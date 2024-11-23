@@ -20,7 +20,15 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .base import BaseModelBackend
+from abc import ABC
+
+from syntropic.configs.base import BaseConfig
 
 
-__all__ = ["BaseModelBackend"]
+class BaseAgent(ABC):
+    def __init__(self, config: BaseConfig):
+        self.config = config
+
+    @property
+    def name(self) -> str:
+        return self.config.name

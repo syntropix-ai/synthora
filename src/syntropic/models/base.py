@@ -20,7 +20,19 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .base import BaseModelBackend
+from abc import ABC, abstractmethod
+from typing import Any, Dict
 
 
-__all__ = ["BaseModelBackend"]
+class BaseModelBackend(ABC):
+    def __init__(self, **kwargs: Dict[str, Any]) -> None:
+        self.kwargs = kwargs
+
+    @abstractmethod
+    def completion(self) -> Any: ...
+
+    @abstractmethod
+    def chat(self) -> Any: ...
+
+    @abstractmethod
+    def embed(self) -> Any: ...
