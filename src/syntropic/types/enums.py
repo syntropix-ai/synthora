@@ -20,7 +20,13 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .base import BaseModelBackend
+from enum import Enum
 
 
-__all__ = ["BaseModelBackend"]
+class AgentType(Enum, str):
+    VANILLA = "vanilla"
+    REACT = "react"
+    REWOO = "rewoo"
+    COT = "cot"
+    TOT = "tot"
+    REFLECTION = "reflection"

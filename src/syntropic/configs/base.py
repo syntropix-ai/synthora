@@ -20,7 +20,30 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .base import BaseModelBackend
+from abc import ABC, abstractmethod
+from pathlib import Path
+from typing import Dict, Self, Type, Union
+
+from syntropic.models.base import BaseModelBackend
 
 
-__all__ = ["BaseModelBackend"]
+class BaseConfig(ABC):
+    def __init__(
+        self, name: str, model: Union[BaseModelBackend, Dict[str, BaseModelBackend]]
+    ):
+        self.name = name
+        self.model = model
+
+    @classmethod
+    def load(cls: Type[Self], source: Union[Path, str]) -> Self:
+        assert isinstance(source, (str, Path)), f"Invalid source type {type(source)}"
+        file_path = Path(source) if isinstance(source, str) else source
+        if not file_path.exists():
+            raise FileNotFoundError(f"File {file_path} not found")
+        if not file_path.is_file():
+            raise ValueError(f"{file_path} is not a file")
+        return cls.from_file(file_path)
+
+    @abstractmethod
+    @classmethod
+    def from_file(cls: Type[Self], path: Path) -> Self: ...
