@@ -1,5 +1,3 @@
-<!-- LICENSE HEADER MANAGED BY add-license-header
-
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 # MIT License
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -18,7 +16,3 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
--->
-
-# Syntropic
-Syntropic is a lightweight and extensible framework for LLM-driven Agents and ALM research. It provides essential components to build, test and evaluate agents. At its core, Syntropic aims to assemble an agent with a single config, thus minimizing your effort in building, tuning, and sharing agents.
