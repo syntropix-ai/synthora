@@ -1,21 +1,111 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# MIT License
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
+# Licensed under the Apache License, Version 2.0 (the “License”);
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an “AS IS” BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
+# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
+
+import asyncio
+import inspect
+from abc import ABC
+from typing import Any, Callable, Dict, List, Optional, Self, Union, cast
+
+from syntropic.types import Err, Ok, Result
+from syntropic.utils.function_schema import get_openai_tool_schema
+
+
+class BaseFunction(ABC):
+    def __init__(self, instance: Any, func: Callable[..., Any]) -> None:
+        self.instance = instance
+        self.func = func
+        self.schema = get_openai_tool_schema(func)
+
+    @classmethod
+    def wrap(
+        cls: Self,
+        func: Callable[..., Any],
+        instance: Optional[Any] = None,
+    ) -> Union["SyncFunction", "AsyncFunction"]:
+        if isinstance(func, staticmethod):
+            instance = None
+
+        if asyncio.iscoroutinefunction(func) or asyncio.iscoroutinefunction(
+            inspect.unwrap(func)
+        ):
+            return AsyncFunction(instance, func)
+        else:
+            return SyncFunction(instance, func)
+
+    @property
+    def name(self) -> str:
+        return cast(str, self.schema["function"]["name"])
+
+    @property
+    def description(self) -> str:
+        return cast(str, self.schema["function"]["description"])
+
+    @property
+    def parameters(self) -> Dict[str, Any]:
+        return self.schema["function"]["parameters"]["properties"]  # type: ignore[no-any-return]
+
+
+class SyncFunction(BaseFunction):
+    def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
+        try:
+            if self.instance is not None:
+                args = (self,) + args
+
+            resp = self.func(*args, **kwargs)
+            if isinstance(resp, Result):
+                return resp
+            return Ok(resp)
+        except Exception as e:
+            return Err(e, str(e))
+
+
+class AsyncFunction(BaseFunction):
+    async def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
+        try:
+            if self.instance is not None:
+                args = (self,) + args
+            resp = await self.func(*args, **kwargs)
+            if isinstance(resp, Result):
+                return resp
+            return Ok(resp)
+        except Exception as e:
+            return Err(e, str(e))
+
+
+class BaseToolkit(ABC):
+    def __init__(self) -> None:
+        self._exposed_functions = [
+            BaseFunction.wrap(v, self)
+            for _, v in self.__class__.__dict__.items()
+            if getattr(v, "_flag", False)
+        ]
+        for f in self._exposed_functions:
+            setattr(self, f.name, f)
+        for v in self.__class__.__dict__.values():
+            if (
+                issubclass(v.__class__, BaseFunction)
+                and v not in self._exposed_functions
+            ):
+                self._exposed_functions.append(v)
+
+    @property
+    def sync_tools(self) -> List[BaseFunction]:
+        return [f for f in self._exposed_functions if isinstance(f, SyncFunction)]
+
+    @property
+    def async_tools(self) -> List[BaseFunction]:
+        return [f for f in self._exposed_functions if isinstance(f, AsyncFunction)]

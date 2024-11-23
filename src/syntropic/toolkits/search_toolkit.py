@@ -15,37 +15,11 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-.PHONY: all format help docs
+from syntropic.toolkits import BaseToolkit
+from syntropic.toolkits.base import BaseFunction
 
-# Default target executed when no arguments are given to make.
-all: help
-
-# Define a variable for the test file path.
-TEST_FILE ?= tests/unit/
-
-docs:
-	poetry run python -m http.server -d docs/build/html 8000
-
-test:
-	poetry run pytest $(TEST_FILE)
-
-install:
-	poetry install --with quality,dev
-	poetry run pre-commit install
-
-format:
-	poetry run pre-commit run --all-files
+from .search_toolkits import search_wikipedia
 
 
-# Documentation
-
-html:
-	cd docs && sphinx-apidoc -o source ../src/ && make html
-
-help:
-	@echo '===================='
-	@echo '-- DOCUMENTATION ---'
-	@echo '--------------------'
-	@echo 'install                      - install dependencies'
-	@echo 'format                       - run code formatters'
-	@echo 'test                         - run unit tests'
+class SearchToolkit(BaseToolkit):
+    search_wikipedia = BaseFunction.wrap(search_wikipedia)
