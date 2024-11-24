@@ -18,7 +18,7 @@
 import asyncio
 import inspect
 from abc import ABC
-from typing import Any, Callable, Dict, List, Optional, Self, Union, cast
+from typing import Any, Callable, Dict, List, Optional, Union, cast
 
 from syntropic.types import Err, Ok, Result
 from syntropic.utils import get_openai_tool_schema
