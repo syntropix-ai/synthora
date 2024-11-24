@@ -1,0 +1,4 @@
+name: test
+type: vanilla
+model: !include basic_model.yaml
+prompt: "What is the capital of France? {x}"

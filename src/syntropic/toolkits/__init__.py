@@ -15,6 +15,8 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
+from typing import Any, Callable
+
 from .base import AsyncFunction, BaseFunction, BaseToolkit, SyncFunction
 from .basic_math_toolkit import BasicMathToolkit
 from .search_toolkit import SearchToolkit

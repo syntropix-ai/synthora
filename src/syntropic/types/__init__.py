@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .enums import AgentType, Err, Ok, Result
+from .enums import AgentType, Err, ModelBackendType, Ok, Result
 
 
-__all__ = ["AgentType", "Result", "Ok", "Err"]
+__all__ = ["AgentType", "Result", "Ok", "Err", "ModelBackendType"]

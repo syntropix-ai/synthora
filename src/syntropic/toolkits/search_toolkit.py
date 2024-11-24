@@ -16,10 +16,9 @@
 #
 
 from syntropic.toolkits import BaseToolkit
-from syntropic.toolkits.base import BaseFunction
 
 from .search_toolkits import search_wikipedia
 
 
 class SearchToolkit(BaseToolkit):
-    search_wikipedia = BaseFunction.wrap(search_wikipedia)
+    search_wikipedia = search_wikipedia
