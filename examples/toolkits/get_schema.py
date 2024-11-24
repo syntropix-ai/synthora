@@ -25,7 +25,7 @@ loop = asyncio.new_event_loop()
 
 toolkit = BasicMathToolkit()
 print([i.name for i in toolkit.sync_tools])
-print(toolkit.async_add.name, loop.run_until_complete(toolkit.async_add(1, 2)))
+print(toolkit.async_add.name, loop.run_until_complete(toolkit.async_add(1, 2)))  # type: ignore[arg-type]
 
 print(toolkit.add.name, toolkit.add(1, 2))
 print(toolkit.subtract.name, toolkit.subtract(1, 2))

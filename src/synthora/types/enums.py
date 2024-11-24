@@ -56,5 +56,13 @@ class MessageRole(Enum):
     USER = "user"
     ASSISTANT = "assistant"
     SYSTEM = "system"
-    FUNCTION_CALL = "function_call"
-    FUNCTION_RETURN = "function_return"
+    RETRIEVER = "retriever"
+    TOOL_RESPONSE = "tool_response"
+
+
+class NodeType(Enum):
+    AGENT = "agent"
+    RETRIEVER = "retreiver"
+    TOOLKIT = "toolkit"
+    USER = "user"
+    SYSTEM = "system"

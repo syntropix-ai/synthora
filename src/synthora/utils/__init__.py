@@ -16,7 +16,14 @@
 #
 
 from .function_schema import get_openai_tool_schema
+from .image import image2base64, is_url, parse_image
 from .yaml_loader import YAMLLoader
 
 
-__all__ = ["get_openai_tool_schema", "YAMLLoader"]
+__all__ = [
+    "get_openai_tool_schema",
+    "YAMLLoader",
+    "is_url",
+    "image2base64",
+    "parse_image",
+]

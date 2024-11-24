@@ -17,7 +17,7 @@
 
 import asyncio
 import inspect
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Optional, Union, cast
 
 from synthora.types import Err, Ok, Result
@@ -57,6 +57,9 @@ class BaseFunction(ABC):
     def parameters(self) -> Dict[str, Any]:
         return self.schema["function"]["parameters"]["properties"]  # type: ignore[no-any-return]
 
+    @abstractmethod
+    def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]: ...
+
 
 class SyncFunction(BaseFunction):
     def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
@@ -72,7 +75,7 @@ class SyncFunction(BaseFunction):
 
 
 class AsyncFunction(BaseFunction):
-    async def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
+    async def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:  # type: ignore[override]
         try:
             if self.instance is not None:
                 args = (self.instance,) + args
@@ -86,18 +89,12 @@ class AsyncFunction(BaseFunction):
 
 class BaseToolkit(ABC):
     def __init__(self) -> None:
-        self._exposed_functions = [
-            BaseFunction.wrap(v, self)
-            for v in self.__class__.__dict__.values()
-            if getattr(v, "_flag", False)
-        ]
-        for f in self._exposed_functions:
-            setattr(self, f.name, f)
+        self._exposed_functions = []
+
         for v in self.__class__.__dict__.values():
-            if (
-                issubclass(v.__class__, BaseFunction)
-                and v not in self._exposed_functions
-            ):
+            if isinstance(v, BaseFunction):
+                if getattr(v, "_flag", False):
+                    v.instance = self
                 self._exposed_functions.append(v)
 
     @property

@@ -15,7 +15,50 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .enums import AgentType, Err, ModelBackendType, Ok, Result
+from .enums import AgentType, Err, ModelBackendType, NodeType, Ok, Result
+from .node import Node
+from .openai import (  # type: ignore[attr-defined]
+    ChatCompletion,
+    ChatCompletionAssistantMessageParam,
+    ChatCompletionChunk,
+    ChatCompletionContentPartImageParam,
+    ChatCompletionContentPartParam,
+    ChatCompletionContentPartTextParam,
+    ChatCompletionFunctionMessageParam,
+    ChatCompletionMessage,
+    ChatCompletionMessageParam,
+    ChatCompletionMessageToolCallParam,
+    ChatCompletionSystemMessageParam,
+    ChatCompletionToolMessageParam,
+    ChatCompletionUserMessageParam,
+    Choice,
+    CompletionUsage,
+    ParsedChatCompletion,
+)
 
 
-__all__ = ["AgentType", "Result", "Ok", "Err", "ModelBackendType"]
+__all__ = [
+    "AgentType",
+    "Result",
+    "Ok",
+    "Err",
+    "ModelBackendType",
+    "Node",
+    "NodeType",
+    "ChatCompletion",
+    "ChatCompletionAssistantMessageParam",
+    "ChatCompletionChunk",
+    "ChatCompletionFunctionMessageParam",
+    "ChatCompletionMessage",
+    "ChatCompletionMessageParam",
+    "ChatCompletionSystemMessageParam",
+    "ChatCompletionUserMessageParam",
+    "Choice",
+    "CompletionUsage",
+    "ParsedChatCompletion",
+    "ChatCompletionToolMessageParam",
+    "ChatCompletionContentPartParam",
+    "ChatCompletionMessageToolCallParam",
+    "ChatCompletionContentPartImageParam",
+    "ChatCompletionContentPartTextParam",
+]
