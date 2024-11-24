@@ -37,10 +37,10 @@ class BaseConfig(BaseModel):
             raise ValueError(f"{file_path} is not a file")
         return cls.from_file(file_path)
 
-    @abstractmethod
+
     @classmethod
     def from_file(cls: Type[Self], path: Path) -> Self: ...
 
-    @abstractmethod
+
     @classmethod
     def from_dict(cls: Type[Self], data: Dict[str, Any]) -> Self: ...

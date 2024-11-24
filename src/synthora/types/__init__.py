@@ -34,6 +34,7 @@ from .openai import (  # type: ignore[attr-defined]
     Choice,
     CompletionUsage,
     ParsedChatCompletion,
+    ChatCompletionMessageToolCall,
 )
 
 
@@ -61,4 +62,5 @@ __all__ = [
     "ChatCompletionMessageToolCallParam",
     "ChatCompletionContentPartImageParam",
     "ChatCompletionContentPartTextParam",
+    "ChatCompletionMessageToolCall",
 ]

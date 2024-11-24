@@ -31,12 +31,29 @@ class Result(Generic[T, E]):
 @dataclass
 class Ok(Result[T, E]):
     value: T
+    
+    @property
+    def is_ok(self) -> bool:
+        return True
+    
+    @property
+    def is_err(self) -> bool:
+        return False
+    
 
 
 @dataclass
 class Err(Result[T, E]):
     error: E
     value: T
+    
+    @property
+    def is_ok(self) -> bool:
+        return False
+    
+    @property
+    def is_err(self) -> bool:
+        return True
 
 
 class AgentType(Enum):
@@ -49,7 +66,7 @@ class AgentType(Enum):
 
 
 class ModelBackendType(Enum):
-    OPENAI = "openai"
+    OPENAI_CHAT = "openai_chat"
 
 
 class MessageRole(Enum):

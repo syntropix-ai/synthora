@@ -21,24 +21,31 @@ from typing import Any, AsyncGenerator, Dict, Generator, List, Optional, Union, 
 from openai import AsyncOpenAI, OpenAI  # type: ignore
 
 from synthora.messages.base import BaseMessage
-from synthora.models import BaseModelBackend
-from synthora.types.enums import NodeType
+from synthora.models.base import BaseModelBackend
+from synthora.types.enums import ModelBackendType, NodeType
 from synthora.types.node import Node
 
 
 class OpenAIChatBackend(BaseModelBackend):
     def __init__(
         self,
+        model_type: str,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
         source: Node = Node(name="assistant", type=NodeType.AGENT),
         config: Optional[Dict[str, Any]] = None,
+        name: Optional[str] = None,
         **kwargs: Dict[str, Any],
     ) -> None:
+        super().__init__(
+            model_type=model_type,
+            backend_type=ModelBackendType.OPENAI_CHAT,
+            config=config,
+            name=name,
+        )
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
         self.kwargs = kwargs
-        self.config = config or {}
         if self.api_key is None:
             raise ValueError("API Key is required for OpenAI")
         self.kwargs["api_key"] = self.api_key  # type: ignore[assignment]
@@ -46,8 +53,6 @@ class OpenAIChatBackend(BaseModelBackend):
             self.kwargs["base_url"] = self.base_url  # type: ignore[assignment]
         self.source = source
         self.client = OpenAI(**self.kwargs)
-
-        super().__init__()
 
     def run(  # type: ignore[return]
         self,
@@ -57,14 +62,19 @@ class OpenAIChatBackend(BaseModelBackend):
     ) -> Union[BaseMessage, Generator[BaseMessage, None, None]]:
         if not isinstance(messages, list):
             messages = [messages]
-        resp = self.client.chat.completions.create(messages=messages, **self.config)
+        messages = [message.to_openai_message() for message in messages]
+        resp = self.client.chat.completions.create(
+            messages=messages, model=self.model_type, **self.config
+        )
         if self.config.get("stream", False):
-            previous_message = None
-            for message in resp:
-                previous_message = BaseMessage.from_openai_stream_response(
-                    message, self.source, previous_message
-                )
-                yield previous_message
+            def stream_messages():
+                previous_message = None
+                for message in resp:
+                    previous_message = BaseMessage.from_openai_stream_response(
+                        message, self.source, previous_message
+                    )
+                    yield previous_message
+            return stream_messages()
         else:
             return BaseMessage.from_openai_response(resp, self.source)
 
@@ -82,12 +92,13 @@ class OpenAIChatBackend(BaseModelBackend):
         resp = await self.client.chat.completions.create(
             messages=messages, **self.config
         )
-        if self.config.get("stream", False):
-            previous_message = None
-            async for message in resp:
-                previous_message = BaseMessage.from_openai_stream_response(
-                    message, self.source, previous_message
-                )
-                yield previous_message
-        else:
-            return BaseMessage.from_openai_response(resp, self.source)
+        return BaseMessage.from_openai_response(resp, self.source)
+        # if self.config.get("stream", False):
+        #     previous_message = None
+        #     async for message in resp:
+        #         previous_message = BaseMessage.from_openai_stream_response(
+        #             message, self.source, previous_message
+        #         )
+        #         yield previous_message
+        # else:
+        #     return BaseMessage.from_openai_response(resp, self.source)

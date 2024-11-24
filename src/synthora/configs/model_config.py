@@ -20,14 +20,16 @@ from typing import Any, Dict, Optional, Self, Type
 
 import yaml
 
-from synthora.configs import BaseConfig
+from synthora.configs.base import BaseConfig
 from synthora.types.enums import ModelBackendType
 from synthora.utils import YAMLLoader
 
 
 class ModelConfig(BaseConfig):
-    name: str
-    backend: ModelBackendType = ModelBackendType.OPENAI
+
+    model_type: str
+    name: Optional[str] = None
+    backend: ModelBackendType = ModelBackendType.OPENAI_CHAT
     config: Optional[Dict[str, Any]] = None
     backend_config: Optional[Dict[str, Any]] = None
 
