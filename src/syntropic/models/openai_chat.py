@@ -18,9 +18,8 @@
 import os
 from typing import Any, Dict, Optional
 
+from fusion.models import BaseModelBackend
 from openai import OpenAI
-
-from syntropic.models import BaseModelBackend
 
 
 class OpenAIChatBackend(BaseModelBackend):

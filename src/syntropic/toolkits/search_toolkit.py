@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from syntropic.toolkits import BaseToolkit
+from fusion.toolkits import BaseToolkit
 
 from .search_toolkits import search_wikipedia
 

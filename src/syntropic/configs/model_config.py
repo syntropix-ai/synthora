@@ -19,10 +19,9 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Self, Type
 
 import yaml
-
-from syntropic.configs import BaseConfig
-from syntropic.types.enums import ModelBackendType
-from syntropic.utils import YAMLLoader
+from fusion.configs import BaseConfig
+from fusion.types.enums import ModelBackendType
+from fusion.utils import YAMLLoader
 
 
 class ModelConfig(BaseConfig):

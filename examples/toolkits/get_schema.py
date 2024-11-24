@@ -18,7 +18,7 @@
 import asyncio
 import json
 
-from syntropic.toolkits import BasicMathToolkit
+from fusion.toolkits import BasicMathToolkit
 
 
 loop = asyncio.new_event_loop()

@@ -17,7 +17,7 @@
 
 import json
 
-from syntropic.toolkits.decorators import tool
+from fusionits.decorators import tool
 
 
 @tool
