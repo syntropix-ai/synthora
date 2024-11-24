@@ -15,6 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
+from copy import deepcopy
 from typing import Any, AnyStr, Dict, List, Optional, Self, Type
 
 from pydantic import BaseModel, model_validator
@@ -26,7 +27,7 @@ from synthora.types import (
     ChatCompletionContentPartImageParam,
     ChatCompletionContentPartTextParam,
     ChatCompletionMessageParam,
-    ChatCompletionMessageToolCallParam,
+    ChatCompletionMessageToolCall,
     ChatCompletionSystemMessageParam,
     ChatCompletionToolMessageParam,
     ChatCompletionUserMessageParam,
@@ -43,7 +44,7 @@ class BaseMessage(BaseModel):
 
     chunk: Optional[str] = None
     content: Optional[str] = None
-    tool_calls: Optional[List[ChatCompletionMessageToolCallParam]] = None
+    tool_calls: Optional[List[ChatCompletionMessageToolCall]] = None
     tool_response: Optional[Dict[str, Any]] = None
     images: Optional[List[str]] = None
 
@@ -78,7 +79,7 @@ class BaseMessage(BaseModel):
         tool_calls: Optional[List[Dict[str, Any]]] = None,
         tool_response: Optional[Result[Dict[str, Any], Exception]] = None,
         source: Node = Node(name="user", type=NodeType.USER),
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: Dict[str, Any] = {},
     ) -> Self:
         if images:
             images = [parse_image(image) for image in images]
@@ -194,7 +195,7 @@ class BaseMessage(BaseModel):
             "finish_reason": choice.finish_reason,
         }
         tool_calls = choice.message.tool_calls
-        if not tool_calls:
+        if not tool_calls and choice.message.function_call:
             tool_calls = [choice.message.function_call]
         return cls(
             id=response.id,
@@ -202,7 +203,7 @@ class BaseMessage(BaseModel):
             role=MessageRole.ASSISTANT,
             content=choice.message.content,
             metadata=metadata,
-            tool_calls=choice.message.tool_calls,
+            tool_calls=tool_calls \
         )
 
     @classmethod
@@ -221,17 +222,24 @@ class BaseMessage(BaseModel):
             "usage": response.usage,
             "finish_reason": choice.finish_reason,
         }
+        if choice.finish_reason:
+            item = deepcopy(previous)
+            item.metadata.update(metadata)
+            item.chunk = None
+            return item
+
         delta = choice.delta
         chunk = delta.content
-        if not chunk:
+        previous_tool_calls = previous.tool_calls if previous else []
+        if chunk is None:
             tool_calls = delta.tool_calls
-            previous_tool_calls = previous.tool_calls if previous else []
+
             if not tool_calls:
                 tool_calls = [delta.function_call]
             for tc in tool_calls:
                 if tc.id:
                     previous_tool_calls.append(  # type: ignore[union-attr]
-                        ChatCompletionMessageToolCallParam(
+                        ChatCompletionMessageToolCall(
                             **{
                                 "id": tc.id,
                                 "type": "function",

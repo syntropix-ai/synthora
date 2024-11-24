@@ -19,11 +19,12 @@ from openai.types.chat.chat_completion_user_message_param import (
 )
 from openai.types.chat.chat_completion_tool_message_param import (
     ChatCompletionToolMessageParam,
+    
 )
 from openai.types.completion_usage import CompletionUsage
 from openai.types.chat import ParsedChatCompletion
 
-
+from openai.types.chat.chat_completion_message_tool_call import ChatCompletionMessageToolCall
 from openai.types.chat import (
     ChatCompletionContentPartParam,
     ChatCompletionMessageToolCallParam,

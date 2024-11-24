@@ -20,7 +20,7 @@ from typing import Any, Dict, List, Optional, Self, Type, Union
 
 import yaml
 
-from synthora.configs import BaseConfig
+from synthora.configs.base import BaseConfig
 from synthora.utils import YAMLLoader
 
 

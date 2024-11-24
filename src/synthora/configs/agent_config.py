@@ -20,7 +20,7 @@ from typing import Any, Dict, List, Optional, Self, Type, Union
 
 import yaml
 
-from synthora.configs import BaseConfig
+from synthora.configs.base import BaseConfig
 from synthora.configs.model_config import ModelConfig
 from synthora.configs.tool_config import ToolConfig
 from synthora.prompts.base import BasePrompt
@@ -46,7 +46,13 @@ class AgentConfig(BaseConfig):
             raise ValueError(f"Error loading yaml file {path}: {e}")
         if tools := data.get("tools", None):
             data["tools"] = ToolConfig.parse_tools(tools)
-
+        prompt = data.get("prompt")
+        if isinstance(prompt, dict):
+            for key, value in prompt.items():
+                prompt[key] = BasePrompt(value)
+        else:
+            prompt = BasePrompt(prompt)
+        data["prompt"] = prompt
         return cls(**data)
 
     @classmethod

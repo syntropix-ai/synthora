@@ -15,23 +15,19 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from synthora.configs.model_config import ModelConfig
-from synthora.types.enums import ModelBackendType
-from .base import BaseModelBackend
-from .openai_chat import OpenAIChatBackend
-
-BACKEND_MAP = {
-    ModelBackendType.OPENAI_CHAT: OpenAIChatBackend,
-}
-
-def create_model_from_config(config: ModelConfig) -> BaseModelBackend:
-    cls = BACKEND_MAP[config.backend]
-    return cls(
-        name=config.name,
-        model_type=config.model_type,
-        config=config.config,
-        **(config.backend_config or {}),
-    )
-
-
-__all__ = ["BaseModelBackend", "OpenAIChatBackend", "create_model_from_config"]
+name: test
+type: react
+description: "This is a test agent"
+model: !include basic_model.yaml
+prompt: "What is the capital of France? {x}"
+tools:
+  - 'retrieval.ABCRetriever'
+  - target: 'tool.math'
+    trace: false
+    args:
+      key: value
+  - target: 'synropic.agents.VanillaAgent'
+    args: !include vanilla_agent.yaml
+  - target: 'synropic.agents.buildin.SearchAgent'
+    args:
+      top_k: 5
