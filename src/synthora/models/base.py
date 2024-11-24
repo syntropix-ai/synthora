@@ -16,12 +16,24 @@
 #
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, List, Union
+
+from synthora.messages.base import BaseMessage
 
 
 class BaseModelBackend(ABC):
     @abstractmethod
-    def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any: ...
+    def run(
+        self,
+        messages: Union[List[BaseMessage], BaseMessage],
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> Any: ...
 
     @abstractmethod
-    async def async_run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any: ...
+    async def async_run(
+        self,
+        messages: Union[List[BaseMessage], BaseMessage],
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> Any: ...

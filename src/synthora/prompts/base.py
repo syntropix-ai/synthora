@@ -16,9 +16,10 @@
 #
 
 import re
-from typing import Any, Set
+from typing import Any, Set, override
 
 from pydantic_core import core_schema
+from pydantic_core.core_schema import StringSchema
 
 
 class BasePrompt(str):
@@ -26,11 +27,14 @@ class BasePrompt(str):
     def args(self) -> Set[str]:
         return set(re.findall(r"{([^}]*)}", self))
 
-    def format(self, **kwargs: Any) -> "BasePrompt":
+    @override
+    def format(self, **kwargs: Any) -> "BasePrompt":  # type: ignore[override]
         return BasePrompt(
             self.format_map({k: v for k, v in kwargs.items() if k in self.args})
         )
 
     @classmethod
-    def __get_pydantic_core_schema__(cls, source, handler):
+    def __get_pydantic_core_schema__(
+        cls: Any, source: Any, handler: Any
+    ) -> StringSchema:
         return core_schema.str_schema()

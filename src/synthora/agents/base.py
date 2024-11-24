@@ -18,11 +18,11 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from synthora.configs.base import BaseConfig
+from synthora.configs.agent_config import AgentConfig
 
 
 class BaseAgent(ABC):
-    def __init__(self, config: BaseConfig):
+    def __init__(self, config: AgentConfig):
         self.config = config
 
     @property

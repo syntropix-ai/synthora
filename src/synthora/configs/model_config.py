@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Self, Type
 
 import yaml
+
 from synthora.configs import BaseConfig
 from synthora.types.enums import ModelBackendType
 from synthora.utils import YAMLLoader
