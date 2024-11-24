@@ -17,7 +17,7 @@
 
 import json
 
-from fusionits.decorators import tool
+from synthora.toolkits.decorators import tool
 
 
 @tool

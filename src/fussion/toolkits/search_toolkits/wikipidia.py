@@ -15,8 +15,8 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from fusion.toolkits.decorators import tool
-from fusion.types.enums import Err, Ok, Result
+from synthora.toolkits.decorators import tool
+from synthora.types.enums import Err, Ok, Result
 
 
 @tool

@@ -18,7 +18,7 @@
 import os
 from typing import Any, Dict, Optional
 
-from fusion.models import BaseModelBackend
+from synthora.models import BaseModelBackend
 from openai import OpenAI
 
 

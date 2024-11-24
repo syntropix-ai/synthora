@@ -15,5 +15,5 @@ limitations under the License.
 =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 -->
 
-# Fusion
-Fusion is a lightweight and extensible framework for LLM-driven Agents and ALM research. It provides essential components to build, test and evaluate agents. At its core, Fusion aims to assemble an agent with a single config, thus minimizing your effort in building, tuning, and sharing agents.
+# Synthora
+Synthora is a lightweight and extensible framework for LLM-driven Agents and ALM research. It provides essential components to build, test and evaluate agents. At its core, Synthora aims to assemble an agent with a single config, thus minimizing your effort in building, tuning, and sharing agents.
