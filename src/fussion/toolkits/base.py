@@ -20,8 +20,8 @@ import inspect
 from abc import ABC
 from typing import Any, Callable, Dict, List, Optional, Union, cast
 
-from fusion.types import Err, Ok, Result
-from fusion.utils import get_openai_tool_schema
+from synthora.types import Err, Ok, Result
+from synthora.utils import get_openai_tool_schema
 
 
 class BaseFunction(ABC):

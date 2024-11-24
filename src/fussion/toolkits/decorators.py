@@ -15,19 +15,16 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from abc import ABC, abstractmethod
-from typing import Any
+import inspect
+from typing import Any, Callable, Union
 
-from fusion.configs.base import BaseConfig
+from synthora.toolkits.base import BaseFunction
 
 
-class BaseAgent(ABC):
-    def __init__(self, config: BaseConfig):
-        self.config = config
-
-    @property
-    def name(self) -> str:
-        return self.config.name
-
-    @abstractmethod
-    def __call__(self, *args: Any, **kwargs: Any) -> Any: ...
+def tool(func: Callable[..., Any]) -> Union[BaseFunction, Callable[..., Any]]:
+    signature = inspect.signature(func)
+    parameters = list(signature.parameters.values())
+    if parameters and parameters[0].name == "self":
+        setattr(func, "_flag", True)
+        return func
+    return BaseFunction.wrap(func)

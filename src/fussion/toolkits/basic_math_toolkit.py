@@ -17,8 +17,8 @@
 
 from typing import Union
 
-from fusion.toolkits import BaseToolkit
-from fusion.toolkits.decorators import tool
+from synthora.toolkits import BaseToolkit
+from synthora.toolkits.decorators import tool
 
 
 class BasicMathToolkit(BaseToolkit):

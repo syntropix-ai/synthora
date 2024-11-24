@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from fusion.configs import AgentConfig
+from synthora.configs import AgentConfig
 
 
 config = AgentConfig.load("examples/configs/configs/basic_agent.yaml")

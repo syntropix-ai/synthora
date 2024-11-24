@@ -16,19 +16,25 @@
 #
 
 from pathlib import Path
-from typing import Any, Dict, Optional, Self, Type
+from typing import Any, Dict, List, Optional, Self, Type, Union
 
 import yaml
-from fusion.configs import BaseConfig
-from fusion.types.enums import ModelBackendType
-from fusion.utils import YAMLLoader
+from synthora.configs import BaseConfig
+from synthora.configs.model_config import ModelConfig
+from synthora.configs.tool_config import ToolConfig
+from synthora.prompts.base import BasePrompt
+from synthora.types.enums import AgentType
+from synthora.utils import YAMLLoader
 
 
-class ModelConfig(BaseConfig):
+class AgentConfig(BaseConfig):
     name: str
-    backend: ModelBackendType = ModelBackendType.OPENAI
-    config: Optional[Dict[str, Any]] = None
-    backend_config: Optional[Dict[str, Any]] = None
+    type: AgentType
+    description: Optional[str] = None
+    model: Union[List[ModelConfig], ModelConfig]
+    prompt: Union[BasePrompt, Dict[str, BasePrompt]]
+    tools: Optional[List[ToolConfig]] = None
+    # retriever: Optional[str] = None
 
     @classmethod
     def from_file(cls: Type[Self], path: Path) -> Self:
@@ -37,6 +43,9 @@ class ModelConfig(BaseConfig):
                 data = yaml.load(file, YAMLLoader)
         except yaml.YAMLError as e:
             raise ValueError(f"Error loading yaml file {path}: {e}")
+        if tools := data.get("tools", None):
+            data["tools"] = ToolConfig.parse_tools(tools)
+
         return cls(**data)
 
     @classmethod

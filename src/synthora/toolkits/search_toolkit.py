@@ -15,8 +15,10 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from synthora.configs import ModelConfig
+from synthora.toolkits import BaseToolkit
+
+from .search_toolkits import search_wikipedia
 
 
-config = ModelConfig.load("examples/configs/configs/basic_model.yaml")
-print(config)
+class SearchToolkit(BaseToolkit):
+    search_wikipedia = search_wikipedia

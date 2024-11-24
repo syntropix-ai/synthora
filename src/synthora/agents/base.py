@@ -15,10 +15,19 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from fusion.toolkits import BaseToolkit
+from abc import ABC, abstractmethod
+from typing import Any
 
-from .search_toolkits import search_wikipedia
+from synthora.configs.base import BaseConfig
 
 
-class SearchToolkit(BaseToolkit):
-    search_wikipedia = search_wikipedia
+class BaseAgent(ABC):
+    def __init__(self, config: BaseConfig):
+        self.config = config
+
+    @property
+    def name(self) -> str:
+        return self.config.name
+
+    @abstractmethod
+    def __call__(self, *args: Any, **kwargs: Any) -> Any: ...

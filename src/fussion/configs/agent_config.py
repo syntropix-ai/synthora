@@ -19,12 +19,12 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Self, Type, Union
 
 import yaml
-from fusion.configs import BaseConfig
-from fusion.configs.model_config import ModelConfig
-from fusion.configs.tool_config import ToolConfig
-from fusion.prompts.base import BasePrompt
-from fusion.types.enums import AgentType
-from fusion.utils import YAMLLoader
+from synthora.configs import BaseConfig
+from synthora.configs.model_config import ModelConfig
+from synthora.configs.tool_config import ToolConfig
+from synthora.prompts.base import BasePrompt
+from synthora.types.enums import AgentType
+from synthora.utils import YAMLLoader
 
 
 class AgentConfig(BaseConfig):

@@ -18,7 +18,7 @@
 import asyncio
 import json
 
-from fusion.toolkits import BasicMathToolkit
+from synthora.toolkits import BasicMathToolkit
 
 
 loop = asyncio.new_event_loop()
