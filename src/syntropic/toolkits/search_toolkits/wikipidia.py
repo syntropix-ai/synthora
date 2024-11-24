@@ -15,9 +15,11 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
+from syntropic.toolkits.decorators import tool
 from syntropic.types.enums import Err, Ok, Result
 
 
+@tool
 def search_wikipedia(
     query: str, sentences: int = 5, auto_suggest: bool = False
 ) -> Result[str, Exception]:

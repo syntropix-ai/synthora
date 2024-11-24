@@ -15,13 +15,32 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from abc import ABC, abstractmethod
-from typing import Any, Dict
+import json
 
+from syntropic.toolkits.decorators import tool
 
-class BaseModelBackend(ABC):
-    @abstractmethod
-    def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any: ...
+@tool
+def add(a: int, b: int) -> int:
+    r"""Add two numbers together."""
+    return a + b
 
-    @abstractmethod
-    async def async_run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any: ...
+print(json.dumps(add.schema, indent=2))
+print(add(1, 2))
+
+# {
+#     "type": "function",
+#     "function": {
+#         "name": "add",
+#         "description": "Add two numbers together.",
+#         "parameters": {
+#             "properties": {
+#                 "a": {"title": "A", "type": "integer"},
+#                 "b": {"title": "B", "type": "integer"},
+#             },
+#             "required": ["a", "b"],
+#             "title": "add",
+#             "type": "object",
+#         },
+#     },
+# }
+# Ok(value=3)

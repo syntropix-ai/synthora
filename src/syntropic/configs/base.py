@@ -15,23 +15,20 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, Self, Type, Union
+from typing import Any, Dict, Self, Type, Union
 
-from syntropic.models.base import BaseModelBackend
+from pydantic import BaseModel
 
 
-class BaseConfig(ABC):
-    def __init__(
-        self, name: str, model: Union[BaseModelBackend, Dict[str, BaseModelBackend]]
-    ):
-        self.name = name
-        self.model = model
-
+class BaseConfig(BaseModel):
     @classmethod
-    def load(cls: Type[Self], source: Union[Path, str]) -> Self:
-        assert isinstance(source, (str, Path)), f"Invalid source type {type(source)}"
+    def load(cls: Type[Self], source: Union[Path, str, Dict[str, Any]]) -> Self:
+        assert isinstance(
+            source, (str, Path, dict)
+        ), f"Invalid source type {type(source)}"
+        if isinstance(source, dict):
+            return cls.from_dict(source)
         file_path = Path(source) if isinstance(source, str) else source
         if not file_path.exists():
             raise FileNotFoundError(f"File {file_path} not found")
@@ -39,6 +36,8 @@ class BaseConfig(ABC):
             raise ValueError(f"{file_path} is not a file")
         return cls.from_file(file_path)
 
-    @abstractmethod
     @classmethod
     def from_file(cls: Type[Self], path: Path) -> Self: ...
+
+    @classmethod
+    def from_dict(cls: Type[Self], data: Dict[str, Any]) -> Self: ...

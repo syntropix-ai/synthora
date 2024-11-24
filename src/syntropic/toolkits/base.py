@@ -21,7 +21,7 @@ from abc import ABC
 from typing import Any, Callable, Dict, List, Optional, Self, Union, cast
 
 from syntropic.types import Err, Ok, Result
-from syntropic.utils.function_schema import get_openai_tool_schema
+from syntropic.utils import get_openai_tool_schema
 
 
 class BaseFunction(ABC):
@@ -30,9 +30,8 @@ class BaseFunction(ABC):
         self.func = func
         self.schema = get_openai_tool_schema(func)
 
-    @classmethod
+    @staticmethod
     def wrap(
-        cls: Self,
         func: Callable[..., Any],
         instance: Optional[Any] = None,
     ) -> Union["SyncFunction", "AsyncFunction"]:
@@ -63,8 +62,7 @@ class SyncFunction(BaseFunction):
     def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
         try:
             if self.instance is not None:
-                args = (self,) + args
-
+                args = (self.instance,) + args
             resp = self.func(*args, **kwargs)
             if isinstance(resp, Result):
                 return resp
@@ -77,7 +75,7 @@ class AsyncFunction(BaseFunction):
     async def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
         try:
             if self.instance is not None:
-                args = (self,) + args
+                args = (self.instance,) + args
             resp = await self.func(*args, **kwargs)
             if isinstance(resp, Result):
                 return resp
@@ -90,7 +88,7 @@ class BaseToolkit(ABC):
     def __init__(self) -> None:
         self._exposed_functions = [
             BaseFunction.wrap(v, self)
-            for _, v in self.__class__.__dict__.items()
+            for v in self.__class__.__dict__.values()
             if getattr(v, "_flag", False)
         ]
         for f in self._exposed_functions:

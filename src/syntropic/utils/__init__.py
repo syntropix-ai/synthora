@@ -15,7 +15,8 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .function_schema import get_openai_tool_schema, register
+from .function_schema import get_openai_tool_schema
+from .yaml_loader import YAMLLoader
 
 
-__all__ = ["get_openai_tool_schema", "register"]
+__all__ = ["get_openai_tool_schema", "YAMLLoader"]

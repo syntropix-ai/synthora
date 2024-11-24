@@ -1,0 +1,8 @@
+name: gpt-4o
+backend: openai
+backend_config:
+  api_key: YOUR_API_KEY
+  url: https://api.openai.com
+config:
+  temperature: 0
+  top_p: 1.0

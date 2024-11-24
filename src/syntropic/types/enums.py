@@ -46,3 +46,15 @@ class AgentType(Enum):
     COT = "cot"
     TOT = "tot"
     REFLECTION = "reflection"
+
+
+class ModelBackendType(Enum):
+    OPENAI = "openai"
+
+
+class MessageRole(Enum):
+    USER = "user"
+    ASSISTANT = "assistant"
+    SYSTEM = "system"
+    FUNCTION_CALL = "function_call"
+    FUNCTION_RETURN = "function_return"

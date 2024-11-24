@@ -74,8 +74,3 @@ def get_openai_tool_schema(func: Callable[..., Any]) -> Dict[str, Any]:
         },
     }
     return openai_tool_schema
-
-
-def register(func: Callable[..., Any]) -> Any:
-    func._flag = True  # type: ignore[attr-defined]
-    return func

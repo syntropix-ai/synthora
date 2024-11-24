@@ -18,14 +18,14 @@
 from typing import Union
 
 from syntropic.toolkits import BaseToolkit
-from syntropic.utils import register
+from syntropic.toolkits.decorators import tool
 
 
 class BasicMathToolkit(BaseToolkit):
-    @register
-    @staticmethod
+
+    @tool
     async def async_add(
-        a: Union[int, float], b: Union[int, float]
+        self, a: Union[int, float], b: Union[int, float]
     ) -> Union[int, float]:
         r"""Add two numbers together
 
@@ -38,7 +38,7 @@ class BasicMathToolkit(BaseToolkit):
         """
         return a + b
 
-    @register
+    @tool
     @staticmethod
     def add(a: Union[int, float], b: Union[int, float]) -> Union[int, float]:
         r"""Add two numbers together
@@ -52,7 +52,7 @@ class BasicMathToolkit(BaseToolkit):
         """
         return a + b
 
-    @register
+    @tool
     @staticmethod
     def subtract(a: Union[int, float], b: Union[int, float]) -> Union[int, float]:
         r"""Subtract two numbers
@@ -66,7 +66,7 @@ class BasicMathToolkit(BaseToolkit):
         """
         return a - b
 
-    @register
+    @tool
     @staticmethod
     def multiply(a: Union[int, float], b: Union[int, float]) -> Union[int, float]:
         r"""Multiply two numbers together
@@ -80,7 +80,7 @@ class BasicMathToolkit(BaseToolkit):
         """
         return a * b
 
-    @register
+    @tool
     @staticmethod
     def divide(a: Union[int, float], b: Union[int, float]) -> Union[int, float]:
         r"""Divide two numbers
