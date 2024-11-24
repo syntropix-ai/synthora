@@ -22,7 +22,6 @@ from syntropic.toolkits.decorators import tool
 
 
 class BasicMathToolkit(BaseToolkit):
-
     @tool
     async def async_add(
         self, a: Union[int, float], b: Union[int, float]

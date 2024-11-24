@@ -19,10 +19,12 @@ import json
 
 from syntropic.toolkits.decorators import tool
 
+
 @tool
 def add(a: int, b: int) -> int:
     r"""Add two numbers together."""
     return a + b
+
 
 print(json.dumps(add.schema, indent=2))
 print(add(1, 2))
