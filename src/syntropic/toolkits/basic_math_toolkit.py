@@ -17,8 +17,8 @@
 
 from typing import Union
 
-from syntropic.toolkits import BaseToolkit
-from syntropic.toolkits.decorators import tool
+from fusion.toolkits import BaseToolkit
+from fusion.toolkits.decorators import tool
 
 
 class BasicMathToolkit(BaseToolkit):

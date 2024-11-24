@@ -18,7 +18,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from syntropic.configs.base import BaseConfig
+from fusion.configs.base import BaseConfig
 
 
 class BaseAgent(ABC):

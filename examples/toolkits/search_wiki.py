@@ -17,7 +17,7 @@
 
 import json
 
-from syntropic.toolkits import SearchToolkit
+from fusion.toolkits import SearchToolkit
 
 
 toolkit = SearchToolkit()

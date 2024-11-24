@@ -16,7 +16,7 @@
 #
 
 [tool.poetry]
-name = "syntropic"
+name = "fusion"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]

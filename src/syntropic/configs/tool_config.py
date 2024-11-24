@@ -19,9 +19,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Self, Type, Union
 
 import yaml
-
-from syntropic.configs import BaseConfig
-from syntropic.utils import YAMLLoader
+from fusion.configs import BaseConfig
+from fusion.utils import YAMLLoader
 
 
 class ToolConfig(BaseConfig):

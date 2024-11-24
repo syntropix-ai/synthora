@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from syntropic.configs import ModelConfig
+from fusion.configs import ModelConfig
 
 
 config = ModelConfig.load("examples/configs/configs/basic_model.yaml")

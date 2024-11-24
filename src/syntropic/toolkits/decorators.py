@@ -18,7 +18,7 @@
 import inspect
 from typing import Any, Callable, Union
 
-from syntropic.toolkits.base import BaseFunction
+from fusion.toolkits.base import BaseFunction
 
 
 def tool(func: Callable[..., Any]) -> Union[BaseFunction, Callable[..., Any]]:
