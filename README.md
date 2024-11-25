@@ -16,7 +16,7 @@ limitations under the License.
 -->
 
 # Synthora
-[![Read the Docs](https://img.shields.io/readthedocs/gentopia)](https://synthora.readthedocs.io/en/latest/)
+[![Read the Docs](https://img.shields.io/readthedocs/synthora)](https://synthora.readthedocs.io/en/latest/)
 
 
 Synthora is a lightweight and extensible framework for LLM-driven Agents and ALM research. It provides essential components to build, test and evaluate agents. At its core, Synthora aims to assemble an agent with a single config, thus minimizing your effort in building, tuning, and sharing agents.
