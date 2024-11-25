@@ -124,7 +124,7 @@ class BaseMessage(BaseModel):
                     raise ValueError("Function response message should have an id")
                 return cls(
                     id=id,
-                    source=source or Node(name="function", type=NodeType.TOOLKIT),
+                    source=source or Node(name="function", type=NodeType.TOOL),
                     role=MessageRole.TOOL_RESPONSE,
                     content=content,
                     tool_response=tool_response,

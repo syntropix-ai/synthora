@@ -24,7 +24,7 @@ from synthora.messages.base import BaseMessage
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import BaseFunction
-from synthora.types.enums import Err, MessageRole, NodeType, Ok, Result
+from synthora.types.enums import CallBackEvent, Err, MessageRole, NodeType, Ok, Result
 from synthora.types.node import Node
 
 
@@ -32,11 +32,12 @@ class VanillaAgent(BaseAgent):
     def __init__(
         self,
         config: AgentConfig,
+        source: Node,
         model: BaseModelBackend,
         prompt: BasePrompt,
         tools: List[Union["BaseAgent", BaseFunction]] = [],
     ) -> None:
-        super().__init__(config, model, prompt, tools)
+        super().__init__(config, source, model, prompt, tools)
         self.model: BaseModelBackend = (
             self.model[0] if isinstance(self.model, list) else self.model
         )
@@ -114,6 +115,15 @@ class VanillaAgent(BaseAgent):
     def run(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
+        if isinstance(message, str):
+            message = BaseMessage.create_message(
+                role=MessageRole.USER,
+                content=message,
+                source=Node(name="user", type=NodeType.USER),
+            )
+        self.callback_manager.call(
+            CallBackEvent.AGENT_START, self.source, message, *args, **kwargs
+        )
         while True:
             response = self.step(message, *args, **kwargs)
             message = ""
@@ -131,7 +141,7 @@ class VanillaAgent(BaseAgent):
                                     id=tool_call.id,
                                     role=MessageRole.TOOL_RESPONSE,
                                     content=resp.value,
-                                    source=Node(name=tool.name, type=NodeType.TOOLKIT),
+                                    source=Node(name=tool.name, type=NodeType.TOOL),
                                 )
                             )
                         except Exception as e:
@@ -140,14 +150,24 @@ class VanillaAgent(BaseAgent):
                                     id=tool_call.id,
                                     role=MessageRole.TOOL_RESPONSE,
                                     content=f"Error: {str(e)}",
-                                    source=Node(name=tool.name, type=NodeType.TOOLKIT),
+                                    source=Node(name=tool.name, type=NodeType.TOOL),
                                 )
                             )
 
                 else:
+                    self.callback_manager.call(
+                        CallBackEvent.AGENT_END, self.source, data, *args, **kwargs
+                    )
                     return Ok(data.content)
 
             else:
+                self.callback_manager.call(
+                    CallBackEvent.AGENT_ERROR,
+                    self.source,
+                    response.error,
+                    *args,
+                    **kwargs,
+                )
                 return response
 
     async def async_run(  # type: ignore[empty-body]

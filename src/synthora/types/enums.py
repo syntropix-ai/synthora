@@ -86,7 +86,21 @@ class MessageRole(Enum):
 
 class NodeType(Enum):
     AGENT = "agent"
+    MODEL = "model"
     RETRIEVER = "retreiver"
-    TOOLKIT = "toolkit"
+    TOOL = "tool"
     USER = "user"
     SYSTEM = "system"
+
+
+class CallBackEvent(Enum):
+    LLM_START = "on_llm_start"
+    LLM_END = "on_llm_end"
+    LLM_ERROR = "on_llm_error"
+    LLM_CHUNK = "on_llm_chunk"
+    TOOL_START = "on_tool_start"
+    TOOL_END = "on_tool_end"
+    TOOL_ERROR = "on_tool_error"
+    AGENT_START = "on_agent_start"
+    AGENT_END = "on_agent_end"
+    AGENT_ERROR = "on_agent_error"

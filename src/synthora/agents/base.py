@@ -20,24 +20,30 @@ import inspect
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Self, Type, Union
 
+from synthora.callbacks import get_callback_manager
+from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.configs.agent_config import AgentConfig
 from synthora.messages.base import BaseMessage
 from synthora.models import create_model_from_config
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import BaseFunction, BaseToolkit
-from synthora.types.enums import Result
+from synthora.types.enums import NodeType, Result
+from synthora.types.node import Node
 
 
 class BaseAgent(ABC):
     def __init__(
         self,
         config: AgentConfig,
+        source: Node,
         model: Union[BaseModelBackend, List[BaseModelBackend]],
         prompt: Union[BasePrompt, Dict[str, BasePrompt]],
         tools: List[Union["BaseAgent", BaseFunction]] = [],
+        handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
     ) -> None:
         self.config = config
+        self.source = source
         self.name = self.config.name
         self.type = self.config.type
         self.description = self.config.description
@@ -45,6 +51,7 @@ class BaseAgent(ABC):
         self.prompt = prompt
         self.tools = tools
         self.history: List[BaseMessage] = []
+        self.callback_manager = get_callback_manager(handlers)
 
     @property
     def schema(self) -> Dict[str, Any]:
@@ -75,6 +82,7 @@ class BaseAgent(ABC):
         _model = config.model if isinstance(config.model, list) else [config.model]
         model = [create_model_from_config(m) for m in _model]
         tools = []
+        source = Node(name=config.name, type=NodeType.AGENT)
         if isinstance(config.prompt, dict):
             prompt = {}
             for key, value in config.prompt.items():
@@ -111,8 +119,12 @@ class BaseAgent(ABC):
                 raise ValueError(
                     f"Error loading toolkit {tool.target} with args {tool.args}: {e}"
                 )
-
-        return cls(config=config, model=model, prompt=prompt, tools=tools)
+        for tool in tools:
+            if tool.source:
+                tool.source.ancestor = source
+        return cls(
+            config=config, model=model, prompt=prompt, tools=tools, source=source
+        )
 
     def get_tool(self, name: str) -> Union[BaseFunction, "BaseAgent"]:
         for tool in self.tools:
