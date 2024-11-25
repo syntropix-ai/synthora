@@ -33,6 +33,18 @@ from synthora.types.node import Node
 
 
 class BaseAgent(ABC):
+    r"""
+    Base class for all agents.
+    
+    Arttributes:
+    
+    - config: AgentConfig: The configuration of the agent.
+    - source: Node: The source node of the agent.
+    - model: Union[BaseModelBackend, List[BaseModelBackend]]: The model of the agent.
+    - prompt: Union[BasePrompt, Dict[str, BasePrompt]]: The prompt of the agent.
+    - tools: List[Union["BaseAgent", BaseFunction]]: The tools of the agent.
+    - handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]]: The handlers of the agent.
+    """
     def __init__(
         self,
         config: AgentConfig,
@@ -55,6 +67,12 @@ class BaseAgent(ABC):
 
     @property
     def schema(self) -> Dict[str, Any]:
+        r""" The schema of the agent. 
+        
+        Returns:
+        
+        - Dict[str, Any]: The schema of the agent.
+        """
         raise NotImplementedError
 
     @abstractmethod
@@ -79,6 +97,16 @@ class BaseAgent(ABC):
 
     @classmethod
     def from_config(cls: Type[Self], config: AgentConfig) -> Self:
+        r""" Create an agent from a configuration.
+        
+        Arguments:
+        
+        - config: AgentConfig: The configuration of the agent.
+        
+        Returns:
+        
+        - Self: The agent created from the configuration.
+        """
         _model = config.model if isinstance(config.model, list) else [config.model]
         model = [create_model_from_config(m) for m in _model]
         tools = []
@@ -127,6 +155,20 @@ class BaseAgent(ABC):
         )
 
     def get_tool(self, name: str) -> Union[BaseFunction, "BaseAgent"]:
+        r""" Get a tool by name.
+        
+        Arguments:
+        
+        - name: str: The name of the tool.
+        
+        Returns:
+        
+        - Union[BaseFunction, "BaseAgent"]: The tool.
+        
+        Raises:
+        
+        - ValueError: If the tool is not found.
+        """
         for tool in self.tools:
             if tool.name == name:
                 return tool
