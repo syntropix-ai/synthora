@@ -54,7 +54,7 @@ class OpenAIChatBackend(BaseModelBackend):
         self.source = source
         self.client = OpenAI(**self.kwargs)
 
-    def run(  # type: ignore[return]
+    def run(
         self,
         messages: Union[List[BaseMessage], BaseMessage],
         *args: Any,
@@ -67,19 +67,21 @@ class OpenAIChatBackend(BaseModelBackend):
             messages=messages, model=self.model_type, **self.config
         )
         if self.config.get("stream", False):
-            def stream_messages():
+
+            def stream_messages() -> Generator[BaseMessage, None, None]:
                 previous_message = None
                 for message in resp:
                     previous_message = BaseMessage.from_openai_stream_response(
                         message, self.source, previous_message
                     )
                     yield previous_message
+
             return stream_messages()
         else:
             return BaseMessage.from_openai_response(resp, self.source)
 
     @override
-    async def async_run(  # type: ignore[override]
+    async def async_run(
         self,
         messages: Union[List[BaseMessage], BaseMessage],
         *args: Any,

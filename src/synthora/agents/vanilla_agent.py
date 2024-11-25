@@ -1,30 +1,72 @@
+# LICENSE HEADER MANAGED BY add-license-header
+#
+# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
+# Licensed under the Apache License, Version 2.0 (the “License”);
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an “AS IS” BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
+#
+
 import json
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Union, cast
+
 from synthora.agents import BaseAgent
 from synthora.configs.agent_config import AgentConfig
 from synthora.messages.base import BaseMessage
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
-from synthora.toolkits.base import BaseToolkit
+from synthora.toolkits.base import BaseFunction
 from synthora.types.enums import Err, MessageRole, NodeType, Ok, Result
 from synthora.types.node import Node
 
 
 class VanillaAgent(BaseAgent):
-
     def __init__(
         self,
         config: AgentConfig,
         model: BaseModelBackend,
         prompt: BasePrompt,
-        tools: List[Union["BaseAgent", BaseToolkit]] = [],
+        tools: List[Union["BaseAgent", BaseFunction]] = [],
     ) -> None:
-        model = model[0] if isinstance(model, list) else model
-        model.config["tools"] = [tool.schema for tool in tools]
-        prompt = list(prompt.values())[0] if isinstance(prompt, dict) else prompt
         super().__init__(config, model, prompt, tools)
+        self.model: BaseModelBackend = (
+            self.model[0] if isinstance(self.model, list) else self.model
+        )
+        self.model.config["tools"] = [tool.schema for tool in tools]
+        self.prompt = (
+            list(self.prompt.values())[0]
+            if isinstance(self.prompt, dict)
+            else self.prompt
+        )
+        self.prompt: BasePrompt = cast(BasePrompt, self.prompt)
 
-    def step(self, message: Union[str, BaseMessage], *args, **kwargs) -> Result[BaseMessage, Exception]:
+    @property
+    def schema(self) -> Dict[str, Any]:
+        return {
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description or "",
+                "parameters": {
+                    "properties": {"message": {"title": "Message", "type": "string"}},
+                    "required": ["message"],
+                    "title": "run",
+                    "type": "object",
+                },
+            },
+        }
+
+    def step(
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+    ) -> Result[Any, Exception]:
         if args_name := self.prompt.args:
             prompt_args = {}
             for arg in args_name:
@@ -69,7 +111,9 @@ class VanillaAgent(BaseAgent):
         self.history.append(response)
         return Ok(response)
 
-    def run(self, message: Union[str, BaseMessage], *args, **kwargs) -> Result[Any, Exception]:
+    def run(
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+    ) -> Result[Any, Exception]:
         while True:
             response = self.step(message, *args, **kwargs)
             message = ""
@@ -106,8 +150,12 @@ class VanillaAgent(BaseAgent):
             else:
                 return response
 
-    async def async_run(self, message: str, *args, **kwargs):
+    async def async_run(  # type: ignore[empty-body]
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+    ) -> Result[Any, Exception]:
         pass
 
-    async def async_step(self, message: str, *args, **kwargs):
+    async def async_step(  # type: ignore[empty-body]
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+    ) -> Result[Any, Exception]:
         pass

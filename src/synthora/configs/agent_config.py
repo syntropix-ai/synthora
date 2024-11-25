@@ -38,7 +38,7 @@ class AgentConfig(BaseConfig):
     # retriever: Optional[str] = None
 
     @classmethod
-    def from_file(cls: Type[Self], path: Path) -> Self:
+    def from_file(cls: Type[Self], path: Union[str, Path]) -> Self:
         try:
             with open(path, "r") as file:
                 data = yaml.load(file, YAMLLoader)

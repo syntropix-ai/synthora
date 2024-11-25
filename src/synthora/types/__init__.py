@@ -27,6 +27,7 @@ from .openai import (  # type: ignore[attr-defined]
     ChatCompletionFunctionMessageParam,
     ChatCompletionMessage,
     ChatCompletionMessageParam,
+    ChatCompletionMessageToolCall,
     ChatCompletionMessageToolCallParam,
     ChatCompletionSystemMessageParam,
     ChatCompletionToolMessageParam,
@@ -34,7 +35,6 @@ from .openai import (  # type: ignore[attr-defined]
     Choice,
     CompletionUsage,
     ParsedChatCompletion,
-    ChatCompletionMessageToolCall,
 )
 
 

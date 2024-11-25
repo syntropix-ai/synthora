@@ -17,12 +17,15 @@
 
 from synthora.configs.model_config import ModelConfig
 from synthora.types.enums import ModelBackendType
+
 from .base import BaseModelBackend
 from .openai_chat import OpenAIChatBackend
+
 
 BACKEND_MAP = {
     ModelBackendType.OPENAI_CHAT: OpenAIChatBackend,
 }
+
 
 def create_model_from_config(config: ModelConfig) -> BaseModelBackend:
     cls = BACKEND_MAP[config.backend]

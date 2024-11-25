@@ -15,7 +15,6 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from abc import abstractmethod
 from pathlib import Path
 from typing import Any, Dict, Self, Type, Union
 
@@ -37,10 +36,10 @@ class BaseConfig(BaseModel):
             raise ValueError(f"{file_path} is not a file")
         return cls.from_file(file_path)
 
+    @classmethod
+    def from_file(cls: Type[Self], path: Path) -> Self:
+        raise NotImplementedError
 
     @classmethod
-    def from_file(cls: Type[Self], path: Path) -> Self: ...
-
-
-    @classmethod
-    def from_dict(cls: Type[Self], data: Dict[str, Any]) -> Self: ...
+    def from_dict(cls: Type[Self], data: Dict[str, Any]) -> Self:
+        raise NotImplementedError

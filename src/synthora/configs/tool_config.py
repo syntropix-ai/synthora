@@ -25,7 +25,7 @@ from synthora.utils import YAMLLoader
 
 
 class ToolConfig(BaseConfig):
-    target: Optional[str] = None
+    target: str
     trace: Optional[bool] = True
     args: Optional[Dict[str, Any]] = None
 
