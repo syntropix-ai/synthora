@@ -58,5 +58,5 @@ agent.tools[0].callback_manager.add(handler)
 agent.model.callback_manager.add(handler)
 agent.callback_manager.add(handler)
 
-agent.run("Search Trump on Wikipedia")
+agent.run("Search Openai on Wikipedia")
 ```
