@@ -27,30 +27,37 @@ E = TypeVar("E", bound=Exception)
 class Result(Generic[T, E]):
     """Base class for Result"""
 
+    @property
+    def is_ok(self) -> bool:
+        raise NotImplementedError
+
+    @property
+    def is_err(self) -> bool:
+        raise NotImplementedError
+
 
 @dataclass
 class Ok(Result[T, E]):
     value: T
-    
+
     @property
     def is_ok(self) -> bool:
         return True
-    
+
     @property
     def is_err(self) -> bool:
         return False
-    
 
 
 @dataclass
 class Err(Result[T, E]):
     error: E
     value: T
-    
+
     @property
     def is_ok(self) -> bool:
         return False
-    
+
     @property
     def is_err(self) -> bool:
         return True

@@ -60,6 +60,12 @@ class BaseFunction(ABC):
     @abstractmethod
     def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]: ...
 
+    @abstractmethod
+    def run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]: ...
+
+    @abstractmethod
+    def async_run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]: ...
+
 
 class SyncFunction(BaseFunction):
     def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
@@ -72,10 +78,10 @@ class SyncFunction(BaseFunction):
             return Ok(resp)
         except Exception as e:
             return Err(e, str(e))
-    
+
     def run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
         return self(*args, **kwargs)
-    
+
     def async_run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
         raise NotImplementedError("This function is not async")
 
@@ -91,10 +97,10 @@ class AsyncFunction(BaseFunction):
             return Ok(resp)
         except Exception as e:
             return Err(e, str(e))
-    
+
     async def async_run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
         return await self(*args, **kwargs)
-    
+
     def run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
         raise NotImplementedError("This function is not sync")
 

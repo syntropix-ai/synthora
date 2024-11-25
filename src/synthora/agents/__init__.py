@@ -18,4 +18,5 @@
 from .base import BaseAgent
 from .vanilla_agent import VanillaAgent
 
+
 __all__ = ["BaseAgent", "VanillaAgent"]

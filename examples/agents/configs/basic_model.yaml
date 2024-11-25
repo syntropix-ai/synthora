@@ -19,7 +19,7 @@ name: searcher
 model_type: gpt-4o
 backend: openai_chat
 backend_config:
-  api_key: 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
+  api_key: <API_KEY>
 config:
   temperature: 0
   top_p: 1.0

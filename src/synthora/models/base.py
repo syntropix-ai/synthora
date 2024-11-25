@@ -16,14 +16,13 @@
 #
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Self, Type, Union
+from typing import Any, Dict, List, Optional, Union
 
-from synthora.configs.model_config import ModelConfig
 from synthora.messages.base import BaseMessage
 from synthora.types.enums import ModelBackendType
 
-class BaseModelBackend(ABC):
 
+class BaseModelBackend(ABC):
     def __init__(
         self,
         model_type: str,

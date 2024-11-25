@@ -26,7 +26,6 @@ from synthora.utils import YAMLLoader
 
 
 class ModelConfig(BaseConfig):
-
     model_type: str
     name: Optional[str] = None
     backend: ModelBackendType = ModelBackendType.OPENAI_CHAT

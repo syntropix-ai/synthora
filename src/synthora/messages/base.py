@@ -203,7 +203,7 @@ class BaseMessage(BaseModel):
             role=MessageRole.ASSISTANT,
             content=choice.message.content,
             metadata=metadata,
-            tool_calls=tool_calls \
+            tool_calls=tool_calls,
         )
 
     @classmethod
@@ -211,7 +211,7 @@ class BaseMessage(BaseModel):
         cls: Type[Self],
         response: ChatCompletionChunk,
         source: Node = Node(name="assistant", type=NodeType.AGENT),
-        previous: Optional["BaseMessage"] = None,
+        previous: Optional[Self] = None,
     ) -> Self:
         choice = response.choices[0]
         metadata = {
@@ -222,7 +222,7 @@ class BaseMessage(BaseModel):
             "usage": response.usage,
             "finish_reason": choice.finish_reason,
         }
-        if choice.finish_reason:
+        if choice.finish_reason and previous:
             item = deepcopy(previous)
             item.metadata.update(metadata)
             item.chunk = None
