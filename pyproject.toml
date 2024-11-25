@@ -29,6 +29,7 @@ pydantic = "^2.10.1"
 docstring-parser = "^0.16"
 asyncio = "^3.4.3"
 openai = "^1.55.0"
+rich = "^13.9.4"
 
 
 [tool.poetry.group.quality.dependencies]

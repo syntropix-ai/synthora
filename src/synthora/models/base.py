@@ -18,6 +18,8 @@
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Union
 
+from synthora.callbacks import get_callback_manager
+from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.messages.base import BaseMessage
 from synthora.types.enums import ModelBackendType
 
@@ -29,11 +31,13 @@ class BaseModelBackend(ABC):
         backend_type: ModelBackendType,
         config: Optional[Dict[str, Any]],
         name: Optional[str] = None,
+        handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
     ) -> None:
         self.name = name
         self.model_type = model_type
         self.backend_type = backend_type
         self.config = config or {}
+        self.callback_manager = get_callback_manager(handlers)
 
     @abstractmethod
     def run(

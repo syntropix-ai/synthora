@@ -20,20 +20,34 @@ import inspect
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, List, Optional, Union, cast
 
+from synthora.callbacks.base_handler import BaseCallBackHandler
+from synthora.callbacks.base_manager import AsyncCallBackManager, BaseCallBackManager
 from synthora.types import Err, Ok, Result
+from synthora.types.enums import CallBackEvent, NodeType
+from synthora.types.node import Node
 from synthora.utils import get_openai_tool_schema
 
 
 class BaseFunction(ABC):
-    def __init__(self, instance: Any, func: Callable[..., Any]) -> None:
+    def __init__(
+        self,
+        instance: Any,
+        func: Callable[..., Any],
+        source: Optional[Node] = None,
+        callback_manager: BaseCallBackManager = BaseCallBackManager(),
+    ) -> None:
         self.instance = instance
         self.func = func
         self.schema = get_openai_tool_schema(func)
+        self.source: Node = source or Node(name=self.name, type=NodeType.TOOL)
+        self.callback_manager = callback_manager
 
     @staticmethod
     def wrap(
         func: Callable[..., Any],
         instance: Optional[Any] = None,
+        source: Optional[Node] = None,
+        handlers: List[BaseCallBackHandler] = [],
     ) -> Union["SyncFunction", "AsyncFunction"]:
         if isinstance(func, staticmethod):
             instance = None
@@ -41,9 +55,11 @@ class BaseFunction(ABC):
         if asyncio.iscoroutinefunction(func) or asyncio.iscoroutinefunction(
             inspect.unwrap(func)
         ):
-            return AsyncFunction(instance, func)
+            callback_manager = AsyncCallBackManager(handlers=handlers)
+            return AsyncFunction(instance, func, source, callback_manager)
         else:
-            return SyncFunction(instance, func)
+            callback_manager = BaseCallBackManager(handlers=handlers)
+            return SyncFunction(instance, func, source, callback_manager)
 
     @property
     def name(self) -> str:
@@ -80,7 +96,15 @@ class SyncFunction(BaseFunction):
             return Err(e, str(e))
 
     def run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
-        return self(*args, **kwargs)
+        self.callback_manager.call(
+            CallBackEvent.TOOL_START, self.source, *args, **kwargs
+        )
+        result = self(*args, **kwargs)
+        if result.is_err:
+            self.callback_manager.call(CallBackEvent.TOOL_ERROR, self.source, result)
+        else:
+            self.callback_manager.call(CallBackEvent.TOOL_END, self.source, result)
+        return result
 
     def async_run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
         raise NotImplementedError("This function is not async")
@@ -99,7 +123,19 @@ class AsyncFunction(BaseFunction):
             return Err(e, str(e))
 
     async def async_run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
-        return await self(*args, **kwargs)
+        self.callback_manager.call(
+            CallBackEvent.TOOL_START, self.source, *args, **kwargs
+        )
+        result = await self(*args, **kwargs)
+        if result.is_err:
+            await self.callback_manager.call(
+                CallBackEvent.TOOL_ERROR, self.source, result
+            )
+        else:
+            await self.callback_manager.call(
+                CallBackEvent.TOOL_END, self.source, result
+            )
+        return result
 
     def run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
         raise NotImplementedError("This function is not sync")

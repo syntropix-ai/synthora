@@ -19,8 +19,8 @@ name: searcher
 model_type: gpt-4o
 backend: openai_chat
 backend_config:
-  api_key: <API_KEY>
+  api_key: "your-api-key"
 config:
   temperature: 0
   top_p: 1.0
-  stream: false
+  stream: true

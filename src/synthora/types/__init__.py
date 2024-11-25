@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .enums import AgentType, Err, ModelBackendType, NodeType, Ok, Result
+from .enums import AgentType, CallBackEvent, Err, ModelBackendType, NodeType, Ok, Result
 from .node import Node
 from .openai import (  # type: ignore[attr-defined]
     ChatCompletion,
@@ -63,4 +63,5 @@ __all__ = [
     "ChatCompletionContentPartImageParam",
     "ChatCompletionContentPartTextParam",
     "ChatCompletionMessageToolCall",
+    "CallBackEvent",
 ]

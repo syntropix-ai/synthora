@@ -39,7 +39,7 @@ function_response_message = BaseMessage.create_message(
     id="1234",
     role=MessageRole.TOOL_RESPONSE,
     content="Hello, Synthora!",
-    source=Node(name="function", type=NodeType.TOOLKIT),
+    source=Node(name="function", type=NodeType.TOOL),
     metadata={"tool_call_id": "1234"},
 )
 retriever_message = BaseMessage.create_message(
