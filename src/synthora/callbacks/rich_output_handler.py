@@ -120,6 +120,7 @@ class RichOutputHandler(BaseCallBackHandler):
         :param stream: If True, prints the item as a stream. If False, prints the item as a panel. Defaults to False.
         :type stream: bool
         """
+        item = item if isinstance(item, str) else str(item)
         if not stream:
             self.console.print(
                 Panel(Markdown(item), title=title, style=style, box=HEAVY)

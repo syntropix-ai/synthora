@@ -44,6 +44,10 @@ class AgentConfig(BaseConfig):
                 data = yaml.load(file, YAMLLoader)
         except yaml.YAMLError as e:
             raise ValueError(f"Error loading yaml file {path}: {e}")
+        return cls.from_dict(data)
+
+    @classmethod
+    def from_dict(cls: Type[Self], data: Dict[str, Any]) -> Self:
         if tools := data.get("tools", None):
             data["tools"] = ToolConfig.parse_tools(tools)
         prompt = data.get("prompt")
@@ -53,8 +57,4 @@ class AgentConfig(BaseConfig):
         else:
             prompt = BasePrompt(prompt)
         data["prompt"] = prompt
-        return cls(**data)
-
-    @classmethod
-    def from_dict(cls: Type[Self], data: Dict[str, Any]) -> Self:
         return cls(**data)

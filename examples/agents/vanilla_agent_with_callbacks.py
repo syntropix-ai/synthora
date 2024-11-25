@@ -16,6 +16,7 @@
 #
 
 
+import json
 from synthora.agents import VanillaAgent
 from synthora.configs import AgentConfig
 from synthora.callbacks import RichOutputHandler
@@ -23,13 +24,22 @@ from synthora.callbacks import RichOutputHandler
 import warnings
 warnings.filterwarnings("ignore")
 
-config = AgentConfig.from_file("examples/agents/configs/vanilla_agent.yaml")
+config = AgentConfig.from_file("examples/agents/configs/basic_agent.yaml")
 
+print(json.dumps(config.model_dump(), indent=2))
+# exit(0)
 agent = VanillaAgent.from_config(config)
+# print(agent.callback_manager, agent.tools[-1].callback_manager)
+# print(agent.schema)
 handler = RichOutputHandler()
 agent.add_handler(handler)
 
-agent.run("What's your name?")
+
+# print(agent.callback_manager.handlers)
+# print(agent.tools[-1].callback_manager.handlers)
+
+# agent.run("What's your name?")
+# agent.run("119 * 117 = ?")
 agent.run("Search Openai on Wikipedia")
 
 
