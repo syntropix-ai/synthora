@@ -21,6 +21,8 @@ Welcome to Synthora's documentation!
 
 Synthora is a lightweight and extensible framework for LLM-driven Agents and ALM research. It provides essential components to build, test and evaluate agents. At its core, Synthora aims to assemble an agent with a single config, thus minimizing your effort in building, tuning, and sharing agents.
 
+Note: This project is in its very early stages of development. The APIs are unstable and subject to significant changes, which may introduce breaking updates. Use with caution, as there are inherent risks in adopting this framework at its current maturity level. Feedback and contributions are welcome to help improve its stability and functionality.
+
 ## Motivation 🧠
 Agent practitioners start to realize the difficulty in tuning a "well-rounded" agent with tons of tools or instructions in a single layer.
 Recent studies like [TinyStories](https://arxiv.org/abs/2301.12726), [Specializing Reasoning](https://arxiv.org/abs/2301.12726), [Let's Verify SbS](https://arxiv.org/abs/2305.20050), [ReWOO](https://arxiv.org/abs/2305.18323), etc. also point us towards an intuitive yet undervalued direction 👉 
