@@ -15,7 +15,6 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-import json
 from typing import Any, Dict, List, Union, cast
 
 from synthora.agents import BaseAgent
@@ -24,9 +23,14 @@ from synthora.messages.base import BaseMessage
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import BaseFunction
-from synthora.types.enums import CallBackEvent, Err, MessageRole, NodeType, Ok, Result
+from synthora.types.enums import CallBackEvent, MessageRole, Ok, Result
 from synthora.types.node import Node
-from synthora.utils.macros import FORMAT_PROMPT, GET_FINAL_MESSAGE, STR_TO_USERMESSAGE, UPDATE_SYSTEM
+from synthora.utils.macros import (
+    FORMAT_PROMPT,
+    GET_FINAL_MESSAGE,
+    STR_TO_USERMESSAGE,
+    UPDATE_SYSTEM,
+)
 
 
 class VanillaAgent(BaseAgent):
@@ -53,7 +57,6 @@ class VanillaAgent(BaseAgent):
     def step(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
-
         UPDATE_SYSTEM(prompt=FORMAT_PROMPT())
         message = STR_TO_USERMESSAGE()
         if message.content:
@@ -68,67 +71,39 @@ class VanillaAgent(BaseAgent):
     def run(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
-        if isinstance(message, str):
-            message = BaseMessage.create_message(
-                role=MessageRole.USER,
-                content=message,
-                source=Node(name="user", type=NodeType.USER),
-            )
-        if self.source.ancestor:
-            self.callback_manager.call(CallBackEvent.TOOL_START, self.source, message, *args, **kwargs)
-        self.callback_manager.call(
-            CallBackEvent.AGENT_START, self.source, message, *args, **kwargs
-        )
+        message = STR_TO_USERMESSAGE()
+        self.on_start(message)
         while True:
             response = self.step(message, *args, **kwargs)
             message = ""
-            if response.is_ok:
-                data = response.value
-                if data.tool_calls:
-                    for tool_call in data.tool_calls:
-                        func = tool_call.function
-                        try:
-                            tool = self.get_tool(func.name)
-                            tool_args = json.loads(func.arguments)
-                            resp = tool.run(**tool_args)
-                            self.history.append(
-                                BaseMessage.create_message(
-                                    id=tool_call.id,
-                                    role=MessageRole.TOOL_RESPONSE,
-                                    content=resp.value,
-                                    source=Node(name=tool.name, type=NodeType.TOOL),
-                                )
-                            )
-                        except Exception as e:
-                            self.history.append(
-                                BaseMessage.create_message(
-                                    id=tool_call.id,
-                                    role=MessageRole.TOOL_RESPONSE,
-                                    content=f"Error: {str(e)}",
-                                    source=Node(name=tool.name, type=NodeType.TOOL),
-                                )
-                            )
-
-                else:
-                    if self.source.ancestor:
-                        self.callback_manager.call(CallBackEvent.TOOL_END, self.source, Ok(data.content))
-                    self.callback_manager.call(
-                        CallBackEvent.AGENT_END, self.source, data, *args, **kwargs
-                    )
-                    return Ok(data.content)
-
-            else:
-                if self.source.ancestor:
-                    self.callback_manager.call(CallBackEvent.TOOL_ERROR, self.source, response, *args, **kwargs)
-
-                self.callback_manager.call(
-                    CallBackEvent.AGENT_ERROR,
-                    self.source,
-                    response.error,
-                    *args,
-                    **kwargs,
-                )
+            if response.is_err:
+                self.on_error(response)
                 return response
+            
+            data = response.value
+            if not data.tool_calls:
+                self.on_end(data)
+                return Ok(data.content)
+            
+            for tool_call in data.tool_calls:
+                func = tool_call.function
+                try:
+                    tool = self.get_tool(func.name)
+                    resp = self.call_tool(func.name, func.arguments)
+                    resp_value = resp.value
+                except Exception as e:
+                    resp_value = f"Error: {str(e)}"
+                    self.on_error(resp)
+
+                self.history.append(
+                    BaseMessage.create_message(
+                        id=tool_call.id,
+                        role=MessageRole.TOOL_RESPONSE,
+                        content=resp_value,
+                        source=tool.source,
+                    )
+                )
+
 
     async def async_run(  # type: ignore[empty-body]
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
