@@ -74,6 +74,8 @@ class VanillaAgent(BaseAgent):
                 content=message,
                 source=Node(name="user", type=NodeType.USER),
             )
+        if self.source.ancestor:
+            self.callback_manager.call(CallBackEvent.TOOL_START, self.source, message, *args, **kwargs)
         self.callback_manager.call(
             CallBackEvent.AGENT_START, self.source, message, *args, **kwargs
         )
@@ -108,12 +110,17 @@ class VanillaAgent(BaseAgent):
                             )
 
                 else:
+                    if self.source.ancestor:
+                        self.callback_manager.call(CallBackEvent.TOOL_END, self.source, Ok(data.content))
                     self.callback_manager.call(
                         CallBackEvent.AGENT_END, self.source, data, *args, **kwargs
                     )
                     return Ok(data.content)
 
             else:
+                if self.source.ancestor:
+                    self.callback_manager.call(CallBackEvent.TOOL_ERROR, self.source, response, *args, **kwargs)
+
                 self.callback_manager.call(
                     CallBackEvent.AGENT_ERROR,
                     self.source,

@@ -15,19 +15,11 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-name: test
-type: react
-description: "This is a test agent"
+name: Vanilla
+type: vanilla
 model: !include basic_model.yaml
-prompt: "What is the capital of France? {x}"
+prompt: "You are an AI Assistant. You are here to help me with my queries. Your name is vanilla."
 tools:
-  - 'retrieval.ABCRetriever'
-  - target: 'tool.math'
-    trace: false
-    args:
-      key: value
-  - target: 'synropic.agents.VanillaAgent'
+  - synthora.toolkits.BasicMathToolkit
+  - target: synthora.agents.VanillaAgent
     args: !include vanilla_agent.yaml
-  - target: 'synropic.agents.buildin.SearchAgent'
-    args:
-      top_k: 5

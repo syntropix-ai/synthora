@@ -63,7 +63,7 @@ class Err(Result[T, E]):
         return True
 
 
-class AgentType(Enum):
+class AgentType(str, Enum):
     VANILLA = "vanilla"
     REACT = "react"
     REWOO = "rewoo"
@@ -72,11 +72,11 @@ class AgentType(Enum):
     REFLECTION = "reflection"
 
 
-class ModelBackendType(Enum):
+class ModelBackendType(str, Enum):
     OPENAI_CHAT = "openai_chat"
 
 
-class MessageRole(Enum):
+class MessageRole(str, Enum):
     USER = "user"
     ASSISTANT = "assistant"
     SYSTEM = "system"
@@ -84,7 +84,7 @@ class MessageRole(Enum):
     TOOL_RESPONSE = "tool_response"
 
 
-class NodeType(Enum):
+class NodeType(str, Enum):
     AGENT = "agent"
     MODEL = "model"
     RETRIEVER = "retreiver"
@@ -93,7 +93,7 @@ class NodeType(Enum):
     SYSTEM = "system"
 
 
-class CallBackEvent(Enum):
+class CallBackEvent(str, Enum):
     LLM_START = "on_llm_start"
     LLM_END = "on_llm_end"
     LLM_ERROR = "on_llm_error"

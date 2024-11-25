@@ -7,27 +7,28 @@ from synthora.types.node import Node
 
 
 class BaseCallBackManager(ABC):
-    def __init__(self, handlers: List[BaseCallBackHandler] = []) -> None:
-        self.handlers = handlers
+
+    def __init__(self, handlers: Optional[List[BaseCallBackHandler]] = None) -> None:
+        self.handlers = handlers or []
         self.source: Optional[Node] = None
-        
+
     def add(self, handler: BaseCallBackHandler) -> None:
         if not isinstance(handler, BaseCallBackHandler):
             raise TypeError("Handler must be of type BaseCallBackHandler")
         self.handlers.append(handler)
-        
+
     def __iadd__(self, handler: BaseCallBackHandler) -> None:
         self.add(handler)
-        
+
     def remove(self, handler: BaseCallBackHandler) -> bool:
         if handler in self.handlers:
             self.handlers.remove(handler)
             return True
         return False
-    
+
     def __isub__(self, handler: BaseCallBackHandler) -> None:
         self.remove(handler)
-        
+
     def call(self, event: CallBackEvent, *args, **kwargs) -> None:
         for handler in self.handlers:
             if self.source is not None:
