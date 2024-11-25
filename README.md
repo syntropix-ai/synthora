@@ -69,8 +69,6 @@ config = AgentConfig.from_file("examples/agents/configs/vanilla_agent.yaml")
 
 agent = VanillaAgent.from_config(config)
 handler = RichOutputHandler()
-agent.tools[0].callback_manager.add(handler)
-agent.model.callback_manager.add(handler)
 agent.callback_manager.add(handler)
 
 agent.run("Search Trump on Wikipedia")
