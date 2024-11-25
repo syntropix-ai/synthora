@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 -->
 
-# Syntropix.AI Documentation
+# Synthora Documentation
 
 Welcome to Synthora's documentation!
 
