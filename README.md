@@ -16,6 +16,8 @@ limitations under the License.
 -->
 
 # Synthora
+[![Read the Docs](https://img.shields.io/readthedocs/gentopia)](https://synthora.readthedocs.io/en/latest/)
+
 
 Synthora is a lightweight and extensible framework for LLM-driven Agents and ALM research. It provides essential components to build, test and evaluate agents. At its core, Synthora aims to assemble an agent with a single config, thus minimizing your effort in building, tuning, and sharing agents.
 
@@ -30,7 +32,6 @@ Sadly, there is no silver bullet for agent specialization. For example, you can
 - Simply add `Let's think step by step.` in your **prompt** for more accurate Math QA.
 - Give a **few-shot** exemplar in your prompt to guide a better reasoning trajectory for novel plotting.
 - Supervise **fine-tuning** (SFT) your 70B `llama2` like [this](https://arxiv.org/abs/2305.20050) to match reasoning of 175B GPT-3.5.
-- Tune your agent **paradigm** like this [demo](https://www.youtube.com/watch?v=diJ4IDaT4Z4) to easily half the execution time for Seach & Summarize.
 - And more ...
 
 Isn't it beautiful if one shares his effort in specialized intelligence, allowing others to reproduce, build on, or interact with it? 🤗 This belief inspires us to build Gentopia, 
