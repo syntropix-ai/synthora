@@ -17,8 +17,9 @@
 
 import importlib
 import inspect
+import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Self, Type, Union, cast
+from typing import Any, Dict, List, Self, Type, Union
 
 from synthora.callbacks import get_callback_manager
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
@@ -28,16 +29,16 @@ from synthora.models import create_model_from_config
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import BaseFunction, BaseToolkit
-from synthora.types.enums import NodeType, Result
+from synthora.types.enums import CallBackEvent, NodeType, Ok, Result
 from synthora.types.node import Node
 
 
 class BaseAgent(ABC):
     r"""
     Base class for all agents.
-    
+
     Arttributes:
-    
+
     - config: AgentConfig: The configuration of the agent.
     - source: Node: The source node of the agent.
     - model: Union[BaseModelBackend, List[BaseModelBackend]]: The model of the agent.
@@ -45,6 +46,7 @@ class BaseAgent(ABC):
     - tools: List[Union["BaseAgent", BaseFunction]]: The tools of the agent.
     - handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]]: The handlers of the agent.
     """
+
     def __init__(
         self,
         config: AgentConfig,
@@ -67,10 +69,10 @@ class BaseAgent(ABC):
 
     @property
     def schema(self) -> Dict[str, Any]:
-        r""" The schema of the agent. 
-        
+        r"""The schema of the agent.
+
         Returns:
-        
+
         - Dict[str, Any]: The schema of the agent.
         """
         return {
@@ -86,7 +88,6 @@ class BaseAgent(ABC):
                 },
             },
         }
-
 
     @property
     def parameters(self) -> Dict[str, Any]:
@@ -114,14 +115,14 @@ class BaseAgent(ABC):
 
     @classmethod
     def from_config(cls: Type[Self], config: AgentConfig) -> Self:
-        r""" Create an agent from a configuration.
-        
+        r"""Create an agent from a configuration.
+
         Arguments:
-        
+
         - config: AgentConfig: The configuration of the agent.
-        
+
         Returns:
-        
+
         - Self: The agent created from the configuration.
         """
         _model = config.model if isinstance(config.model, list) else [config.model]
@@ -172,18 +173,18 @@ class BaseAgent(ABC):
         )
 
     def get_tool(self, name: str) -> Union[BaseFunction, "BaseAgent"]:
-        r""" Get a tool by name.
-        
+        r"""Get a tool by name.
+
         Arguments:
-        
+
         - name: str: The name of the tool.
-        
+
         Returns:
-        
+
         - Union[BaseFunction, "BaseAgent"]: The tool.
-        
+
         Raises:
-        
+
         - ValueError: If the tool is not found.
         """
         for tool in self.tools:
@@ -191,11 +192,15 @@ class BaseAgent(ABC):
                 return tool
         raise ValueError(f"Tool {name} not found in agent {self.name}")
 
-    def add_handler(self, handler: Union[BaseCallBackHandler, AsyncCallBackHandler], recursive: bool = True) -> None:
-        r""" Add a callback to the agent.
-        
+    def add_handler(
+        self,
+        handler: Union[BaseCallBackHandler, AsyncCallBackHandler],
+        recursive: bool = True,
+    ) -> None:
+        r"""Add a callback to the agent.
+
         Arguments:
-        
+
         - handler: Union[BaseCallBackHandler, AsyncCallBackHandler]: The callback handler.
         - recursive: bool: Whether to add the callback recursively to the tools.
         """
@@ -204,3 +209,50 @@ class BaseAgent(ABC):
             model.add_handler(handler, recursive=recursive)
         for tool in self.tools:
             tool.add_handler(handler, recursive=recursive)
+
+    def call_tool(self, name: str, arguments: str) -> Result[Any, Exception]:
+        tool = self.get_tool(name)
+        tool_args = json.loads(arguments)
+        return tool.run(**tool_args)
+
+    def on_start(
+        self,
+        message: List[BaseMessage],
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
+        if self.source.ancestor:
+            self.callback_manager.call(
+                CallBackEvent.TOOL_START, self.source, message, *args, **kwargs
+            )
+        self.callback_manager.call(
+            CallBackEvent.AGENT_START, self.source, message, *args, **kwargs
+        )
+    
+    def on_end(
+        self,
+        message: BaseMessage,
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
+        if self.source.ancestor:
+            self.callback_manager.call(
+                CallBackEvent.TOOL_END, self.source, Ok(message.content), *args, **kwargs
+            )
+        self.callback_manager.call(
+            CallBackEvent.AGENT_END, self.source, message, *args, **kwargs
+        )
+
+    def on_error(
+        self,
+        result: Result[Any, Exception],
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
+        if self.source.ancestor:
+            self.callback_manager.call(
+                CallBackEvent.TOOL_ERROR, self.source, result, *args, **kwargs
+            )
+        self.callback_manager.call(
+            CallBackEvent.AGENT_ERROR, self.source, result, *args, **kwargs
+        )

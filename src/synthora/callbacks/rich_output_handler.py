@@ -1,16 +1,33 @@
+# LICENSE HEADER MANAGED BY add-license-header
+#
+# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
+# Licensed under the Apache License, Version 2.0 (the “License”);
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an “AS IS” BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
+#
+
 from typing import Any, Dict, List, Optional
-from synthora.callbacks.base_handler import BaseCallBackHandler
+
 from rich.box import Box
 from rich.console import Console
-from pydantic import BaseModel
 from rich.live import Live
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.status import Status
-from rich.syntax import Syntax
 
+from synthora.callbacks.base_handler import BaseCallBackHandler
 from synthora.types.enums import Result
 from synthora.types.node import Node
+
 
 HEAVY: Box = Box(
     """\
@@ -24,6 +41,7 @@ HEAVY: Box = Box(
 ┗━┻┛
 """
 )
+
 
 class RichOutputHandler(BaseCallBackHandler):
     def __init__(self, console: Optional[Console] = None) -> None:
@@ -109,7 +127,13 @@ class RichOutputHandler(BaseCallBackHandler):
         """
         self.console.print_json(data=item)
 
-    def panel_print(self, item: Any, title: str = "Output", stream: bool = False, style: str = "yellow"):
+    def panel_print(
+        self,
+        item: Any,
+        title: str = "Output",
+        stream: bool = False,
+        style: str = "yellow",
+    ):
         """
         Prints an item to the output as a panel.
 
@@ -149,21 +173,27 @@ class RichOutputHandler(BaseCallBackHandler):
             self.live = None
         self.cache = ""
 
-    def on_tool_start(self, source: Optional[Node], *args: Any, **kwargs: Dict[str, Any]) -> None:
+    def on_tool_start(
+        self, source: Optional[Node], *args: Any, **kwargs: Dict[str, Any]
+    ) -> None:
         self.update_status(f"Calling Tool: {source.name if source else 'Unknown'}")
 
-    def on_tool_end(self, source: Optional[Node], result: Result[Any, Exception]) -> None:
+    def on_tool_end(
+        self, source: Optional[Node], result: Result[Any, Exception]
+    ) -> None:
         self.done()
         title = f"[cyan]{source.name}" if source else "[cyan]Unknown"
         self.panel_print(result.value, title=title, style="cyan")
 
-    def on_tool_error(self, source: Optional[Node], result: Result[Any, Exception]) -> None:
+    def on_tool_error(
+        self, source: Optional[Node], result: Result[Any, Exception]
+    ) -> None:
         self.done()
         title = f"[red]{source.name}" if source else "[red]Unknown"
         self.panel_print(result.error, title=title, style="red")
 
     def on_llm_start(self, source, messages, stream: bool = False, *args, **kwargs):
-        self.thinking(source.name if source else 'Unknown')
+        self.thinking(source.name if source else "Unknown")
 
     def on_llm_chunk(self, source, message, *args, **kwargs):
         if message.chunk:
@@ -193,17 +223,17 @@ class RichOutputHandler(BaseCallBackHandler):
             self.status.start()
 
     def on_agent_start(self, source, message, *args, **kwargs):
-        title = f"[bold blue]{source.name if source else 'Unknown'}\' Task: "
+        title = f"[bold blue]{source.name if source else 'Unknown'}' Task: "
         self.panel_print(message.content, title=title, style="blue")
 
     def on_agent_end(self, source, message, *args, **kwargs):
-        title = f"[bold blue]{source.name if source else 'Unknown'}\' Response: "
+        title = f"[bold blue]{source.name if source else 'Unknown'}' Response: "
         self.panel_print(message.content, title=title, style="green")
         self.clear()
         self.done(True)
 
     def on_agent_error(self, source, e, *args, **kwargs):
-        title = f"[bold blue]{source.name if source else 'Unknown'}\' Error: "
+        title = f"[bold blue]{source.name if source else 'Unknown'}' Error: "
         self.panel_print(str(e), title=title, style="red")
         self.clear()
         self.done(True)
