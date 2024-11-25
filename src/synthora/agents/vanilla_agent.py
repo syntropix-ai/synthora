@@ -26,6 +26,7 @@ from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import BaseFunction
 from synthora.types.enums import CallBackEvent, Err, MessageRole, NodeType, Ok, Result
 from synthora.types.node import Node
+from synthora.utils.macros import FORMAT_PROMPT, GET_FINAL_MESSAGE, STR_TO_USERMESSAGE, UPDATE_SYSTEM
 
 
 class VanillaAgent(BaseAgent):
@@ -49,66 +50,18 @@ class VanillaAgent(BaseAgent):
         )
         self.prompt: BasePrompt = cast(BasePrompt, self.prompt)
 
-    @property
-    def schema(self) -> Dict[str, Any]:
-        return {
-            "type": "function",
-            "function": {
-                "name": self.name,
-                "description": self.description or "",
-                "parameters": {
-                    "properties": {"message": {"title": "Message", "type": "string"}},
-                    "required": ["message"],
-                    "title": "run",
-                    "type": "object",
-                },
-            },
-        }
-
     def step(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
-        if args_name := self.prompt.args:
-            prompt_args = {}
-            for arg in args_name:
-                if arg in kwargs:
-                    prompt_args[arg] = kwargs[arg]
-                elif arg in locals():
-                    prompt_args[arg] = locals()[arg]
-                elif arg in globals():
-                    prompt_args[arg] = globals()[arg]
-                else:
-                    return Err(
-                        Exception(f"Missing argument {arg}"), f"Missing argument {arg}"
-                    )
-            prompt = self.prompt.format(**prompt_args)
-        else:
-            prompt = str(self.prompt)
-        if not self.history:
-            self.history.append(
-                BaseMessage.create_message(
-                    MessageRole.SYSTEM,
-                    content=prompt,
-                    source=Node(name=self.name, type=NodeType.SYSTEM),
-                )
-            )
-        else:
-            self.history[0].content = prompt
 
-        if isinstance(message, str):
-            message = BaseMessage.create_message(
-                role=MessageRole.USER,
-                content=message,
-                source=Node(name="user", type=NodeType.USER),
-            )
+        UPDATE_SYSTEM(prompt=FORMAT_PROMPT())
+        message = STR_TO_USERMESSAGE()
         if message.content:
             self.history.append(message)
+
         response = self.model.run(self.history, *args, **kwargs)
-        if not isinstance(response, BaseMessage):
-            tmp = None
-            for res in response:
-                tmp = res
-            response = tmp
+        response = GET_FINAL_MESSAGE()
+
         self.history.append(response)
         return Ok(response)
 

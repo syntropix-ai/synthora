@@ -24,6 +24,7 @@ all: help
 TEST_FILE ?= tests/unit/
 
 docs:
+	make html
 	poetry run python -m http.server -d docs/build/html 8000
 
 test:

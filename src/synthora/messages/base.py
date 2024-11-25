@@ -166,11 +166,14 @@ class BaseMessage(BaseModel):
                     name=self.source.name,
                 )
             elif self.role == MessageRole.ASSISTANT:
+                tmp_args = {}
+                if self.tool_calls:
+                    tmp_args["tool_calls"] = self.tool_calls
                 return ChatCompletionAssistantMessageParam(
                     content=content,
                     role="assistant",
                     name=self.source.name,
-                    tool_calls=self.tool_calls,
+                    **tmp_args,
                 )
             elif self.role == MessageRole.RETRIEVER:
                 return ChatCompletionAssistantMessageParam(

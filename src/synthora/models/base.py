@@ -54,3 +54,6 @@ class BaseModelBackend(ABC):
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> Any: ...
+
+    def add_handler(self, handler: Union[BaseCallBackHandler, AsyncCallBackHandler], recursive: bool = False) -> None:
+        self.callback_manager.add(handler)

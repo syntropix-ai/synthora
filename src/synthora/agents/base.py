@@ -18,7 +18,7 @@
 import importlib
 import inspect
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Self, Type, Union
+from typing import Any, Dict, List, Self, Type, Union, cast
 
 from synthora.callbacks import get_callback_manager
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
@@ -73,7 +73,24 @@ class BaseAgent(ABC):
         
         - Dict[str, Any]: The schema of the agent.
         """
-        raise NotImplementedError
+        return {
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description or "",
+                "parameters": {
+                    "properties": {"message": {"title": "Message", "type": "string"}},
+                    "required": ["message"],
+                    "title": "run",
+                    "type": "object",
+                },
+            },
+        }
+
+
+    @property
+    def parameters(self) -> Dict[str, Any]:
+        return self.schema["function"]["parameters"]["properties"]  # type: ignore[no-any-return]
 
     @abstractmethod
     def run(
@@ -173,3 +190,17 @@ class BaseAgent(ABC):
             if tool.name == name:
                 return tool
         raise ValueError(f"Tool {name} not found in agent {self.name}")
+
+    def add_handler(self, handler: Union[BaseCallBackHandler, AsyncCallBackHandler], recursive: bool = True) -> None:
+        r""" Add a callback to the agent.
+        
+        Arguments:
+        
+        - handler: Union[BaseCallBackHandler, AsyncCallBackHandler]: The callback handler.
+        - recursive: bool: Whether to add the callback recursively to the tools.
+        """
+        self.callback_manager.add(handler)
+        for model in self.model if isinstance(self.model, list) else [self.model]:
+            model.add_handler(handler, recursive=recursive)
+        for tool in self.tools:
+            tool.add_handler(handler, recursive=recursive)

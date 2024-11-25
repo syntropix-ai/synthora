@@ -29,6 +29,8 @@ class BasePrompt(str):
 
     @override
     def format(self, **kwargs: Any) -> "BasePrompt":  # type: ignore[override]
+        if not self.args:
+            return self
         return BasePrompt(
             self.format_map({k: v for k, v in kwargs.items() if k in self.args})
         )
