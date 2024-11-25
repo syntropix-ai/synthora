@@ -27,9 +27,9 @@ config = AgentConfig.from_file("examples/agents/configs/vanilla_agent.yaml")
 
 agent = VanillaAgent.from_config(config)
 handler = RichOutputHandler()
-agent.tools[0].callback_manager.add(handler)
-agent.model.callback_manager.add(handler)
-agent.callback_manager.add(handler)
+agent.add_handler(handler)
 
+agent.run("What's your name?")
 agent.run("Search Openai on Wikipedia")
+
 

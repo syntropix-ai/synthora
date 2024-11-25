@@ -109,7 +109,7 @@ class RichOutputHandler(BaseCallBackHandler):
         """
         self.console.print_json(data=item)
 
-    def panel_print(self, item: Any, title: str = "Output", stream: bool = False):
+    def panel_print(self, item: Any, title: str = "Output", stream: bool = False, style: str = "yellow"):
         """
         Prints an item to the output as a panel.
 
@@ -121,14 +121,14 @@ class RichOutputHandler(BaseCallBackHandler):
         :type stream: bool
         """
         if not stream:
-            self.console.print(Panel(item, title=title))
+            self.console.print(
+                Panel(Markdown(item), title=title, style=style, box=HEAVY)
+            )
             return
         if self.live is None:
-            # if self.status is not None:
-            #     self.status.stop()
             self.cache = item
             self.live = Live(
-                Panel(Markdown(self.cache), title=title, style="yellow", box=HEAVY),
+                Panel(Markdown(self.cache), title=title, style=style, box=HEAVY),
                 console=self.console,
                 refresh_per_second=12,
             )
@@ -136,7 +136,7 @@ class RichOutputHandler(BaseCallBackHandler):
             return
         self.cache += item
         self.live.update(
-            Panel(Markdown(self.cache), title=title, style="yellow", box=HEAVY)
+            Panel(Markdown(self.cache), title=title, style=style, box=HEAVY)
         )
 
     def clear(self):
@@ -154,12 +154,12 @@ class RichOutputHandler(BaseCallBackHandler):
     def on_tool_end(self, source: Optional[Node], result: Result[Any, Exception]) -> None:
         self.done()
         title = f"[cyan]{source.name}" if source else "[cyan]Unknown"
-        self.panel_print(result.value, title=title)
+        self.panel_print(result.value, title=title, style="cyan")
 
     def on_tool_error(self, source: Optional[Node], result: Result[Any, Exception]) -> None:
         self.done()
         title = f"[red]{source.name}" if source else "[red]Unknown"
-        self.panel_print(result.error, title=title)
+        self.panel_print(result.error, title=title, style="red")
 
     def on_llm_start(self, source, messages, stream: bool = False, *args, **kwargs):
         self.thinking(source.name if source else 'Unknown')
@@ -193,16 +193,16 @@ class RichOutputHandler(BaseCallBackHandler):
 
     def on_agent_start(self, source, message, *args, **kwargs):
         title = f"[bold blue]{source.name if source else 'Unknown'}\' Task: "
-        self.panel_print(message.content, title=title)
+        self.panel_print(message.content, title=title, style="blue")
 
     def on_agent_end(self, source, message, *args, **kwargs):
         title = f"[bold blue]{source.name if source else 'Unknown'}\' Response: "
-        self.panel_print(message.content, title=title)
+        self.panel_print(message.content, title=title, style="green")
         self.clear()
         self.done(True)
 
     def on_agent_error(self, source, e, *args, **kwargs):
         title = f"[bold blue]{source.name if source else 'Unknown'}\' Error: "
-        self.panel_print(str(e), title=title)
+        self.panel_print(str(e), title=title, style="red")
         self.clear()
         self.done(True)

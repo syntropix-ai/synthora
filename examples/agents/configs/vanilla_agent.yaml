@@ -15,9 +15,9 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-name: test
+name: Vanilla
 type: vanilla
 model: !include basic_model.yaml
-prompt: "You are an AI Assistant. You are here to help me with my queries."
+prompt: "You are an AI Assistant. You are here to help me with my queries. Your name if vanilla."
 tools:
   - synthora.toolkits.SearchToolkit

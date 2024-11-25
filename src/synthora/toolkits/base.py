@@ -81,6 +81,9 @@ class BaseFunction(ABC):
 
     @abstractmethod
     def async_run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]: ...
+    
+    def add_handler(self, handler: BaseCallBackHandler, recursive: bool = False) -> None:
+        self.callback_manager.add(handler)
 
 
 class SyncFunction(BaseFunction):
