@@ -15,9 +15,32 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .base import BaseAgent
-from .vanilla_agent import VanillaAgent
-from .react_agent import ReactAgent
+
+import json
+import warnings
+
+from synthora.agents import ReactAgent
+from synthora.callbacks import RichOutputHandler
+from synthora.configs import AgentConfig
 
 
-__all__ = ["BaseAgent", "VanillaAgent", "ReactAgent"]
+warnings.filterwarnings("ignore")
+
+config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
+
+print(json.dumps(config.model_dump(), indent=2))
+# exit(0)
+agent = ReactAgent.from_config(config)
+# print(agent.callback_manager, agent.tools[-1].callback_manager)
+# print(agent.schema)
+handler = RichOutputHandler()
+agent.add_handler(handler)
+
+
+# print(agent.callback_manager.handlers)
+# print(agent.tools[-1].callback_manager.handlers)
+
+# agent.run("What's your name?")
+# agent.run("119 * 117 = ?")
+agent.run("Search Openai on Wikipedia. Outpout Your thought first!")
+# print(agent.history[0])
