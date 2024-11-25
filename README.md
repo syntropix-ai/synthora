@@ -74,5 +74,5 @@ agent = VanillaAgent.from_config(config)
 handler = RichOutputHandler()
 agent.callback_manager.add(handler)
 
-agent.run("Search Trump on Wikipedia")
+agent.run("Search Openai on Wikipedia")
 ```

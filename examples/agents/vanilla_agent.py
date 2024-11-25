@@ -27,4 +27,4 @@ config = AgentConfig.from_file("examples/agents/configs/vanilla_agent.yaml")
 agent = VanillaAgent.from_config(config)
 print(json.dumps(agent.schema, indent=2))
 
-print(agent.run("Search Trump on Wikipedia"))
+print(agent.run("Search Openai on Wikipedia"))
