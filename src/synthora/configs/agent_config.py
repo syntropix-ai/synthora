@@ -35,7 +35,7 @@ class AgentConfig(BaseConfig):
     model: Union[List[ModelConfig], ModelConfig]
     prompt: Union[BasePrompt, Dict[str, BasePrompt]]
     tools: Optional[List[ToolConfig]] = None
-    # retriever: Optional[str] = None
+
 
     @classmethod
     def from_file(cls: Type[Self], path: Union[str, Path]) -> Self:

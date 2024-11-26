@@ -42,6 +42,8 @@ def get_openai_tool_schema(func: Callable[..., Any]) -> Dict[str, Any]:
 
     if "self" in paras_schema["properties"]:
         del paras_schema["properties"]["self"]
+    if "self" in paras_schema["required"]:
+        paras_schema["required"].remove("self")
 
     if not func.__doc__:
         return {
