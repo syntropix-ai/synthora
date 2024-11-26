@@ -102,14 +102,6 @@ class BaseMessage(BaseModel):
                     content=content,
                     metadata=metadata,
                 )
-            case MessageRole.RETRIEVER:
-                return cls(
-                    source=source or Node(name="retriever", type=NodeType.RETRIEVER),
-                    role=MessageRole.RETRIEVER,
-                    content=content,
-                    images=images,
-                    metadata=metadata,
-                )
             case MessageRole.ASSISTANT:
                 return cls(
                     source=source or Node(name="assistant", type=NodeType.AGENT),
@@ -175,12 +167,7 @@ class BaseMessage(BaseModel):
                     name=self.source.name,
                     **tmp_args,
                 )
-            elif self.role == MessageRole.RETRIEVER:
-                return ChatCompletionAssistantMessageParam(
-                    content=content,
-                    role="assistant",
-                    name=self.source.name,
-                )
+            
 
     @classmethod
     def from_openai_response(

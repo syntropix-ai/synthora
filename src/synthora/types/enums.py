@@ -80,14 +80,12 @@ class MessageRole(str, Enum):
     USER = "user"
     ASSISTANT = "assistant"
     SYSTEM = "system"
-    RETRIEVER = "retriever"
     TOOL_RESPONSE = "tool_response"
 
 
 class NodeType(str, Enum):
     AGENT = "agent"
     MODEL = "model"
-    RETRIEVER = "retreiver"
     TOOL = "tool"
     USER = "user"
     SYSTEM = "system"

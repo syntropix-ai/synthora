@@ -42,19 +42,7 @@ function_response_message = BaseMessage.create_message(
     source=Node(name="function", type=NodeType.TOOL),
     metadata={"tool_call_id": "1234"},
 )
-retriever_message = BaseMessage.create_message(
-    role=MessageRole.RETRIEVER,
-    content="Hello, Synthora!",
-    source=Node(name="retriever", type=NodeType.RETRIEVER),
-    metadata={"retriever_id": "1234"},
-)
-retriever_message_with_image = BaseMessage.create_message(
-    role=MessageRole.RETRIEVER,
-    content="Hello, Synthora!",
-    images=["https://example.com/image.jpg"],
-    source=Node(name="retriever", type=NodeType.RETRIEVER),
-    metadata={"retriever_id": "1234"},
-)
+
 
 assistant_message = BaseMessage.create_message(
     role=MessageRole.ASSISTANT,
@@ -67,6 +55,4 @@ assistant_message = BaseMessage.create_message(
 print(user_message.to_openai_message())
 print(user_message_with_image.to_openai_message())
 print(function_response_message.to_openai_message())
-print(retriever_message.to_openai_message())
-print(retriever_message_with_image.to_openai_message())
 print(assistant_message.to_openai_message())
