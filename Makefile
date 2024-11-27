@@ -37,6 +37,9 @@ install:
 format:
 	poetry run pre-commit run --all-files
 
+publish:
+	poetry build && poetry publish --build
+
 
 # Documentation
 
