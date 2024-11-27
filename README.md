@@ -36,7 +36,7 @@ Sadly, there is no silver bullet for agent specialization. For example, you can
 - Supervise **fine-tuning** (SFT) your 70B `llama2` like [this](https://arxiv.org/abs/2305.20050) to match reasoning of 175B GPT-3.5.
 - And more ...
 
-Isn't it beautiful if one shares his effort in specialized intelligence, allowing others to reproduce, build on, or interact with it? 🤗 This belief inspires us to build Gentopia,
+Isn't it beautiful if one shares his effort in specialized intelligence, allowing others to reproduce, build on, or interact with it? 🤗 This belief inspires us to build Synthora,
 **designed for agent *specialization, sharing, and interaction,* to stackingly achieve collective growth towards greater intelligence.**.
 
 ## Core Features 💡
