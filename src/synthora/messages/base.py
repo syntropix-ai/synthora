@@ -167,7 +167,6 @@ class BaseMessage(BaseModel):
                     name=self.source.name,
                     **tmp_args,
                 )
-            
 
     @classmethod
     def from_openai_response(

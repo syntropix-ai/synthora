@@ -16,7 +16,7 @@
 #
 
 from abc import ABC
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.types.enums import CallBackEvent
@@ -45,7 +45,7 @@ class BaseCallBackManager(ABC):
     def __isub__(self, handler: BaseCallBackHandler) -> None:
         self.remove(handler)
 
-    def call(self, event: CallBackEvent, *args, **kwargs) -> None:
+    def call(self, event: CallBackEvent, *args: Any, **kwargs: Dict[str, Any]) -> None:
         for handler in self.handlers:
             if self.source is not None:
                 args = (self.source, *args)
@@ -59,7 +59,9 @@ class AsyncCallBackManager(BaseCallBackManager):
         self.handlers = handlers
         self.source: Optional[Node] = None
 
-    async def call(self, event: CallBackEvent, *args, **kwargs) -> None:
+    async def call(  # type: ignore[override]
+        self, event: CallBackEvent, *args: Any, **kwargs: Dict[str, Any]
+    ) -> None:
         for handler in self.handlers:
             if self.source is not None:
                 args = (self.source, *args)

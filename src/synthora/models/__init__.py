@@ -17,6 +17,7 @@
 
 from synthora.configs.model_config import ModelConfig
 from synthora.types.enums import ModelBackendType
+from synthora.types.node import Node
 
 from .base import BaseModelBackend
 from .openai_chat import OpenAIChatBackend
@@ -27,10 +28,11 @@ BACKEND_MAP = {
 }
 
 
-def create_model_from_config(config: ModelConfig) -> BaseModelBackend:
+def create_model_from_config(config: ModelConfig, source: Node) -> BaseModelBackend:
     cls = BACKEND_MAP[config.backend]
     return cls(
         name=config.name,
+        source=source,
         model_type=config.model_type,
         config=config.config,
         **(config.backend_config or {}),

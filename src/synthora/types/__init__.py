@@ -16,6 +16,7 @@
 #
 
 from .enums import AgentType, CallBackEvent, Err, ModelBackendType, NodeType, Ok, Result
+from .event import TraceEvent
 from .node import Node
 from .openai import (  # type: ignore[attr-defined]
     ChatCompletion,
@@ -64,4 +65,5 @@ __all__ = [
     "ChatCompletionContentPartTextParam",
     "ChatCompletionMessageToolCall",
     "CallBackEvent",
+    "TraceEvent",
 ]

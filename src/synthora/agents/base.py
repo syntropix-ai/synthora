@@ -19,7 +19,7 @@ import importlib
 import inspect
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Self, Type, Union
+from typing import Any, Dict, List, Optional, Self, Type, Union
 
 from synthora.callbacks import get_callback_manager
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
@@ -126,13 +126,14 @@ class BaseAgent(ABC):
         - Self: The agent created from the configuration.
         """
         _model = config.model if isinstance(config.model, list) else [config.model]
-        model = [create_model_from_config(m) for m in _model]
-        tools = []
         source = Node(name=config.name, type=NodeType.AGENT)
+        model = [create_model_from_config(m, source) for m in _model]
+        tools: List[Union[BaseFunction, BaseAgent]] = []
+
+        prompt: Union[BasePrompt, Dict[str, BasePrompt]] = {}
         if isinstance(config.prompt, dict):
-            prompt = {}
             for key, value in config.prompt.items():
-                prompt[key] = BasePrompt(value)
+                prompt[key] = BasePrompt(value)  # type: ignore[index]
         else:
             prompt = BasePrompt(config.prompt)
 
@@ -150,14 +151,19 @@ class BaseAgent(ABC):
                     )
                 if issubclass(module, BaseToolkit):
                     instance = module(**tool.args)
+                    for t in instance.async_tools:
+                        t.source.ancestor = source
+                    for t in instance.sync_tools:
+                        t.source.ancestor = source
                     tools.extend(instance.sync_tools)
                     tools.extend(instance.async_tools)
                 elif issubclass(module, BaseAgent):
                     agent_config = AgentConfig.from_dict(tool.args or {})
-                    instance = module.from_config(agent_config)
+                    instance = module.from_config(agent_config)  # type: ignore[attr-defined]
                     tools.append(instance)
                 elif issubclass(module, BaseFunction):
                     instance = module(**tool.args)
+                    instance.source.ancestor = source
                     tools.append(instance)
             except ImportError:
                 raise ImportError(f"Could not import {tool.target}")
@@ -165,9 +171,9 @@ class BaseAgent(ABC):
                 raise ValueError(
                     f"Error loading toolkit {tool.target} with args {tool.args}: {e}"
                 )
-        for tool in tools:
-            if tool.source:
-                tool.source.ancestor = source
+        for t in tools:
+            if t.source:
+                t.source.ancestor = source
         return cls(
             config=config, model=model, prompt=prompt, tools=tools, source=source
         )
@@ -217,7 +223,7 @@ class BaseAgent(ABC):
 
     def on_start(
         self,
-        message: List[BaseMessage],
+        message: Union[List[BaseMessage], BaseMessage],
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
@@ -228,7 +234,7 @@ class BaseAgent(ABC):
         self.callback_manager.call(
             CallBackEvent.AGENT_START, self.source, message, *args, **kwargs
         )
-    
+
     def on_end(
         self,
         message: BaseMessage,
@@ -237,7 +243,11 @@ class BaseAgent(ABC):
     ) -> None:
         if self.source.ancestor:
             self.callback_manager.call(
-                CallBackEvent.TOOL_END, self.source, Ok(message.content), *args, **kwargs
+                CallBackEvent.TOOL_END,
+                self.source,
+                Ok(message.content),
+                *args,
+                **kwargs,
             )
         self.callback_manager.call(
             CallBackEvent.AGENT_END, self.source, message, *args, **kwargs
@@ -256,3 +266,20 @@ class BaseAgent(ABC):
         self.callback_manager.call(
             CallBackEvent.AGENT_ERROR, self.source, result, *args, **kwargs
         )
+
+    def get_compents(
+        self, source: Node
+    ) -> Optional[Union[Self, BaseFunction, BaseModelBackend, "BaseAgent"]]:
+        if source == self.source:
+            return self
+        for model in self.model if isinstance(self.model, list) else [self.model]:
+            if model.source == source:
+                return model
+        for tool in self.tools:
+            if tool.source == source:
+                return tool
+            if isinstance(tool, BaseAgent):
+                comp = tool.get_compents(source)
+                if comp:
+                    return comp
+        return None

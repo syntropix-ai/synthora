@@ -41,6 +41,7 @@ class OpenAIChatBackend(BaseModelBackend):
     ) -> None:
         super().__init__(
             model_type=model_type,
+            source=source,
             backend_type=ModelBackendType.OPENAI_CHAT,
             config=config,
             name=name,
@@ -54,7 +55,6 @@ class OpenAIChatBackend(BaseModelBackend):
         self.kwargs["api_key"] = self.api_key  # type: ignore[assignment]
         if self.base_url is not None:
             self.kwargs["base_url"] = self.base_url  # type: ignore[assignment]
-        self.source = source
         self.client = OpenAI(**self.kwargs)
 
     def run(

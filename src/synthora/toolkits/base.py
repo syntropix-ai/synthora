@@ -33,20 +33,18 @@ class BaseFunction(ABC):
         self,
         instance: Any,
         func: Callable[..., Any],
-        source: Optional[Node] = None,
         callback_manager: BaseCallBackManager = BaseCallBackManager(),
     ) -> None:
         self.instance = instance
         self.func = func
         self.schema = get_openai_tool_schema(func)
-        self.source: Node = source or Node(name=self.name, type=NodeType.TOOL)
+        self.source: Node = Node(name=self.name, type=NodeType.TOOL)
         self.callback_manager = callback_manager
 
     @staticmethod
     def wrap(
         func: Callable[..., Any],
         instance: Optional[Any] = None,
-        source: Optional[Node] = None,
         handlers: List[BaseCallBackHandler] = [],
     ) -> Union["SyncFunction", "AsyncFunction"]:
         if isinstance(func, staticmethod):
@@ -55,11 +53,11 @@ class BaseFunction(ABC):
         if asyncio.iscoroutinefunction(func) or asyncio.iscoroutinefunction(
             inspect.unwrap(func)
         ):
-            callback_manager = AsyncCallBackManager(handlers=handlers)
-            return AsyncFunction(instance, func, source, callback_manager)
-        else:
-            callback_manager = BaseCallBackManager(handlers=handlers)
-            return SyncFunction(instance, func, source, callback_manager)
+            return AsyncFunction(
+                instance, func, AsyncCallBackManager(handlers=handlers)
+            )
+
+        return SyncFunction(instance, func, BaseCallBackManager(handlers=handlers))
 
     @property
     def name(self) -> str:
@@ -127,17 +125,19 @@ class AsyncFunction(BaseFunction):
         except Exception as e:
             return Err(e, str(e))
 
-    async def async_run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
+    async def async_run(  # type: ignore[override]
+        self, *args: Any, **kwargs: Any
+    ) -> Result[Any, Exception]:
         self.callback_manager.call(
             CallBackEvent.TOOL_START, self.source, *args, **kwargs
         )
         result = await self(*args, **kwargs)
         if result.is_err:
-            await self.callback_manager.call(
+            await self.callback_manager.call(  # type: ignore[func-returns-value]
                 CallBackEvent.TOOL_ERROR, self.source, result
             )
         else:
-            await self.callback_manager.call(
+            await self.callback_manager.call(  # type: ignore[func-returns-value]
                 CallBackEvent.TOOL_END, self.source, result
             )
         return result

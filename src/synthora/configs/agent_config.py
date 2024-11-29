@@ -36,7 +36,6 @@ class AgentConfig(BaseConfig):
     prompt: Union[BasePrompt, Dict[str, BasePrompt]]
     tools: Optional[List[ToolConfig]] = None
 
-
     @classmethod
     def from_file(cls: Type[Self], path: Union[str, Path]) -> Self:
         try:

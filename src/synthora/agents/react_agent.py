@@ -24,7 +24,7 @@ from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import BaseFunction
 from synthora.toolkits.decorators import tool
-from synthora.types.enums import CallBackEvent, MessageRole, Ok, Result
+from synthora.types.enums import MessageRole, Ok, Result
 from synthora.types.node import Node
 from synthora.utils.macros import (
     FORMAT_PROMPT,
@@ -32,17 +32,20 @@ from synthora.utils.macros import (
     STR_TO_USERMESSAGE,
     UPDATE_SYSTEM,
 )
+
+
 @tool
 def finish(response: str) -> str:
-    r""" Stop the conversation and return the final response. 
+    r"""Stop the conversation and return the final response.
     Only should be used when you get the final answer or
     can not solve the problem.
-    
+
     Args:
         response (str): The final response.
-    
+
     """
     return response
+
 
 class ReactAgent(BaseAgent):
     def __init__(
@@ -64,16 +67,15 @@ class ReactAgent(BaseAgent):
             if isinstance(self.prompt, dict)
             else self.prompt
         )
-        self.prompt: BasePrompt = cast(BasePrompt, self.prompt)
 
     def step(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         UPDATE_SYSTEM(prompt=FORMAT_PROMPT())
-        message = STR_TO_USERMESSAGE()
+        message = cast(BaseMessage, STR_TO_USERMESSAGE())
         if message.content:
             self.history.append(message)
-        
+
         for _ in range(2):
             response = self.model.run(self.history, *args, **kwargs)
             response = GET_FINAL_MESSAGE()
@@ -85,7 +87,7 @@ class ReactAgent(BaseAgent):
     def run(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
-        message = STR_TO_USERMESSAGE()
+        message = cast(BaseMessage, STR_TO_USERMESSAGE())
         self.on_start(message)
         while True:
             response = self.step(message, *args, **kwargs)
@@ -93,18 +95,18 @@ class ReactAgent(BaseAgent):
             if response.is_err:
                 self.on_error(response)
                 return response
-            
-            data = response.value
+
+            data = response.unwrap()
             if not data.tool_calls:
                 self.on_end(data)
                 return Ok(data.content)
-            
+
             for tool_call in data.tool_calls:
                 func = tool_call.function
                 try:
                     tool = self.get_tool(func.name)
                     resp = self.call_tool(func.name, func.arguments)
-                    resp_value = resp.value
+                    resp_value = resp.unwrap()
                 except Exception as e:
                     resp_value = f"Error: {str(e)}"
                     self.on_error(resp)
@@ -121,7 +123,6 @@ class ReactAgent(BaseAgent):
                     data.content = resp_value
                     self.on_end(data)
                     return Ok(resp_value)
-
 
     async def async_run(  # type: ignore[empty-body]
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]

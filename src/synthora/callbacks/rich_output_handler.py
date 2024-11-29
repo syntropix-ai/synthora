@@ -25,6 +25,7 @@ from rich.panel import Panel
 from rich.status import Status
 
 from synthora.callbacks.base_handler import BaseCallBackHandler
+from synthora.messages.base import BaseMessage
 from synthora.types.enums import Result
 from synthora.types.node import Node
 
@@ -52,14 +53,14 @@ class RichOutputHandler(BaseCallBackHandler):
         self.cache: str = ""
         super().__init__()
 
-    def stop(self):
+    def stop(self) -> None:
         """
         Stops the Live status.
         """
         if self.status is not None:
             self.status.stop()
 
-    def update_status(self, output: str, style: str = "[bold green]"):
+    def update_status(self, output: str, style: str = "[bold green]") -> None:
         """
         Updates the status, push it into a stack.
 
@@ -75,7 +76,7 @@ class RichOutputHandler(BaseCallBackHandler):
             self.status = self.console.status(f"{style}{output}")
         self.status.start()
 
-    def thinking(self, name: str):
+    def thinking(self, name: str) -> None:
         """
         Shows that a name is thinking.
 
@@ -89,7 +90,7 @@ class RichOutputHandler(BaseCallBackHandler):
             self.status = self.console.status(f"[bold green]{name} is thinking...")
         self.status.start()
 
-    def done(self, _all=False):
+    def done(self, _all: bool = False) -> None:
         """
         Marks the status as done.
 
@@ -98,18 +99,20 @@ class RichOutputHandler(BaseCallBackHandler):
         """
         if _all:
             self.status_stack = []
-            self.status.stop()
-        else:
-            if len(self.status_stack) > 0:
-                self.status_stack.pop()
-            if len(self.status_stack) > 0:
-                self.status.update(
-                    f"[bold green]{self.status_stack[-1]} is thinking..."
-                )
-            else:
+            if self.status is not None:
                 self.status.stop()
+        else:
+            if self.status:
+                if len(self.status_stack) > 0:
+                    self.status_stack.pop()
+                if len(self.status_stack) > 0:
+                    self.status.update(
+                        f"[bold green]{self.status_stack[-1]} is thinking..."
+                    )
+                else:
+                    self.status.stop()
 
-    def stream_print(self, item: str):
+    def stream_print(self, item: str) -> None:
         """
         Prints an item to the output as a stream.
 
@@ -118,7 +121,7 @@ class RichOutputHandler(BaseCallBackHandler):
         """
         self.console.print(item, end="")
 
-    def json_print(self, item: Dict[str, Any]):
+    def json_print(self, item: Dict[str, Any]) -> None:
         """
         Prints an item to the output as a JSON object.
 
@@ -133,7 +136,7 @@ class RichOutputHandler(BaseCallBackHandler):
         title: str = "Output",
         stream: bool = False,
         style: str = "yellow",
-    ):
+    ) -> None:
         """
         Prints an item to the output as a panel.
 
@@ -164,7 +167,7 @@ class RichOutputHandler(BaseCallBackHandler):
             Panel(Markdown(self.cache), title=title, style=style, box=HEAVY)
         )
 
-    def clear(self):
+    def clear(self) -> None:
         """
         Clears the Live status and print cache.
         """
@@ -183,19 +186,28 @@ class RichOutputHandler(BaseCallBackHandler):
     ) -> None:
         self.done()
         title = f"[cyan]{source.name}" if source else "[cyan]Unknown"
-        self.panel_print(result.value, title=title, style="cyan")
+        self.panel_print(result.unwrap(), title=title, style="cyan")
 
     def on_tool_error(
         self, source: Optional[Node], result: Result[Any, Exception]
     ) -> None:
         self.done()
         title = f"[red]{source.name}" if source else "[red]Unknown"
-        self.panel_print(result.error, title=title, style="red")
+        self.panel_print(result.unwrap_err_val(), title=title, style="red")
 
-    def on_llm_start(self, source, messages, stream: bool = False, *args, **kwargs):
+    def on_llm_start(
+        self,
+        source: Node,
+        messages: List[BaseMessage],
+        stream: bool = False,
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
         self.thinking(source.name if source else "Unknown")
 
-    def on_llm_chunk(self, source, message, *args, **kwargs):
+    def on_llm_chunk(
+        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Dict[str, Any]
+    ) -> None:
         if message.chunk:
             if self.status is not None:
                 self.status.stop()
@@ -205,7 +217,14 @@ class RichOutputHandler(BaseCallBackHandler):
                 stream=True,
             )
 
-    def on_llm_end(self, source, message, stream: bool = False, *args, **kwargs):
+    def on_llm_end(
+        self,
+        source: Node,
+        message: BaseMessage,
+        stream: bool = False,
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
         self.done()
         if not stream and message.content:
             self.panel_print(
@@ -215,25 +234,42 @@ class RichOutputHandler(BaseCallBackHandler):
         if self.status is not None:
             self.status.start()
 
-    def on_llm_error(self, source, e, stream: bool = False, *args, **kwargs):
+    def on_llm_error(
+        self,
+        source: Node,
+        e: Exception,
+        stream: bool = False,
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
         self.done()
         self.panel_print(str(e), title=source.name if source.name else "Unknow")
         self.clear()
         if self.status is not None:
             self.status.start()
 
-    def on_agent_start(self, source, message, *args, **kwargs):
+    def on_agent_start(
+        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Dict[str, Any]
+    ) -> None:
         title = f"[bold blue]{source.name if source else 'Unknown'}' Task: "
         self.panel_print(message.content, title=title, style="blue")
 
-    def on_agent_end(self, source, message, *args, **kwargs):
+    def on_agent_end(
+        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Dict[str, Any]
+    ) -> None:
         title = f"[bold blue]{source.name if source else 'Unknown'}' Response: "
         self.panel_print(message.content, title=title, style="green")
         self.clear()
         self.done(True)
 
-    def on_agent_error(self, source, e, *args, **kwargs):
+    def on_agent_error(
+        self,
+        source: Node,
+        result: Result[Any, Exception],
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
         title = f"[bold blue]{source.name if source else 'Unknown'}' Error: "
-        self.panel_print(str(e), title=title, style="red")
+        self.panel_print(str(result.unwrap_err_val()), title=title, style="red")
         self.clear()
         self.done(True)

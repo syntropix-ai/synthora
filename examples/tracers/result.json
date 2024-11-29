@@ -1,0 +1,478 @@
+{
+    "id": "ce236152-b770-47bb-8d67-d36c17d1e9bd",
+    "timestamp": 1732856807.813855,
+    "event_type": "on_agent_start",
+    "data": {
+        "id": null,
+        "source": {
+            "name": "user",
+            "type": "user",
+            "ancestor": null
+        },
+        "role": "user",
+        "chunk": null,
+        "content": "Search Openai on Wikipedia. Outpout Your thought first!",
+        "tool_calls": null,
+        "tool_response": null,
+        "images": null,
+        "metadata": {}
+    },
+    "stack": [
+        {
+            "name": "WebSearcher",
+            "type": "agent",
+            "ancestor": null
+        }
+    ],
+    "metadata": {
+        "args": [],
+        "kwargs": {}
+    }
+}
+{
+    "id": "0be39eef-8185-46c6-9597-bbd5bc3bbddc",
+    "timestamp": 1732856807.814544,
+    "event_type": "on_llm_start",
+    "data": [
+        {
+            "id": null,
+            "source": {
+                "name": "WebSearcher",
+                "type": "system",
+                "ancestor": {
+                    "name": "WebSearcher",
+                    "type": "agent",
+                    "ancestor": null
+                }
+            },
+            "role": "system",
+            "chunk": null,
+            "content": "You are a task-solving assistant with access to tools. Follow these rules:\n\n- Start by generating a \"Thought\" to explain your reasoning about how to solve the problem, and why you are using the tool.\n- Then call the necessary tool to solve the problem. \n- If you determine that no further tools are required and the task is complete, call the \"finish\" tool to provide the final response.\n\nYOU MUST Output the thought first!\n",
+            "tool_calls": null,
+            "tool_response": null,
+            "images": null,
+            "metadata": {}
+        },
+        {
+            "id": null,
+            "source": {
+                "name": "user",
+                "type": "user",
+                "ancestor": null
+            },
+            "role": "user",
+            "chunk": null,
+            "content": "Search Openai on Wikipedia. Outpout Your thought first!",
+            "tool_calls": null,
+            "tool_response": null,
+            "images": null,
+            "metadata": {}
+        }
+    ],
+    "stack": [
+        {
+            "name": "WebSearcher",
+            "type": "agent",
+            "ancestor": null
+        },
+        {
+            "name": "searcher",
+            "type": "model",
+            "ancestor": {
+                "name": "WebSearcher",
+                "type": "agent",
+                "ancestor": null
+            }
+        }
+    ],
+    "metadata": {
+        "stream": true,
+        "model": "gpt-4o",
+        "args": [],
+        "kwargs": {}
+    }
+}
+{
+    "id": "d4bfc14c-e838-44da-bb6e-62b2c7816e29",
+    "timestamp": 1732856809.510647,
+    "event_type": "on_llm_end",
+    "data": {
+        "id": "chatcmpl-AYnVJ7xuoI70H8m5fZaitiJAdWDff",
+        "source": {
+            "name": "searcher",
+            "type": "model",
+            "ancestor": {
+                "name": "WebSearcher",
+                "type": "agent",
+                "ancestor": null
+            }
+        },
+        "role": "assistant",
+        "chunk": null,
+        "content": "Thought: To find detailed and reliable information about OpenAI, I will search for it on Wikipedia. This will provide a comprehensive overview of the organization, its history, and its activities. I will use the search_wikipedia function to retrieve this information.\n\nLet's proceed with the search.search_wikipedia{\"query\":\"OpenAI\"}",
+        "tool_calls": [
+            {
+                "id": "call_sZh9wZIPfIdeI9y9D2HzKiC2",
+                "function": {
+                    "arguments": "{\"query\":\"OpenAI\"}",
+                    "name": "search_wikipedia"
+                },
+                "type": "function"
+            }
+        ],
+        "tool_response": null,
+        "images": null,
+        "metadata": {
+            "created": 1732856809,
+            "model": "gpt-4o-2024-08-06",
+            "service_tier": null,
+            "system_fingerprint": "fp_831e067d82",
+            "usage": null,
+            "finish_reason": "tool_calls"
+        }
+    },
+    "stack": [
+        {
+            "name": "WebSearcher",
+            "type": "agent",
+            "ancestor": null
+        }
+    ],
+    "metadata": {
+        "stream": true,
+        "model": "gpt-4o-2024-08-06",
+        "args": [],
+        "kwargs": {},
+        "created": 1732856809,
+        "service_tier": null,
+        "system_fingerprint": "fp_831e067d82",
+        "usage": null,
+        "finish_reason": "tool_calls"
+    }
+}
+{
+    "id": "76babc7d-de78-4df6-a0dd-56bc989ba698",
+    "timestamp": 1732856809.510788,
+    "event_type": "on_tool_start",
+    "data": {
+        "args": [],
+        "kwargs": {
+            "query": "OpenAI"
+        }
+    },
+    "stack": [
+        {
+            "name": "WebSearcher",
+            "type": "agent",
+            "ancestor": null
+        },
+        {
+            "name": "search_wikipedia",
+            "type": "tool",
+            "ancestor": {
+                "name": "WebSearcher",
+                "type": "agent",
+                "ancestor": null
+            }
+        }
+    ],
+    "metadata": {
+        "args": [],
+        "kwargs": {
+            "query": "OpenAI"
+        }
+    }
+}
+{
+    "id": "d7a3797c-d819-4c35-9c50-97545884fe9a",
+    "timestamp": 1732856810.017475,
+    "event_type": "on_tool_end",
+    "data": {
+        "value": "OpenAI is an American artificial intelligence (AI) research organization founded in December 2015 and headquartered in San Francisco, California. Its stated mission is to develop \"safe and beneficial\" artificial general intelligence (AGI), which it defines as \"highly autonomous systems that outperform humans at most economically valuable work\". As a leading organization in the ongoing AI boom, OpenAI is known for the GPT family of large language models, the DALL-E series of text-to-image models, and a text-to-video model named Sora. Its release of ChatGPT in November 2022 has been credited with catalyzing widespread interest in generative AI.\nThe organization consists of the non-profit OpenAI, Inc., registered in Delaware, and its for-profit subsidiary introduced in 2019, OpenAI Global, LLC. Microsoft owns roughly 49% of OpenAI's equity, having invested US$13 billion. It also provides computing resources to OpenAI through its cloud platform, Microsoft Azure."
+    },
+    "stack": [
+        {
+            "name": "WebSearcher",
+            "type": "agent",
+            "ancestor": null
+        }
+    ],
+    "metadata": {
+        "args": [],
+        "kwargs": {}
+    }
+}
+{
+    "id": "91b8ac29-5c51-40d0-a9fa-1fcc2ba88581",
+    "timestamp": 1732856810.018015,
+    "event_type": "on_llm_start",
+    "data": [
+        {
+            "id": null,
+            "source": {
+                "name": "WebSearcher",
+                "type": "system",
+                "ancestor": {
+                    "name": "WebSearcher",
+                    "type": "agent",
+                    "ancestor": null
+                }
+            },
+            "role": "system",
+            "chunk": null,
+            "content": "You are a task-solving assistant with access to tools. Follow these rules:\n\n- Start by generating a \"Thought\" to explain your reasoning about how to solve the problem, and why you are using the tool.\n- Then call the necessary tool to solve the problem. \n- If you determine that no further tools are required and the task is complete, call the \"finish\" tool to provide the final response.\n\nYOU MUST Output the thought first!\n",
+            "tool_calls": null,
+            "tool_response": null,
+            "images": null,
+            "metadata": {}
+        },
+        {
+            "id": null,
+            "source": {
+                "name": "user",
+                "type": "user",
+                "ancestor": null
+            },
+            "role": "user",
+            "chunk": null,
+            "content": "Search Openai on Wikipedia. Outpout Your thought first!",
+            "tool_calls": null,
+            "tool_response": null,
+            "images": null,
+            "metadata": {}
+        },
+        {
+            "id": "chatcmpl-AYnVJ7xuoI70H8m5fZaitiJAdWDff",
+            "source": {
+                "name": "searcher",
+                "type": "model",
+                "ancestor": {
+                    "name": "WebSearcher",
+                    "type": "agent",
+                    "ancestor": null
+                }
+            },
+            "role": "assistant",
+            "chunk": null,
+            "content": "Thought: To find detailed and reliable information about OpenAI, I will search for it on Wikipedia. This will provide a comprehensive overview of the organization, its history, and its activities. I will use the search_wikipedia function to retrieve this information.\n\nLet's proceed with the search.search_wikipedia{\"query\":\"OpenAI\"}",
+            "tool_calls": [
+                {
+                    "id": "call_sZh9wZIPfIdeI9y9D2HzKiC2",
+                    "function": {
+                        "arguments": "{\"query\":\"OpenAI\"}",
+                        "name": "search_wikipedia"
+                    },
+                    "type": "function"
+                }
+            ],
+            "tool_response": null,
+            "images": null,
+            "metadata": {
+                "created": 1732856809,
+                "model": "gpt-4o-2024-08-06",
+                "service_tier": null,
+                "system_fingerprint": "fp_831e067d82",
+                "usage": null,
+                "finish_reason": "tool_calls"
+            }
+        },
+        {
+            "id": "call_sZh9wZIPfIdeI9y9D2HzKiC2",
+            "source": {
+                "name": "search_wikipedia",
+                "type": "tool",
+                "ancestor": {
+                    "name": "WebSearcher",
+                    "type": "agent",
+                    "ancestor": null
+                }
+            },
+            "role": "tool_response",
+            "chunk": null,
+            "content": "OpenAI is an American artificial intelligence (AI) research organization founded in December 2015 and headquartered in San Francisco, California. Its stated mission is to develop \"safe and beneficial\" artificial general intelligence (AGI), which it defines as \"highly autonomous systems that outperform humans at most economically valuable work\". As a leading organization in the ongoing AI boom, OpenAI is known for the GPT family of large language models, the DALL-E series of text-to-image models, and a text-to-video model named Sora. Its release of ChatGPT in November 2022 has been credited with catalyzing widespread interest in generative AI.\nThe organization consists of the non-profit OpenAI, Inc., registered in Delaware, and its for-profit subsidiary introduced in 2019, OpenAI Global, LLC. Microsoft owns roughly 49% of OpenAI's equity, having invested US$13 billion. It also provides computing resources to OpenAI through its cloud platform, Microsoft Azure.",
+            "tool_calls": null,
+            "tool_response": null,
+            "images": null,
+            "metadata": {}
+        }
+    ],
+    "stack": [
+        {
+            "name": "WebSearcher",
+            "type": "agent",
+            "ancestor": null
+        },
+        {
+            "name": "searcher",
+            "type": "model",
+            "ancestor": {
+                "name": "WebSearcher",
+                "type": "agent",
+                "ancestor": null
+            }
+        }
+    ],
+    "metadata": {
+        "stream": true,
+        "model": "gpt-4o",
+        "args": [],
+        "kwargs": {}
+    }
+}
+{
+    "id": "3467c1df-fed1-45b8-843a-704903f1887e",
+    "timestamp": 1732856812.244117,
+    "event_type": "on_llm_end",
+    "data": {
+        "id": "chatcmpl-AYnVLowYuhlMrKYrxtICIa5m0r1d4",
+        "source": {
+            "name": "searcher",
+            "type": "model",
+            "ancestor": {
+                "name": "WebSearcher",
+                "type": "agent",
+                "ancestor": null
+            }
+        },
+        "role": "assistant",
+        "chunk": null,
+        "content": "OpenAI is an American artificial intelligence (AI) research organization founded in December 2015 and headquartered in San Francisco, California. Its mission is to develop \"safe and beneficial\" artificial general intelligence (AGI), defined as \"highly autonomous systems that outperform humans at most economically valuable work.\" OpenAI is known for the GPT family of large language models, the DALL-E series of text-to-image models, and a text-to-video model named Sora. The release of ChatGPT in November 2022 significantly increased interest in generative AI.\n\nThe organization includes the non-profit OpenAI, Inc., and its for-profit subsidiary, OpenAI Global, LLC, introduced in 2019. Microsoft owns approximately 49% of OpenAI's equity, having invested $13 billion, and provides computing resources through its cloud platform, Microsoft Azure.",
+        "tool_calls": [
+            {
+                "id": "call_0BAwnzpvC5kB95tvj6B1fZhT",
+                "function": {
+                    "arguments": "{\"response\":\"OpenAI is an American artificial intelligence (AI) research organization founded in December 2015 and headquartered in San Francisco, California. Its mission is to develop \\\"safe and beneficial\\\" artificial general intelligence (AGI), defined as \\\"highly autonomous systems that outperform humans at most economically valuable work.\\\" OpenAI is known for the GPT family of large language models, the DALL-E series of text-to-image models, and a text-to-video model named Sora. The release of ChatGPT in November 2022 significantly increased interest in generative AI.\\n\\nThe organization includes the non-profit OpenAI, Inc., and its for-profit subsidiary, OpenAI Global, LLC, introduced in 2019. Microsoft owns approximately 49% of OpenAI's equity, having invested $13 billion, and provides computing resources through its cloud platform, Microsoft Azure.\"}",
+                    "name": "finish"
+                },
+                "type": "function"
+            }
+        ],
+        "tool_response": null,
+        "images": null,
+        "metadata": {
+            "created": 1732856811,
+            "model": "gpt-4o-2024-08-06",
+            "service_tier": null,
+            "system_fingerprint": "fp_831e067d82",
+            "usage": null,
+            "finish_reason": "tool_calls"
+        }
+    },
+    "stack": [
+        {
+            "name": "WebSearcher",
+            "type": "agent",
+            "ancestor": null
+        }
+    ],
+    "metadata": {
+        "stream": true,
+        "model": "gpt-4o-2024-08-06",
+        "args": [],
+        "kwargs": {},
+        "created": 1732856811,
+        "service_tier": null,
+        "system_fingerprint": "fp_831e067d82",
+        "usage": null,
+        "finish_reason": "tool_calls"
+    }
+}
+{
+    "id": "039764ca-dd56-4f18-ac52-03320f15429f",
+    "timestamp": 1732856812.244237,
+    "event_type": "on_tool_start",
+    "data": {
+        "args": [],
+        "kwargs": {
+            "response": "OpenAI is an American artificial intelligence (AI) research organization founded in December 2015 and headquartered in San Francisco, California. Its mission is to develop \"safe and beneficial\" artificial general intelligence (AGI), defined as \"highly autonomous systems that outperform humans at most economically valuable work.\" OpenAI is known for the GPT family of large language models, the DALL-E series of text-to-image models, and a text-to-video model named Sora. The release of ChatGPT in November 2022 significantly increased interest in generative AI.\n\nThe organization includes the non-profit OpenAI, Inc., and its for-profit subsidiary, OpenAI Global, LLC, introduced in 2019. Microsoft owns approximately 49% of OpenAI's equity, having invested $13 billion, and provides computing resources through its cloud platform, Microsoft Azure."
+        }
+    },
+    "stack": [
+        {
+            "name": "WebSearcher",
+            "type": "agent",
+            "ancestor": null
+        },
+        {
+            "name": "finish",
+            "type": "tool",
+            "ancestor": null
+        }
+    ],
+    "metadata": {
+        "args": [],
+        "kwargs": {
+            "response": "OpenAI is an American artificial intelligence (AI) research organization founded in December 2015 and headquartered in San Francisco, California. Its mission is to develop \"safe and beneficial\" artificial general intelligence (AGI), defined as \"highly autonomous systems that outperform humans at most economically valuable work.\" OpenAI is known for the GPT family of large language models, the DALL-E series of text-to-image models, and a text-to-video model named Sora. The release of ChatGPT in November 2022 significantly increased interest in generative AI.\n\nThe organization includes the non-profit OpenAI, Inc., and its for-profit subsidiary, OpenAI Global, LLC, introduced in 2019. Microsoft owns approximately 49% of OpenAI's equity, having invested $13 billion, and provides computing resources through its cloud platform, Microsoft Azure."
+        }
+    }
+}
+{
+    "id": "6aca7555-7028-47bd-8faf-14c1d320f1b9",
+    "timestamp": 1732856812.246539,
+    "event_type": "on_tool_end",
+    "data": {
+        "value": "OpenAI is an American artificial intelligence (AI) research organization founded in December 2015 and headquartered in San Francisco, California. Its mission is to develop \"safe and beneficial\" artificial general intelligence (AGI), defined as \"highly autonomous systems that outperform humans at most economically valuable work.\" OpenAI is known for the GPT family of large language models, the DALL-E series of text-to-image models, and a text-to-video model named Sora. The release of ChatGPT in November 2022 significantly increased interest in generative AI.\n\nThe organization includes the non-profit OpenAI, Inc., and its for-profit subsidiary, OpenAI Global, LLC, introduced in 2019. Microsoft owns approximately 49% of OpenAI's equity, having invested $13 billion, and provides computing resources through its cloud platform, Microsoft Azure."
+    },
+    "stack": [
+        {
+            "name": "WebSearcher",
+            "type": "agent",
+            "ancestor": null
+        }
+    ],
+    "metadata": {
+        "args": [],
+        "kwargs": {}
+    }
+}
+{
+    "id": "1772e5c0-088c-4f09-b259-edcdef0081f6",
+    "timestamp": 1732856812.247848,
+    "event_type": "on_agent_end",
+    "data": {
+        "id": "chatcmpl-AYnVLowYuhlMrKYrxtICIa5m0r1d4",
+        "source": {
+            "name": "searcher",
+            "type": "model",
+            "ancestor": {
+                "name": "WebSearcher",
+                "type": "agent",
+                "ancestor": null
+            }
+        },
+        "role": "assistant",
+        "chunk": null,
+        "content": "OpenAI is an American artificial intelligence (AI) research organization founded in December 2015 and headquartered in San Francisco, California. Its mission is to develop \"safe and beneficial\" artificial general intelligence (AGI), defined as \"highly autonomous systems that outperform humans at most economically valuable work.\" OpenAI is known for the GPT family of large language models, the DALL-E series of text-to-image models, and a text-to-video model named Sora. The release of ChatGPT in November 2022 significantly increased interest in generative AI.\n\nThe organization includes the non-profit OpenAI, Inc., and its for-profit subsidiary, OpenAI Global, LLC, introduced in 2019. Microsoft owns approximately 49% of OpenAI's equity, having invested $13 billion, and provides computing resources through its cloud platform, Microsoft Azure.",
+        "tool_calls": [
+            {
+                "id": "call_0BAwnzpvC5kB95tvj6B1fZhT",
+                "function": {
+                    "arguments": "{\"response\":\"OpenAI is an American artificial intelligence (AI) research organization founded in December 2015 and headquartered in San Francisco, California. Its mission is to develop \\\"safe and beneficial\\\" artificial general intelligence (AGI), defined as \\\"highly autonomous systems that outperform humans at most economically valuable work.\\\" OpenAI is known for the GPT family of large language models, the DALL-E series of text-to-image models, and a text-to-video model named Sora. The release of ChatGPT in November 2022 significantly increased interest in generative AI.\\n\\nThe organization includes the non-profit OpenAI, Inc., and its for-profit subsidiary, OpenAI Global, LLC, introduced in 2019. Microsoft owns approximately 49% of OpenAI's equity, having invested $13 billion, and provides computing resources through its cloud platform, Microsoft Azure.\"}",
+                    "name": "finish"
+                },
+                "type": "function"
+            }
+        ],
+        "tool_response": null,
+        "images": null,
+        "metadata": {
+            "created": 1732856811,
+            "model": "gpt-4o-2024-08-06",
+            "service_tier": null,
+            "system_fingerprint": "fp_831e067d82",
+            "usage": null,
+            "finish_reason": "tool_calls"
+        }
+    },
+    "stack": [],
+    "metadata": {
+        "args": [],
+        "kwargs": {},
+        "created": 1732856811,
+        "model": "gpt-4o-2024-08-06",
+        "service_tier": null,
+        "system_fingerprint": "fp_831e067d82",
+        "usage": null,
+        "finish_reason": "tool_calls"
+    }
+}
