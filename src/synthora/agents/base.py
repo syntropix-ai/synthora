@@ -31,6 +31,7 @@ from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import BaseFunction, BaseToolkit
 from synthora.types.enums import CallBackEvent, NodeType, Ok, Result
 from synthora.types.node import Node
+from synthora.utils.macros import CALL_ASYNC_CALLBACK
 
 
 class BaseAgent(ABC):
@@ -331,6 +332,29 @@ class BaseAgent(ABC):
         tool = self.get_tool(name)
         tool_args = json.loads(arguments)
         return tool.run(**tool_args)
+    
+    async def async_call_tool(self, name: str, arguments: str) -> Result[Any, Exception]:
+        """Execute a tool by name with the given arguments.
+        
+        Args:
+            name (str): Name of the tool to execute
+            arguments (str): JSON string containing tool parameters as key-value pairs
+            
+        Returns:
+            Result[Any, Exception]: Result object where:
+                - Success case: Contains tool execution output of any type
+                - Error case: Contains Exception with failure details
+                
+        Raises:
+            ValueError: If tool with given name is not found
+            JSONDecodeError: If arguments string is not valid JSON
+        """
+        tool = self.get_tool(name)
+        tool_args = json.loads(arguments)
+        if isinstance(tool, BaseFunction):
+            return tool.run(**tool_args)
+        else:
+            return await tool.async_run(**tool_args)
 
     def on_start(
         self,
@@ -356,6 +380,33 @@ class BaseAgent(ABC):
                 CallBackEvent.TOOL_START, self.source, message, *args, **kwargs
             )
         self.callback_manager.call(
+            CallBackEvent.AGENT_START, self.source, message, *args, **kwargs
+        )
+        
+    async def async_on_start(
+        self,
+        message: Union[List[BaseMessage], BaseMessage],
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
+        """Handle agent start event.
+        
+        Triggers appropriate callbacks when the agent starts processing a message.
+        If the agent is being used as a tool, also triggers tool start callbacks.
+        
+        Args:
+            message (Union[List[BaseMessage], BaseMessage]): Message or list of messages being processed
+            *args (Any): Additional positional arguments
+            **kwargs (Dict[str, Any]): Additional keyword arguments
+            
+        Returns:
+            None
+        """
+        if self.source.ancestor:
+            await CALL_ASYNC_CALLBACK(
+                CallBackEvent.TOOL_START, self.source, message, *args, **kwargs
+            )
+        await CALL_ASYNC_CALLBACK(
             CallBackEvent.AGENT_START, self.source, message, *args, **kwargs
         )
 
@@ -390,6 +441,34 @@ class BaseAgent(ABC):
             CallBackEvent.AGENT_END, self.source, message, *args, **kwargs
         )
 
+    
+    async def async_on_end(
+        self,
+        message: BaseMessage,
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
+        """Handle agent completion event.
+        
+        Triggers appropriate callbacks when the agent completes processing.
+        If the agent is being used as a tool, also triggers tool completion callbacks.
+        
+        Args:
+            message (BaseMessage): The final message produced by the agent
+            *args (Any): Additional positional arguments
+            **kwargs (Dict[str, Any]): Additional keyword arguments
+            
+        Returns:
+            None
+        """
+        if self.source.ancestor:
+            await CALL_ASYNC_CALLBACK(
+                CallBackEvent.TOOL_END, self.source, Ok(message.content), *args, **kwargs
+            )
+        await CALL_ASYNC_CALLBACK(
+            CallBackEvent.AGENT_END, self.source, message, *args, **kwargs
+        )
+
     def on_error(
         self,
         result: Result[Any, Exception],
@@ -416,7 +495,34 @@ class BaseAgent(ABC):
         self.callback_manager.call(
             CallBackEvent.AGENT_ERROR, self.source, result, *args, **kwargs
         )
-
+        
+    async def async_on_error(
+        self,
+        result: Result[Any, Exception],
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
+        """Handle agent error event.
+        
+        Triggers appropriate callbacks when the agent encounters an error.
+        If the agent is being used as a tool, also triggers tool error callbacks.
+        
+        Args:
+            result (Result[Any, Exception]): Result object containing the error
+            *args (Any): Additional positional arguments
+            **kwargs (Dict[str, Any]): Additional keyword arguments
+            
+        Returns:
+            None
+        """
+        if self.source.ancestor:
+            await CALL_ASYNC_CALLBACK(
+                CallBackEvent.TOOL_ERROR, self.source, result, *args, **kwargs
+            )
+        await CALL_ASYNC_CALLBACK(
+            CallBackEvent.AGENT_ERROR, self.source, result, *args, **kwargs
+        )
+        
     def get_compents(
         self, source: Node
     ) -> Optional[Union[Self, BaseFunction, BaseModelBackend, "BaseAgent"]]:
