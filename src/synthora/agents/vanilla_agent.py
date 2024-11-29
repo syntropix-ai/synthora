@@ -26,6 +26,7 @@ from synthora.toolkits.base import BaseFunction
 from synthora.types.enums import MessageRole, Ok, Result
 from synthora.types.node import Node
 from synthora.utils.macros import (
+    ASYNC_GET_FINAL_MESSAGE,
     FORMAT_PROMPT,
     GET_FINAL_MESSAGE,
     STR_TO_USERMESSAGE,
@@ -116,7 +117,7 @@ class VanillaAgent(BaseAgent):
                 - An Exception if the execution failed
         """
         message = cast(BaseMessage, STR_TO_USERMESSAGE())
-        self.on_start(message)
+        self.on_start(message, *args, **kwargs)
         while True:
             response = self.step(message, *args, **kwargs)
             message = ""
@@ -148,25 +149,6 @@ class VanillaAgent(BaseAgent):
                     )
                 )
 
-    async def async_run(
-        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
-    ) -> Result[Any, Exception]:
-        """Execute the message processing loop asynchronously.
-        
-        Note: This is a placeholder for future async implementation.
-        
-        Args:
-            message (Union[str, BaseMessage]): Input message to process
-            *args (Any): Additional positional arguments
-            **kwargs (Dict[str, Any]): Additional keyword arguments
-            
-        Returns:
-            Result[Any, Exception]: A Result containing either:
-                - The final response
-                - An Exception if the execution failed
-        """
-        pass
-
     async def async_step(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
@@ -184,4 +166,66 @@ class VanillaAgent(BaseAgent):
                 - The step execution result
                 - An Exception if the step failed
         """
-        pass
+        UPDATE_SYSTEM(prompt=FORMAT_PROMPT())
+        message = cast(BaseMessage, STR_TO_USERMESSAGE())
+        if message.content:
+            self.history.append(message)
+
+        response = await self.model.async_run(self.history, *args, **kwargs)
+        response = await ASYNC_GET_FINAL_MESSAGE()
+
+        self.history.append(response)
+        return Ok(response)
+    
+    async def async_run(
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+    ) -> Result[Any, Exception]:
+        """Execute the message processing loop asynchronously.
+        
+        Note: This is a placeholder for future async implementation.
+        
+        Args:
+            message (Union[str, BaseMessage]): Input message to process
+            *args (Any): Additional positional arguments
+            **kwargs (Dict[str, Any]): Additional keyword arguments
+            
+        Returns:
+            Result[Any, Exception]: A Result containing either:
+                - The final response
+                - An Exception if the execution failed
+        """
+        message = cast(BaseMessage, STR_TO_USERMESSAGE())
+        await self.async_on_start(message, *args, **kwargs)
+        while True:
+            response = await self.async_step(message, *args, **kwargs)
+            message = ""
+            if response.is_err:
+                await self.async_on_error(response, *args, **kwargs)
+                return response
+
+            data = response.unwrap()
+            if not data.tool_calls:
+                await self.async_on_end(data, *args, **kwargs)
+                return Ok(data.content)
+
+            for tool_call in data.tool_calls:
+                func = tool_call.function
+                try:
+                    tool = self.get_tool(func.name)
+                    resp = await self.async_call_tool(func.name, func.arguments)
+                    resp_value = resp.unwrap()
+                except Exception as e:
+                    resp_value = f"Error: {str(e)}"
+                    await self.async_on_error(resp, *args, **kwargs)
+
+                self.history.append(
+                    BaseMessage.create_message(
+                        id=tool_call.id,
+                        role=MessageRole.TOOL_RESPONSE,
+                        content=resp_value,
+                        source=tool.source,
+                    )
+                )
+
+
+    

@@ -25,6 +25,7 @@ from synthora.messages.base import BaseMessage
 from synthora.models.base import BaseModelBackend
 from synthora.types.enums import CallBackEvent, ModelBackendType, NodeType
 from synthora.types.node import Node
+from synthora.utils.macros import CALL_ASYNC_CALLBACK
 
 
 class OpenAIChatBackend(BaseModelBackend):
@@ -55,7 +56,10 @@ class OpenAIChatBackend(BaseModelBackend):
         self.kwargs["api_key"] = self.api_key  # type: ignore[assignment]
         if self.base_url is not None:
             self.kwargs["base_url"] = self.base_url  # type: ignore[assignment]
-        self.client = OpenAI(**self.kwargs)
+        if isinstance(self.callback_manager, AsyncCallBackHandler):
+            self.client = AsyncOpenAI(**self.kwargs)
+        else:
+            self.client = OpenAI(**self.kwargs)
 
     def run(
         self,
@@ -63,6 +67,8 @@ class OpenAIChatBackend(BaseModelBackend):
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> Union[BaseMessage, Generator[BaseMessage, None, None]]:
+        if not isinstance(self.client, OpenAI):
+            self.client = OpenAI(**self.kwargs)
         if not isinstance(messages, list):
             messages = [messages]
         stream = self.config.get("stream", False)
@@ -134,16 +140,60 @@ class OpenAIChatBackend(BaseModelBackend):
             self.client = AsyncOpenAI(**self.kwargs)
         if not isinstance(messages, list):
             messages = [messages]
-        resp = await self.client.chat.completions.create(
-            messages=messages, **self.config
+        stream = self.config.get("stream", False)
+        await CALL_ASYNC_CALLBACK(
+            CallBackEvent.LLM_START,
+            self.source,
+            messages,
+            stream,
+            *args,
+            **kwargs,
         )
-        return BaseMessage.from_openai_response(resp, self.source)
-        # if self.config.get("stream", False):
-        #     previous_message = None
-        #     async for message in resp:
-        #         previous_message = BaseMessage.from_openai_stream_response(
-        #             message, self.source, previous_message
-        #         )
-        #         yield previous_message
-        # else:
-        #     return BaseMessage.from_openai_response(resp, self.source)
+        messages = [message.to_openai_message() for message in messages]
+        try:
+            resp = await self.client.chat.completions.create(
+                messages=messages, model=self.model_type, **self.config
+            )
+        except Exception as e:
+            await self.callback_manager.call(
+                CallBackEvent.LLM_ERROR, self.source, e, stream, *args, **kwargs
+            )
+            raise e
+        if stream:
+            async def stream_messages() -> AsyncGenerator[BaseMessage, None]:
+                try:
+                    previous_message = None
+                    async for message in resp:
+                        previous_message = BaseMessage.from_openai_stream_response(
+                            message, self.source, previous_message
+                        )
+                        await CALL_ASYNC_CALLBACK(
+                            CallBackEvent.LLM_CHUNK,
+                            self.source,
+                            previous_message,
+                            *args,
+                            **kwargs,
+                        )
+                        
+                        yield previous_message
+                except Exception as e:
+                    await CALL_ASYNC_CALLBACK(
+                        CallBackEvent.LLM_ERROR, self.source, e, stream, *args, **kwargs
+                    )
+
+                await CALL_ASYNC_CALLBACK(
+                    CallBackEvent.LLM_END,
+                    self.source,
+                    previous_message,
+                    stream,
+                    *args,
+                    **kwargs,
+                )
+
+            return stream_messages()
+        else:
+            result = BaseMessage.from_openai_response(resp, self.source)
+            await CALL_ASYNC_CALLBACK(
+                CallBackEvent.LLM_END, self.source, result, stream, *args, **kwargs
+            )
+            return result
