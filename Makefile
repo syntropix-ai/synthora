@@ -23,6 +23,9 @@ all: help
 # Define a variable for the test file path.
 TEST_FILE ?= tests/unit/
 
+clean:
+	cd docs && make clean
+
 docs:
 	make html
 	poetry run python -m http.server -d docs/build/html 8000
