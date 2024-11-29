@@ -17,7 +17,7 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, cast
 
 
 T = TypeVar("T")
@@ -34,6 +34,21 @@ class Result(Generic[T, E]):
     @property
     def is_err(self) -> bool:
         raise NotImplementedError
+
+    def unwrap(self) -> T:
+        if self.is_ok:
+            return cast(Ok[T, E], self).value
+        raise RuntimeError("Called unwrap on an Err value")
+
+    def unwrap_err(self) -> E:
+        if self.is_err:
+            return cast(Err[T, E], self).error
+        raise RuntimeError("Called unwrap_err on an Ok value")
+
+    def unwrap_err_val(self) -> T:
+        if self.is_err:
+            return cast(Err[T, E], self).value
+        raise RuntimeError("Called unwrap_err_val on an Ok value")
 
 
 @dataclass

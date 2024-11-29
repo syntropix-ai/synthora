@@ -16,7 +16,7 @@
 #
 
 import inspect
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from synthora.messages.base import BaseMessage
 from synthora.prompts.base import BasePrompt
@@ -24,14 +24,14 @@ from synthora.types.enums import MessageRole, NodeType
 from synthora.types.node import Node
 
 
-def macro(func):
+def macro(func: Callable[..., Any]) -> Callable[..., Any]:
     r"""A decorator to create a macro function.
     Macro functions can access the local variables of the caller function.
     """
 
-    def wrapper(*args, **kwargs):
-        caller_frame = inspect.currentframe().f_back
-        caller_locals = caller_frame.f_locals
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
+        caller_frame = inspect.currentframe().f_back  # type: ignore[union-attr]
+        caller_locals = caller_frame.f_locals  # type: ignore[union-attr]
         kwargs.update(caller_locals)
         return func(*args, **kwargs)
 
@@ -56,7 +56,7 @@ def FORMAT_PROMPT(
 
     """
     if prompt is None:
-        prompt = kwargs.get("self").prompt
+        prompt = kwargs.get("self").prompt  # type: ignore[union-attr]
     params = {**kwargs, **globals()}
     if "self" in params:
         del params["self"]
@@ -82,14 +82,14 @@ def UPDATE_SYSTEM(
     - kwargs: Dict[str, Any]: The local variables of the caller function.
     """
     if not history:
-        history = kwargs.get("self").history
+        history = kwargs.get("self").history  # type: ignore[union-attr]
     if not prompt:
-        prompt = kwargs.get("self").prompt
+        prompt = kwargs.get("self").prompt  # type: ignore[union-attr]
     if not source:
-        source = kwargs.get("self").source
-    name = kwargs.get("name", None) or kwargs.get("self").name
+        source = kwargs.get("self").source  # type: ignore[union-attr]
+    name = kwargs.get("name", None) or kwargs.get("self").name  # type: ignore[union-attr]
     if not history:
-        history.append(
+        history.append(  # type: ignore[union-attr]
             BaseMessage.create_message(
                 MessageRole.SYSTEM,
                 content=prompt,
@@ -120,13 +120,13 @@ def STR_TO_USERMESSAGE(
 
     """
     if message is None:
-        message = kwargs.get("message")
+        message = kwargs.get("message")  # type: ignore[assignment]
     if isinstance(message, str):
         return BaseMessage.create_message(
             role=MessageRole.USER,
             content=message,
         )
-    return message
+    return message  # type: ignore[return-value]
 
 
 @macro
@@ -149,10 +149,10 @@ def GET_FINAL_MESSAGE(
 
     """
     if response is None:
-        response = kwargs.get("response")
+        response = kwargs.get("response")  # type: ignore[assignment]
     if not isinstance(response, BaseMessage):
         tmp = None
-        for res in response:
+        for res in response:  # type: ignore[union-attr]
             tmp = res
         response = tmp
-    return response
+    return response  # type: ignore[return-value]

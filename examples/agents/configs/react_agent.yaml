@@ -19,11 +19,11 @@ name: WebSearcher
 description: "This agent is a simple AI assistant that can help you search the web."
 type: react
 model: !include basic_model.yaml
-prompt: | 
+prompt: |
   You are a task-solving assistant with access to tools. Follow these rules:
 
   - Start by generating a "Thought" to explain your reasoning about how to solve the problem, and why you are using the tool.
-  - Then call the necessary tool to solve the problem. 
+  - Then call the necessary tool to solve the problem.
   - If you determine that no further tools are required and the task is complete, call the "finish" tool to provide the final response.
 
   YOU MUST Output the thought first!

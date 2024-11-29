@@ -16,7 +16,7 @@
 #
 
 from abc import ABC
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from synthora.messages.base import BaseMessage
 from synthora.types.enums import Result
@@ -26,169 +26,174 @@ from synthora.types.node import Node
 class BaseCallBackHandler(ABC):
     def on_llm_start(
         self,
-        source: Optional[Node],
+        source: Node,
         messages: List[BaseMessage],
         stream: bool = False,
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
     def on_llm_end(
         self,
-        source: Optional[Node],
+        source: Node,
         message: BaseMessage,
         stream: bool = False,
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
     def on_llm_error(
         self,
-        source: Optional[Node],
+        source: Node,
         e: Exception,
         stream: bool = False,
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
     def on_llm_chunk(
         self,
-        source: Optional[Node],
+        source: Node,
         message: BaseMessage,
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
     def on_tool_start(
         self,
-        source: Optional[Node],
+        source: Node,
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
     def on_tool_end(
         self,
-        source: Optional[Node],
+        source: Node,
         result: Result[Any, Exception],
     ) -> None:
-        pass
+        return None
 
     def on_tool_error(
         self,
-        source: Optional[Node],
+        source: Node,
         result: Result[Any, Exception],
     ) -> None:
-        pass
+        return None
 
     def on_agent_start(
         self,
-        source: Optional[Node],
+        source: Node,
         message: BaseMessage,
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
     def on_agent_end(
         self,
-        source: Optional[Node],
+        source: Node,
         message: BaseMessage,
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
     def on_agent_error(
         self,
-        source: Optional[Node],
+        source: Node,
         result: Result[Any, Exception],
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
 
 class AsyncCallBackHandler(BaseCallBackHandler):
-    async def on_llm_start(
+    async def on_llm_start(  # type: ignore[override]
         self,
-        source: Optional[Node],
+        source: Node,
         messages: List[BaseMessage],
+        stream: bool = False,
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
-    async def on_llm_end(
+    async def on_llm_end(  # type: ignore[override]
         self,
-        source: Optional[Node],
+        source: Node,
+        message: BaseMessage,
+        stream: bool = False,
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
+        return None
+
+    async def on_llm_error(  # type: ignore[override]
+        self,
+        source: Node,
+        e: Exception,
+        stream: bool = False,
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
+        return None
+
+    async def on_llm_chunk(  # type: ignore[override]
+        self,
+        source: Node,
         message: BaseMessage,
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
-    async def on_llm_error(
-        self, source: Optional[Node], e: Exception, *args: Any, **kwargs: Dict[str, Any]
-    ) -> None:
-        pass
-
-    async def on_llm_chunk(
+    async def on_tool_start(  # type: ignore[override]
         self,
-        source: Optional[Node],
-        message: BaseMessage,
+        source: Node,
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
-    async def on_tool_start(
+    async def on_tool_end(  # type: ignore[override]
         self,
-        source: Optional[Node],
-        *args: Any,
-        **kwargs: Dict[str, Any],
-    ) -> None:
-        pass
-
-    async def on_tool_end(
-        self,
-        source: Optional[Node],
+        source: Node,
         result: Result[Any, Exception],
     ) -> None:
-        pass
+        return None
 
-    async def on_tool_error(
-        self, source: Optional[Node], result: Result[Any, Exception]
-    ) -> None:
-        pass
+    async def on_tool_error(self, source: Node, result: Result[Any, Exception]) -> None:  # type: ignore[override]
+        return None
 
-    async def on_agent_start(
+    async def on_agent_start(  # type: ignore[override]
         self,
-        source: Optional[Node],
+        source: Node,
         message: List[BaseMessage],
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
-    async def on_agent_end(
+    async def on_agent_end(  # type: ignore[override]
         self,
-        source: Optional[Node],
+        source: Node,
         message: BaseMessage,
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None
 
-    async def on_agent_error(
+    async def on_agent_error(  # type: ignore[override]
         self,
-        source: Optional[Node],
+        source: Node,
         result: Result[Any, Exception],
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
-        pass
+        return None

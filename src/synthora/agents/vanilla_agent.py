@@ -23,7 +23,7 @@ from synthora.messages.base import BaseMessage
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import BaseFunction
-from synthora.types.enums import CallBackEvent, MessageRole, Ok, Result
+from synthora.types.enums import MessageRole, Ok, Result
 from synthora.types.node import Node
 from synthora.utils.macros import (
     FORMAT_PROMPT,
@@ -52,13 +52,12 @@ class VanillaAgent(BaseAgent):
             if isinstance(self.prompt, dict)
             else self.prompt
         )
-        self.prompt: BasePrompt = cast(BasePrompt, self.prompt)
 
     def step(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         UPDATE_SYSTEM(prompt=FORMAT_PROMPT())
-        message = STR_TO_USERMESSAGE()
+        message = cast(BaseMessage, STR_TO_USERMESSAGE())
         if message.content:
             self.history.append(message)
 
@@ -71,7 +70,7 @@ class VanillaAgent(BaseAgent):
     def run(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
-        message = STR_TO_USERMESSAGE()
+        message = cast(BaseMessage, STR_TO_USERMESSAGE())
         self.on_start(message)
         while True:
             response = self.step(message, *args, **kwargs)
@@ -79,18 +78,18 @@ class VanillaAgent(BaseAgent):
             if response.is_err:
                 self.on_error(response)
                 return response
-            
-            data = response.value
+
+            data = response.unwrap()
             if not data.tool_calls:
                 self.on_end(data)
                 return Ok(data.content)
-            
+
             for tool_call in data.tool_calls:
                 func = tool_call.function
                 try:
                     tool = self.get_tool(func.name)
                     resp = self.call_tool(func.name, func.arguments)
-                    resp_value = resp.value
+                    resp_value = resp.unwrap()
                 except Exception as e:
                     resp_value = f"Error: {str(e)}"
                     self.on_error(resp)
@@ -103,7 +102,6 @@ class VanillaAgent(BaseAgent):
                         source=tool.source,
                     )
                 )
-
 
     async def async_run(  # type: ignore[empty-body]
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]

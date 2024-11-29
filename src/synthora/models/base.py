@@ -21,19 +21,22 @@ from typing import Any, Dict, List, Optional, Union
 from synthora.callbacks import get_callback_manager
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.messages.base import BaseMessage
-from synthora.types.enums import ModelBackendType
+from synthora.types.enums import ModelBackendType, NodeType
+from synthora.types.node import Node
 
 
 class BaseModelBackend(ABC):
     def __init__(
         self,
         model_type: str,
+        source: Node,
         backend_type: ModelBackendType,
         config: Optional[Dict[str, Any]],
         name: Optional[str] = None,
         handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
     ) -> None:
         self.name = name
+        self.source = Node(name=name, type=NodeType.MODEL, ancestor=source)
         self.model_type = model_type
         self.backend_type = backend_type
         self.config = config or {}
