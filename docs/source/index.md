@@ -84,7 +84,16 @@ agent.run("Search Openai on Wikipedia")
 :maxdepth: 2
 :hidden:
 
-tutorial.config
+tutorial/config
+tutorial/callback
+```
+
+```{toctree}
+:caption: Examples
+:maxdepth: 2
+:hidden:
+
+cookbook/chat_with_agent.ipynb
 ```
 
 ```{toctree}

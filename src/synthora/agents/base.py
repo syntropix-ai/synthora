@@ -34,17 +34,27 @@ from synthora.types.node import Node
 
 
 class BaseAgent(ABC):
-    r"""
-    Base class for all agents.
-
-    Arttributes:
-
-    - config: AgentConfig: The configuration of the agent.
-    - source: Node: The source node of the agent.
-    - model: Union[BaseModelBackend, List[BaseModelBackend]]: The model of the agent.
-    - prompt: Union[BasePrompt, Dict[str, BasePrompt]]: The prompt of the agent.
-    - tools: List[Union["BaseAgent", BaseFunction]]: The tools of the agent.
-    - handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]]: The handlers of the agent.
+    """Base class for all agents.
+    
+    This class serves as the foundation for all agent implementations in the system.
+    It provides core functionality for:
+    - Managing agent configuration and state
+    - Handling model interactions
+    - Tool management and execution
+    - Event callbacks and logging
+    - Message history tracking
+    
+    Attributes:
+        config (AgentConfig): The configuration settings for the agent
+        source (Node): The source node in the computation graph
+        name (str): The name of the agent
+        type (str): The type of the agent
+        description (str): A description of the agent's purpose
+        model (Union[BaseModelBackend, List[BaseModelBackend]]): The model backend(s)
+        prompt (Union[BasePrompt, Dict[str, BasePrompt]]): The prompt template(s)
+        tools (List[Union[BaseAgent, BaseFunction]]): Available tools and sub-agents
+        history (List[BaseMessage]): Message history
+        callback_manager (CallbackManager): Manages event callbacks
     """
 
     def __init__(
@@ -56,6 +66,16 @@ class BaseAgent(ABC):
         tools: List[Union["BaseAgent", BaseFunction]] = [],
         handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
     ) -> None:
+        """Initialize a new agent instance.
+        
+        Args:
+            config (AgentConfig): Configuration settings for the agent
+            source (Node): The source node in the computation graph
+            model (Union[BaseModelBackend, List[BaseModelBackend]]): The model backend(s)
+            prompt (Union[BasePrompt, Dict[str, BasePrompt]]): The prompt template(s)
+            tools (List[Union[BaseAgent, BaseFunction]]): Available tools and sub-agents
+            handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]]): Callback handlers for monitoring agent events
+        """
         self.config = config
         self.source = source
         self.name = self.config.name
@@ -69,8 +89,8 @@ class BaseAgent(ABC):
 
     @property
     def schema(self) -> Dict[str, Any]:
-        r"""The schema of the agent.
-
+        """Generate the JSON schema describing this agent's interface.
+        
         Returns:
 
         - Dict[str, Any]: The schema of the agent.
@@ -91,39 +111,115 @@ class BaseAgent(ABC):
 
     @property
     def parameters(self) -> Dict[str, Any]:
+        """Get the parameters schema for this agent.
+        
+        Returns:
+            Dict[str, Any]: A dictionary containing the properties section of the agent's 
+                function parameters schema
+        """
         return self.schema["function"]["parameters"]["properties"]  # type: ignore[no-any-return]
 
     @abstractmethod
     def run(
         self, message: str, *args: Any, **kwargs: Dict[str, Any]
-    ) -> Result[Any, Exception]: ...
+    ) -> Result[Any, Exception]:
+        """Execute the agent's main synchronous processing logic.
+        
+        Args:
+            message (str): The input message to process
+            *args (Any): Additional positional arguments
+            **kwargs (Dict[str, Any]): Additional keyword arguments
+            
+        Returns:
+            Result[Any, Exception]: A Result object containing either:
+                - The successful execution output (Any type)
+                - An Exception if the execution failed
+        """
+        ...
 
     @abstractmethod
     async def async_run(
         self, message: str, *args: Any, **kwargs: Dict[str, Any]
-    ) -> Result[Any, Exception]: ...
+    ) -> Result[Any, Exception]:
+        """Execute the agent's main asynchronous processing logic.
+        
+        Args:
+            message (str): The input message to process
+            *args (Any): Additional positional arguments
+            **kwargs (Dict[str, Any]): Additional keyword arguments
+            
+        Returns:
+            Result[Any, Exception]: A Result object containing either:
+                - The successful execution output (Any type)
+                - An Exception if the execution failed
+        """
+        ...
 
     @abstractmethod
     def step(
         self, message: str, *args: Any, **kwargs: Dict[str, Any]
-    ) -> Result[Any, Exception]: ...
+    ) -> Result[Any, Exception]:
+        """Execute a single synchronous step of the agent's processing logic.
+        
+        This method represents one iteration of the agent's decision-making process.
+        
+        Args:
+            message (str): The input message to process
+            *args (Any): Additional positional arguments
+            **kwargs (Dict[str, Any]): Additional keyword arguments
+            
+        Returns:
+            Result[Any, Exception]: A Result object containing either:
+                - The step execution output (Any type)
+                - An Exception if the step failed
+        """
+        ...
 
     @abstractmethod
     async def async_step(
         self, message: str, *args: Any, **kwargs: Dict[str, Any]
-    ) -> Result[Any, Exception]: ...
+    ) -> Result[Any, Exception]:
+        """Execute a single asynchronous step of the agent's processing logic.
+        
+        This method represents one iteration of the agent's decision-making process.
+        
+        Args:
+            message (str): The input message to process
+            *args (Any): Additional positional arguments
+            **kwargs (Dict[str, Any]): Additional keyword arguments
+            
+        Returns:
+            Result[Any, Exception]: A Result object containing either:
+                - The step execution output (Any type)
+                - An Exception if the step failed
+        """
+        ...
 
     @classmethod
     def from_config(cls: Type[Self], config: AgentConfig) -> Self:
-        r"""Create an agent from a configuration.
-
-        Arguments:
-
-        - config: AgentConfig: The configuration of the agent.
-
+        """Factory method to create an agent instance from configuration.
+        
+        This method handles:
+        - Model initialization
+        - Tool/toolkit loading and setup
+        - Prompt template configuration
+        - Node graph construction
+        
+        Args:
+            config (AgentConfig): Complete agent configuration including:
+                - name (str): Agent name
+                - type (str): Agent type identifier
+                - description (str): Agent description
+                - model (Union[ModelConfig, List[ModelConfig]]): Model configuration(s)
+                - prompt (Union[str, Dict[str, str]]): Prompt template(s)
+                - tools (Optional[List[ToolConfig]]): Tool configurations
+            
         Returns:
-
-        - Self: The agent created from the configuration.
+            Self: Fully configured instance of the agent class
+            
+        Raises:
+            ImportError: If tool/toolkit modules cannot be imported
+            ValueError: If tool configuration is invalid or missing required fields
         """
         _model = config.model if isinstance(config.model, list) else [config.model]
         source = Node(name=config.name, type=NodeType.AGENT)
@@ -179,7 +275,7 @@ class BaseAgent(ABC):
         )
 
     def get_tool(self, name: str) -> Union[BaseFunction, "BaseAgent"]:
-        r"""Get a tool by name.
+        """Get a tool by name.
 
         Arguments:
 
@@ -203,7 +299,7 @@ class BaseAgent(ABC):
         handler: Union[BaseCallBackHandler, AsyncCallBackHandler],
         recursive: bool = True,
     ) -> None:
-        r"""Add a callback to the agent.
+        """Add a callback to the agent.
 
         Arguments:
 
@@ -217,6 +313,21 @@ class BaseAgent(ABC):
             tool.add_handler(handler, recursive=recursive)
 
     def call_tool(self, name: str, arguments: str) -> Result[Any, Exception]:
+        """Execute a tool by name with the given arguments.
+        
+        Args:
+            name (str): Name of the tool to execute
+            arguments (str): JSON string containing tool parameters as key-value pairs
+            
+        Returns:
+            Result[Any, Exception]: Result object where:
+                - Success case: Contains tool execution output of any type
+                - Error case: Contains Exception with failure details
+                
+        Raises:
+            ValueError: If tool with given name is not found
+            JSONDecodeError: If arguments string is not valid JSON
+        """
         tool = self.get_tool(name)
         tool_args = json.loads(arguments)
         return tool.run(**tool_args)
@@ -227,6 +338,19 @@ class BaseAgent(ABC):
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
+        """Handle agent start event.
+        
+        Triggers appropriate callbacks when the agent starts processing a message.
+        If the agent is being used as a tool, also triggers tool start callbacks.
+        
+        Args:
+            message (Union[List[BaseMessage], BaseMessage]): Message or list of messages being processed
+            *args (Any): Additional positional arguments
+            **kwargs (Dict[str, Any]): Additional keyword arguments
+            
+        Returns:
+            None
+        """
         if self.source.ancestor:
             self.callback_manager.call(
                 CallBackEvent.TOOL_START, self.source, message, *args, **kwargs
@@ -241,6 +365,19 @@ class BaseAgent(ABC):
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
+        """Handle agent completion event.
+        
+        Triggers appropriate callbacks when the agent completes processing.
+        If the agent is being used as a tool, also triggers tool completion callbacks.
+        
+        Args:
+            message (BaseMessage): The final message produced by the agent
+            *args (Any): Additional positional arguments
+            **kwargs (Dict[str, Any]): Additional keyword arguments
+            
+        Returns:
+            None
+        """
         if self.source.ancestor:
             self.callback_manager.call(
                 CallBackEvent.TOOL_END,
@@ -259,6 +396,19 @@ class BaseAgent(ABC):
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> None:
+        """Handle agent error event.
+        
+        Triggers appropriate callbacks when the agent encounters an error.
+        If the agent is being used as a tool, also triggers tool error callbacks.
+        
+        Args:
+            result (Result[Any, Exception]): Result object containing the error
+            *args (Any): Additional positional arguments
+            **kwargs (Dict[str, Any]): Additional keyword arguments
+            
+        Returns:
+            None
+        """
         if self.source.ancestor:
             self.callback_manager.call(
                 CallBackEvent.TOOL_ERROR, self.source, result, *args, **kwargs
@@ -270,6 +420,18 @@ class BaseAgent(ABC):
     def get_compents(
         self, source: Node
     ) -> Optional[Union[Self, BaseFunction, BaseModelBackend, "BaseAgent"]]:
+        """Retrieve component by source node.
+        
+        Recursively searches through the agent's components (self, models, tools)
+        to find the component matching the given source node.
+        
+        Args:
+            source (Node): The source node to search for
+            
+        Returns:
+            Optional[Union[Self, BaseFunction, BaseModelBackend, "BaseAgent"]]: 
+                The matching component if found, None otherwise
+        """
         if source == self.source:
             return self
         for model in self.model if isinstance(self.model, list) else [self.model]:

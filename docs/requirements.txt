@@ -1,3 +1,5 @@
 myst-parser
 sphinx-rtd-theme
 sphinx-book-theme
+ipykernel
+nbsphinx

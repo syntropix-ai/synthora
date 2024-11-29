@@ -42,19 +42,39 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.coverage",
     "sphinx.ext.mathjax",
+    "nbsphinx",
 ]
+
+nbsphinx_execute = 'never'
+nbsphinx_allow_errors = True
+nbsphinx_prolog = r"""
+.. raw:: html
+
+    <style>
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        display: none;
+    }
+    </style>
+"""
 
 templates_path = ["_templates"]
 exclude_patterns: List[str] = []
 
+myst_enable_extensions = [
+    "colon_fence",
+    "dollarmath",
+    "amsmath"
+]
+
+nb_execution_mode = "off"
+nb_execution_timeout = 300
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "sphinx_book_theme"
 html_static_path = ["_static"]
-source_suffix = {
-    ".rst": "restructuredtext",
-    ".md": "markdown",
-}
-master_doc = "index"
+
+source_suffix = [".rst", ".md"]
+
