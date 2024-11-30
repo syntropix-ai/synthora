@@ -29,6 +29,19 @@ BACKEND_MAP = {
 
 
 def create_model_from_config(config: ModelConfig, source: Node) -> BaseModelBackend:
+    """Create a model instance from configuration.
+
+    Args:
+        config (ModelConfig): Model configuration containing backend type, name,
+            model type and other configuration parameters
+        source (Node): Source node representing the model's origin or context
+
+    Returns:
+        BaseModelBackend: Instantiated model backend based on the configuration
+
+    Raises:
+        KeyError: If specified backend type is not found in BACKEND_MAP
+    """
     cls = BACKEND_MAP[config.backend]
     return cls(
         name=config.name,

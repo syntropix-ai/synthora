@@ -58,6 +58,7 @@ jupyter-sphinx = "^0.5.3"
 jupyter = "^1.1.1"
 myst-nb = "^1.1.2"
 pandoc = "^2.4"
+fastapi = {extras = ["standard"], version = "^0.115.5"}
 
 
 

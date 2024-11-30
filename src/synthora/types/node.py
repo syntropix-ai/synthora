@@ -23,6 +23,17 @@ from synthora.types.enums import NodeType
 
 
 class Node(BaseModel):
+    """A model representing a node in the agent execution tree.
+
+    This class captures detailed information about nodes in the agent execution tree,
+    including their name, type, and ancestor.
+
+    Attributes:
+        name (str): The name of the node
+        type (NodeType): The type of the node
+        ancestor (Optional[Node]): The ancestor of the node, defaults to None
+    """
+
     name: str
     type: NodeType
     ancestor: Optional["Node"] = None

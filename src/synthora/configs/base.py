@@ -22,8 +22,29 @@ from pydantic import BaseModel
 
 
 class BaseConfig(BaseModel):
+    """Base configuration class that provides common loading functionality
+
+    All configuration classes should inherit from this base class.
+    """
+
     @classmethod
     def load(cls: Type[Self], source: Union[Path, str, Dict[str, Any]]) -> Self:
+        """Universal loader that handles different input types
+
+        Args:
+            source (Union[Path, str, Dict[str, Any]]): Configuration source, can be:
+                - Path object pointing to config file
+                - String path to config file
+                - Dictionary containing config data
+
+        Returns:
+            Self: Instance of the configuration class
+
+        Raises:
+            AssertionError: If source type is invalid
+            FileNotFoundError: If specified file path doesn't exist
+            ValueError: If specified path is not a file
+        """
         assert isinstance(
             source, (str, Path, dict)
         ), f"Invalid source type {type(source)}"
@@ -38,8 +59,30 @@ class BaseConfig(BaseModel):
 
     @classmethod
     def from_file(cls: Type[Self], path: Path) -> Self:
+        """Load configuration from a file
+
+        Args:
+            path (Path): Path to the configuration file
+
+        Returns:
+            Self: Instance of the configuration class
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses
+        """
         raise NotImplementedError
 
     @classmethod
     def from_dict(cls: Type[Self], data: Dict[str, Any]) -> Self:
+        """Create configuration from a dictionary
+
+        Args:
+            data (Dict[str, Any]): Dictionary containing configuration data
+
+        Returns:
+            Self: Instance of the configuration class
+
+        Raises:
+            NotImplementedError: This method must be implemented by subclasses
+        """
         raise NotImplementedError

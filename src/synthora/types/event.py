@@ -1,20 +1,54 @@
+# LICENSE HEADER MANAGED BY add-license-header
+#
+# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
+# Licensed under the Apache License, Version 2.0 (the “License”);
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an “AS IS” BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
+#
+
+import uuid
+from datetime import datetime
 from typing import Any, Dict, List
 from uuid import UUID
-import uuid
+
 from pydantic import BaseModel
 
 from synthora.types.enums import CallBackEvent
 from synthora.types.node import Node
-from datetime import datetime
 
 
 class TraceEvent(BaseModel):
+    """A model representing a trace event during agent execution.
+
+    This class captures detailed information about events that occur during
+    agent execution, including timing, context, and associated data.
+
+    Attributes:
+        id (UUID): Unique identifier for the trace event
+        timestamp (float): Unix timestamp when the event occurred
+        event_type (CallBackEvent): Type of the callback event (e.g., agent_start, llm_end)
+        data (Any): The primary data associated with the event (e.g., messages, results)
+        stack (List[Node]): The execution stack at the time of the event
+        current (Node): The currently active node when the event occurred
+        metadata (Dict[str, Any]): Additional contextual information about the event
+    """
+
     id: UUID
     timestamp: float
     event_type: CallBackEvent
 
     data: Any
     stack: List[Node]
+    current: Node
     metadata: Dict[str, Any]
 
     def to_dict(self) -> Dict[str, Any]:
@@ -25,14 +59,15 @@ class TraceEvent(BaseModel):
             Dict[str, Any]: The TraceEvent as a dictionary.
         """
         data = self.model_dump()
-        data['id'] = str(data['id'])
+        data["id"] = str(data["id"])
         return data
-    
+
     @staticmethod
     def create(
         type: CallBackEvent,
         data: Any,
         stack: List[Node],
+        current: Node,
         metadata: Dict[str, Any],
     ) -> "TraceEvent":
         """
@@ -53,5 +88,6 @@ class TraceEvent(BaseModel):
             event_type=type,
             data=data,
             stack=stack,
+            current=current,
             metadata=metadata,
         )

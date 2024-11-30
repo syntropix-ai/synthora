@@ -26,16 +26,16 @@ def get_callback_manager(
     handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]],
 ) -> Union[BaseCallBackManager, AsyncCallBackManager]:
     """Create an appropriate callback manager based on handler types.
-    
+
     Creates either a synchronous or asynchronous callback manager depending on
     whether any of the handlers are asynchronous.
-    
+
     Args:
-        handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]]): 
+        handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]]):
             List of callback handlers to be managed
-            
+
     Returns:
-        Union[BaseCallBackManager, AsyncCallBackManager]: 
+        Union[BaseCallBackManager, AsyncCallBackManager]:
             - AsyncCallBackManager if any handlers are async
             - BaseCallBackManager if all handlers are synchronous
     """

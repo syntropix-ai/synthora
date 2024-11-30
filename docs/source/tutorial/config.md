@@ -103,6 +103,3 @@ agent.run("Search OpenAI on Wikipedia")
 - **Beautiful Output**: Clean formatting to track agent actions
 
 That's it! You've learned how to create both a basic chatbot and a search-capable AI agent. Amazing what a few lines of code can do! 😎
-
-
-

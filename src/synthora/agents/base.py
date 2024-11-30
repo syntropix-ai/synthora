@@ -36,7 +36,7 @@ from synthora.utils.macros import CALL_ASYNC_CALLBACK
 
 class BaseAgent(ABC):
     """Base class for all agents.
-    
+
     This class serves as the foundation for all agent implementations in the system.
     It provides core functionality for:
     - Managing agent configuration and state
@@ -44,7 +44,7 @@ class BaseAgent(ABC):
     - Tool management and execution
     - Event callbacks and logging
     - Message history tracking
-    
+
     Attributes:
         config (AgentConfig): The configuration settings for the agent
         source (Node): The source node in the computation graph
@@ -68,7 +68,7 @@ class BaseAgent(ABC):
         handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
     ) -> None:
         """Initialize a new agent instance.
-        
+
         Args:
             config (AgentConfig): Configuration settings for the agent
             source (Node): The source node in the computation graph
@@ -91,7 +91,7 @@ class BaseAgent(ABC):
     @property
     def schema(self) -> Dict[str, Any]:
         """Generate the JSON schema describing this agent's interface.
-        
+
         Returns:
 
         - Dict[str, Any]: The schema of the agent.
@@ -113,9 +113,9 @@ class BaseAgent(ABC):
     @property
     def parameters(self) -> Dict[str, Any]:
         """Get the parameters schema for this agent.
-        
+
         Returns:
-            Dict[str, Any]: A dictionary containing the properties section of the agent's 
+            Dict[str, Any]: A dictionary containing the properties section of the agent's
                 function parameters schema
         """
         return self.schema["function"]["parameters"]["properties"]  # type: ignore[no-any-return]
@@ -125,12 +125,12 @@ class BaseAgent(ABC):
         self, message: str, *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute the agent's main synchronous processing logic.
-        
+
         Args:
             message (str): The input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result object containing either:
                 - The successful execution output (Any type)
@@ -143,12 +143,12 @@ class BaseAgent(ABC):
         self, message: str, *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute the agent's main asynchronous processing logic.
-        
+
         Args:
             message (str): The input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result object containing either:
                 - The successful execution output (Any type)
@@ -161,14 +161,14 @@ class BaseAgent(ABC):
         self, message: str, *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute a single synchronous step of the agent's processing logic.
-        
+
         This method represents one iteration of the agent's decision-making process.
-        
+
         Args:
             message (str): The input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result object containing either:
                 - The step execution output (Any type)
@@ -181,14 +181,14 @@ class BaseAgent(ABC):
         self, message: str, *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute a single asynchronous step of the agent's processing logic.
-        
+
         This method represents one iteration of the agent's decision-making process.
-        
+
         Args:
             message (str): The input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result object containing either:
                 - The step execution output (Any type)
@@ -199,13 +199,13 @@ class BaseAgent(ABC):
     @classmethod
     def from_config(cls: Type[Self], config: AgentConfig) -> Self:
         """Factory method to create an agent instance from configuration.
-        
+
         This method handles:
         - Model initialization
         - Tool/toolkit loading and setup
         - Prompt template configuration
         - Node graph construction
-        
+
         Args:
             config (AgentConfig): Complete agent configuration including:
                 - name (str): Agent name
@@ -214,10 +214,10 @@ class BaseAgent(ABC):
                 - model (Union[ModelConfig, List[ModelConfig]]): Model configuration(s)
                 - prompt (Union[str, Dict[str, str]]): Prompt template(s)
                 - tools (Optional[List[ToolConfig]]): Tool configurations
-            
+
         Returns:
             Self: Fully configured instance of the agent class
-            
+
         Raises:
             ImportError: If tool/toolkit modules cannot be imported
             ValueError: If tool configuration is invalid or missing required fields
@@ -315,16 +315,16 @@ class BaseAgent(ABC):
 
     def call_tool(self, name: str, arguments: str) -> Result[Any, Exception]:
         """Execute a tool by name with the given arguments.
-        
+
         Args:
             name (str): Name of the tool to execute
             arguments (str): JSON string containing tool parameters as key-value pairs
-            
+
         Returns:
             Result[Any, Exception]: Result object where:
                 - Success case: Contains tool execution output of any type
                 - Error case: Contains Exception with failure details
-                
+
         Raises:
             ValueError: If tool with given name is not found
             JSONDecodeError: If arguments string is not valid JSON
@@ -332,19 +332,21 @@ class BaseAgent(ABC):
         tool = self.get_tool(name)
         tool_args = json.loads(arguments)
         return tool.run(**tool_args)
-    
-    async def async_call_tool(self, name: str, arguments: str) -> Result[Any, Exception]:
+
+    async def async_call_tool(
+        self, name: str, arguments: str
+    ) -> Result[Any, Exception]:
         """Execute a tool by name with the given arguments.
-        
+
         Args:
             name (str): Name of the tool to execute
             arguments (str): JSON string containing tool parameters as key-value pairs
-            
+
         Returns:
             Result[Any, Exception]: Result object where:
                 - Success case: Contains tool execution output of any type
                 - Error case: Contains Exception with failure details
-                
+
         Raises:
             ValueError: If tool with given name is not found
             JSONDecodeError: If arguments string is not valid JSON
@@ -363,15 +365,15 @@ class BaseAgent(ABC):
         **kwargs: Dict[str, Any],
     ) -> None:
         """Handle agent start event.
-        
+
         Triggers appropriate callbacks when the agent starts processing a message.
         If the agent is being used as a tool, also triggers tool start callbacks.
-        
+
         Args:
             message (Union[List[BaseMessage], BaseMessage]): Message or list of messages being processed
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             None
         """
@@ -382,7 +384,7 @@ class BaseAgent(ABC):
         self.callback_manager.call(
             CallBackEvent.AGENT_START, self.source, message, *args, **kwargs
         )
-        
+
     async def async_on_start(
         self,
         message: Union[List[BaseMessage], BaseMessage],
@@ -390,15 +392,15 @@ class BaseAgent(ABC):
         **kwargs: Dict[str, Any],
     ) -> None:
         """Handle agent start event.
-        
+
         Triggers appropriate callbacks when the agent starts processing a message.
         If the agent is being used as a tool, also triggers tool start callbacks.
-        
+
         Args:
             message (Union[List[BaseMessage], BaseMessage]): Message or list of messages being processed
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             None
         """
@@ -417,15 +419,15 @@ class BaseAgent(ABC):
         **kwargs: Dict[str, Any],
     ) -> None:
         """Handle agent completion event.
-        
+
         Triggers appropriate callbacks when the agent completes processing.
         If the agent is being used as a tool, also triggers tool completion callbacks.
-        
+
         Args:
             message (BaseMessage): The final message produced by the agent
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             None
         """
@@ -441,7 +443,6 @@ class BaseAgent(ABC):
             CallBackEvent.AGENT_END, self.source, message, *args, **kwargs
         )
 
-    
     async def async_on_end(
         self,
         message: BaseMessage,
@@ -449,21 +450,25 @@ class BaseAgent(ABC):
         **kwargs: Dict[str, Any],
     ) -> None:
         """Handle agent completion event.
-        
+
         Triggers appropriate callbacks when the agent completes processing.
         If the agent is being used as a tool, also triggers tool completion callbacks.
-        
+
         Args:
             message (BaseMessage): The final message produced by the agent
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             None
         """
         if self.source.ancestor:
             await CALL_ASYNC_CALLBACK(
-                CallBackEvent.TOOL_END, self.source, Ok(message.content), *args, **kwargs
+                CallBackEvent.TOOL_END,
+                self.source,
+                Ok(message.content),
+                *args,
+                **kwargs,
             )
         await CALL_ASYNC_CALLBACK(
             CallBackEvent.AGENT_END, self.source, message, *args, **kwargs
@@ -476,15 +481,15 @@ class BaseAgent(ABC):
         **kwargs: Dict[str, Any],
     ) -> None:
         """Handle agent error event.
-        
+
         Triggers appropriate callbacks when the agent encounters an error.
         If the agent is being used as a tool, also triggers tool error callbacks.
-        
+
         Args:
             result (Result[Any, Exception]): Result object containing the error
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             None
         """
@@ -495,7 +500,7 @@ class BaseAgent(ABC):
         self.callback_manager.call(
             CallBackEvent.AGENT_ERROR, self.source, result, *args, **kwargs
         )
-        
+
     async def async_on_error(
         self,
         result: Result[Any, Exception],
@@ -503,15 +508,15 @@ class BaseAgent(ABC):
         **kwargs: Dict[str, Any],
     ) -> None:
         """Handle agent error event.
-        
+
         Triggers appropriate callbacks when the agent encounters an error.
         If the agent is being used as a tool, also triggers tool error callbacks.
-        
+
         Args:
             result (Result[Any, Exception]): Result object containing the error
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             None
         """
@@ -522,20 +527,20 @@ class BaseAgent(ABC):
         await CALL_ASYNC_CALLBACK(
             CallBackEvent.AGENT_ERROR, self.source, result, *args, **kwargs
         )
-        
+
     def get_compents(
         self, source: Node
     ) -> Optional[Union[Self, BaseFunction, BaseModelBackend, "BaseAgent"]]:
         """Retrieve component by source node.
-        
+
         Recursively searches through the agent's components (self, models, tools)
         to find the component matching the given source node.
-        
+
         Args:
             source (Node): The source node to search for
-            
+
         Returns:
-            Optional[Union[Self, BaseFunction, BaseModelBackend, "BaseAgent"]]: 
+            Optional[Union[Self, BaseFunction, BaseModelBackend, "BaseAgent"]]:
                 The matching component if found, None otherwise
         """
         if source == self.source:

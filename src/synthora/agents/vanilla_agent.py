@@ -36,10 +36,10 @@ from synthora.utils.macros import (
 
 class VanillaAgent(BaseAgent):
     """A basic agent implementation with straightforward message processing.
-    
+
     This agent provides a simple implementation that processes messages sequentially,
     can use tools, and maintains a conversation history.
-    
+
     Args:
         config (AgentConfig): Configuration for the agent
         source (Node): Source node for the agent
@@ -71,15 +71,15 @@ class VanillaAgent(BaseAgent):
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute a single step of message processing.
-        
+
         Updates the system prompt, processes the input message, and generates a response
         using the model.
-        
+
         Args:
             message (Union[str, BaseMessage]): Input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result containing either:
                 - The model's response
@@ -100,17 +100,17 @@ class VanillaAgent(BaseAgent):
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute the complete message processing loop.
-        
+
         Processes the input message and handles any tool calls that are generated.
         Continues until either:
         - A final response without tool calls is reached
         - An error occurs
-        
+
         Args:
             message (Union[str, BaseMessage]): Input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result containing either:
                 - The final response content
@@ -153,14 +153,14 @@ class VanillaAgent(BaseAgent):
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute a single step of message processing asynchronously.
-        
+
         Note: This is a placeholder for future async implementation.
-        
+
         Args:
             message (Union[str, BaseMessage]): Input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result containing either:
                 - The step execution result
@@ -176,19 +176,19 @@ class VanillaAgent(BaseAgent):
 
         self.history.append(response)
         return Ok(response)
-    
+
     async def async_run(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute the message processing loop asynchronously.
-        
+
         Note: This is a placeholder for future async implementation.
-        
+
         Args:
             message (Union[str, BaseMessage]): Input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result containing either:
                 - The final response
@@ -226,6 +226,3 @@ class VanillaAgent(BaseAgent):
                         source=tool.source,
                     )
                 )
-
-
-    

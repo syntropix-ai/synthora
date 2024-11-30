@@ -29,12 +29,32 @@ from synthora.utils import get_openai_tool_schema
 
 
 class BaseFunction(ABC):
+    """Abstract base class for function wrappers that can be used as tools.
+
+    Provides common functionality for both synchronous and asynchronous function handling,
+    including callback management and OpenAI tool schema generation.
+
+    Attributes:
+        instance: The class instance that owns this function (if method)
+        func: The wrapped function or method
+        schema: OpenAI tool schema generated from the function
+        source: Node representing this tool in the execution graph
+        callback_manager: Manager for handling function execution callbacks
+    """
+
     def __init__(
         self,
         instance: Any,
         func: Callable[..., Any],
         callback_manager: BaseCallBackManager = BaseCallBackManager(),
     ) -> None:
+        """Initialize the function wrapper.
+
+        Args:
+            instance: The class instance if this wraps a method, None for standalone functions
+            func: The function or method to wrap
+            callback_manager: Manager for handling callbacks. Defaults to BaseCallBackManager()
+        """
         self.instance = instance
         self.func = func
         self.schema = get_openai_tool_schema(func)
@@ -47,6 +67,16 @@ class BaseFunction(ABC):
         instance: Optional[Any] = None,
         handlers: List[BaseCallBackHandler] = [],
     ) -> Union["SyncFunction", "AsyncFunction"]:
+        """Wrap a function or method as either a SyncFunction or AsyncFunction.
+
+        Args:
+            func: The function to wrap
+            instance: The class instance if wrapping a method. Defaults to None
+            handlers: List of callback handlers. Defaults to []
+
+        Returns:
+            Either SyncFunction or AsyncFunction based on the wrapped function type
+        """
         if isinstance(func, staticmethod):
             instance = None
 
@@ -61,33 +91,98 @@ class BaseFunction(ABC):
 
     @property
     def name(self) -> str:
+        """Get the function name from its schema.
+
+        Returns:
+            str: The name of the function as defined in the OpenAI tool schema
+        """
         return cast(str, self.schema["function"]["name"])
 
     @property
     def description(self) -> str:
+        """Get the function description from its schema.
+
+        Returns:
+            str: The description of the function as defined in the OpenAI tool schema
+        """
         return cast(str, self.schema["function"]["description"])
 
     @property
     def parameters(self) -> Dict[str, Any]:
+        """Get the function parameters from its schema.
+
+        Returns:
+            Dict[str, Any]: Dictionary of parameter definitions from the OpenAI tool schema
+        """
         return self.schema["function"]["parameters"]["properties"]  # type: ignore[no-any-return]
 
     @abstractmethod
-    def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]: ...
+    def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
+        """Execute the wrapped function.
+
+        Args:
+            *args: Positional arguments for the function
+            **kwargs: Keyword arguments for the function
+
+        Returns:
+            Result[Any, Exception]: Result containing either the return value or an exception
+        """
+        ...
 
     @abstractmethod
-    def run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]: ...
+    def run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
+        """Execute the function with callback handling.
+
+        Args:
+            *args: Positional arguments for the function
+            **kwargs: Keyword arguments for the function
+
+        Returns:
+            Result[Any, Exception]: Result containing either the return value or an exception
+        """
+        ...
 
     @abstractmethod
-    def async_run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]: ...
+    def async_run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
+        """Execute the function asynchronously with callback handling.
+
+        Args:
+            *args: Positional arguments for the function
+            **kwargs: Keyword arguments for the function
+
+        Returns:
+            Result[Any, Exception]: Result containing either the return value or an exception
+        """
+        ...
 
     def add_handler(
         self, handler: BaseCallBackHandler, recursive: bool = False
     ) -> None:
+        """Add a callback handler to the function's callback manager.
+
+        Args:
+            handler: The callback handler to add
+            recursive: Whether to add the handler recursively. Defaults to False
+        """
         self.callback_manager.add(handler)
 
 
 class SyncFunction(BaseFunction):
+    """Wrapper for synchronous functions that can be used as tools.
+
+    Implements synchronous execution with callback handling and result wrapping.
+    """
+
     def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
+        """Execute the wrapped function synchronously.
+
+        Args:
+            *args: Positional arguments for the function
+            **kwargs: Keyword arguments for the function
+
+        Returns:
+            Result containing either the successful return value or an exception
+        """
         try:
             if self.instance is not None:
                 args = (self.instance,) + args
@@ -99,6 +194,17 @@ class SyncFunction(BaseFunction):
             return Err(e, str(e))
 
     def run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
+        """Execute the synchronous function with callback handling.
+
+        Triggers TOOL_START callback before execution and either TOOL_ERROR or TOOL_END after.
+
+        Args:
+            *args: Positional arguments for the function
+            **kwargs: Keyword arguments for the function
+
+        Returns:
+            Result[Any, Exception]: Result containing either the return value or an exception
+        """
         self.callback_manager.call(
             CallBackEvent.TOOL_START, self.source, *args, **kwargs
         )
@@ -110,11 +216,30 @@ class SyncFunction(BaseFunction):
         return result
 
     def async_run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
+        """Not implemented for synchronous functions.
+
+        Raises:
+            NotImplementedError: Always raises this error as sync functions cannot be run async
+        """
         raise NotImplementedError("This function is not async")
 
 
 class AsyncFunction(BaseFunction):
+    """Wrapper for asynchronous functions that can be used as tools.
+
+    Implements asynchronous execution with callback handling and result wrapping.
+    """
+
     async def __call__(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:  # type: ignore[override]
+        """Execute the wrapped function asynchronously.
+
+        Args:
+            *args: Positional arguments for the function
+            **kwargs: Keyword arguments for the function
+
+        Returns:
+            Result containing either the successful return value or an exception
+        """
         try:
             if self.instance is not None:
                 args = (self.instance,) + args
@@ -128,6 +253,17 @@ class AsyncFunction(BaseFunction):
     async def async_run(  # type: ignore[override]
         self, *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
+        """Execute the asynchronous function with callback handling.
+
+        Triggers TOOL_START callback before execution and either TOOL_ERROR or TOOL_END after.
+
+        Args:
+            *args: Positional arguments for the function
+            **kwargs: Keyword arguments for the function
+
+        Returns:
+            Result[Any, Exception]: Result containing either the return value or an exception
+        """
         self.callback_manager.call(
             CallBackEvent.TOOL_START, self.source, *args, **kwargs
         )
@@ -143,10 +279,24 @@ class AsyncFunction(BaseFunction):
         return result
 
     def run(self, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
+        """Not implemented for asynchronous functions.
+
+        Raises:
+            NotImplementedError: Always raises this error as async functions cannot be run sync
+        """
         raise NotImplementedError("This function is not sync")
 
 
 class BaseToolkit(ABC):
+    """Abstract base class for creating toolkits that expose multiple functions as tools.
+
+    Automatically collects and manages functions marked as tools within the class.
+
+    Properties:
+        sync_tools: List of synchronous tool functions
+        async_tools: List of asynchronous tool functions
+    """
+
     def __init__(self) -> None:
         self._exposed_functions = []
 
@@ -158,8 +308,18 @@ class BaseToolkit(ABC):
 
     @property
     def sync_tools(self) -> List[BaseFunction]:
+        """Get all synchronous tools in the toolkit.
+
+        Returns:
+            List[BaseFunction]: List of all synchronous function tools
+        """
         return [f for f in self._exposed_functions if isinstance(f, SyncFunction)]
 
     @property
     def async_tools(self) -> List[BaseFunction]:
+        """Get all asynchronous tools in the toolkit.
+
+        Returns:
+            List[BaseFunction]: List of all asynchronous function tools
+        """
         return [f for f in self._exposed_functions if isinstance(f, AsyncFunction)]

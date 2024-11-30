@@ -29,6 +29,19 @@ from synthora.utils.macros import CALL_ASYNC_CALLBACK
 
 
 class OpenAIChatBackend(BaseModelBackend):
+    """OpenAI Chat Completion backend implementation.
+
+    Attributes:
+        model_type (str): The OpenAI model identifier (e.g., 'gpt-4', 'gpt-3.5-turbo')
+        api_key (Optional[str]): OpenAI API key. Defaults to OPENAI_API_KEY env var
+        base_url (Optional[str]): Custom API base URL. Defaults to OPENAI_BASE_URL env var
+        source (Node): Source node for the messages. Defaults to Node(name="assistant", type=NodeType.AGENT)
+        config (Optional[Dict[str, Any]]): Additional configuration parameters. Defaults to None
+        name (Optional[str]): Backend name identifier. Defaults to None
+        handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]]): Callback handlers. Defaults to []
+        kwargs (Dict[str, Any]): Additional keyword arguments for OpenAI client
+    """
+
     def __init__(
         self,
         model_type: str,
@@ -67,6 +80,17 @@ class OpenAIChatBackend(BaseModelBackend):
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> Union[BaseMessage, Generator[BaseMessage, None, None]]:
+        """Synchronously generate chat completions.
+
+        Args:
+            messages: Single message or list of messages to process
+            *args: Additional positional arguments
+            **kwargs: Additional keyword arguments
+
+        Returns:
+            BaseMessage or Generator[BaseMessage, None, None]: Generated response(s)
+            If stream=True, returns a generator of message chunks
+        """
         if not isinstance(self.client, OpenAI):
             self.client = OpenAI(**self.kwargs)
         if not isinstance(messages, list):
@@ -136,6 +160,17 @@ class OpenAIChatBackend(BaseModelBackend):
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> Union[BaseMessage, AsyncGenerator[BaseMessage, None]]:
+        """Asynchronously generate chat completions.
+
+        Args:
+            messages: Single message or list of messages to process
+            *args: Additional positional arguments
+            **kwargs: Additional keyword arguments
+
+        Returns:
+            BaseMessage or AsyncGenerator[BaseMessage, None]: Generated response(s)
+            If stream=True, returns an async generator of message chunks
+        """
         if not isinstance(self.client, AsyncOpenAI):
             self.client = AsyncOpenAI(**self.kwargs)
         if not isinstance(messages, list):
@@ -155,11 +190,12 @@ class OpenAIChatBackend(BaseModelBackend):
                 messages=messages, model=self.model_type, **self.config
             )
         except Exception as e:
-            await self.callback_manager.call(
+            await self.callback_manager.call(  # type: ignore[func-returns-value]
                 CallBackEvent.LLM_ERROR, self.source, e, stream, *args, **kwargs
             )
             raise e
         if stream:
+
             async def stream_messages() -> AsyncGenerator[BaseMessage, None]:
                 try:
                     previous_message = None
@@ -174,7 +210,7 @@ class OpenAIChatBackend(BaseModelBackend):
                             *args,
                             **kwargs,
                         )
-                        
+
                         yield previous_message
                 except Exception as e:
                     await CALL_ASYNC_CALLBACK(

@@ -102,13 +102,14 @@ cookbook/chat_with_agent.ipynb
 :hidden:
 
 synthora.agents
-synthora
-synthora.callbacks
 synthora.configs
 synthora.messages
 synthora.models
 synthora.prompts
 synthora.toolkits
+synthora.callbacks
+synthoraa.tracers
 synthora.types
 synthora.utils
+synthora
 ```

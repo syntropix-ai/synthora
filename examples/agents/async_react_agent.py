@@ -16,13 +16,14 @@
 #
 
 
+import asyncio
 import json
 import warnings
 
 from synthora.agents import ReactAgent
 from synthora.callbacks import RichOutputHandler
 from synthora.configs import AgentConfig
-import asyncio
+
 
 warnings.filterwarnings("ignore")
 
