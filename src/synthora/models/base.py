@@ -26,6 +26,17 @@ from synthora.types.node import Node
 
 
 class BaseModelBackend(ABC):
+    """Abstract base class for model backends.
+
+    Attributes:
+        name (Optional[str]): Name of the model backend
+        source (Node): Source node representing the model's context
+        model_type (str): Type of the model
+        backend_type (ModelBackendType): Type of the backend implementation
+        config (Dict[str, Any]): Configuration parameters for the model
+        callback_manager: Manager for handling callbacks
+    """
+
     def __init__(
         self,
         model_type: str,
@@ -35,6 +46,17 @@ class BaseModelBackend(ABC):
         name: Optional[str] = None,
         handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
     ) -> None:
+        """Initialize the model backend.
+
+        Args:
+            model_type (str): Type of the model
+            source (Node): Source node for the model
+            backend_type (ModelBackendType): Type of backend implementation
+            config (Optional[Dict[str, Any]]): Model configuration parameters
+            name (Optional[str]): Name of the model backend
+            handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]]):
+                List of callback handlers
+        """
         self.name = name
         self.source = Node(name=name, type=NodeType.MODEL, ancestor=source)
         self.model_type = model_type
@@ -48,7 +70,18 @@ class BaseModelBackend(ABC):
         messages: Union[List[BaseMessage], BaseMessage],
         *args: Any,
         **kwargs: Dict[str, Any],
-    ) -> Any: ...
+    ) -> Any:
+        """Run the model synchronously.
+
+        Args:
+            messages (Union[List[BaseMessage], BaseMessage]): Input messages
+            *args: Additional positional arguments
+            **kwargs: Additional keyword arguments
+
+        Returns:
+            Any: Model output
+        """
+        ...
 
     @abstractmethod
     async def async_run(
@@ -56,11 +89,29 @@ class BaseModelBackend(ABC):
         messages: Union[List[BaseMessage], BaseMessage],
         *args: Any,
         **kwargs: Dict[str, Any],
-    ) -> Any: ...
+    ) -> Any:
+        """Run the model asynchronously.
+
+        Args:
+            messages (Union[List[BaseMessage], BaseMessage]): Input messages
+            *args: Additional positional arguments
+            **kwargs: Additional keyword arguments
+
+        Returns:
+            Any: Model output
+        """
+        ...
 
     def add_handler(
         self,
         handler: Union[BaseCallBackHandler, AsyncCallBackHandler],
-        recursive: bool = False,
+        recursive: bool = True,
     ) -> None:
+        """Add a callback handler to the model.
+
+        Args:
+            handler (Union[BaseCallBackHandler, AsyncCallBackHandler]):
+                Callback handler to add
+            recursive (bool): Whether to add handler recursively
+        """
         self.callback_manager.add(handler)

@@ -22,6 +22,32 @@ from synthora.toolkits.base import BaseFunction
 
 
 def tool(func: Callable[..., Any]) -> BaseFunction:
+    """Decorator that marks a function or method as a tool for use in the toolkit system.
+
+    This decorator performs the following:
+    1. Inspects the function signature to detect if it's a method (has 'self' parameter)
+    2. If it's a method, marks it with a '_flag' attribute for later processing
+    3. Wraps the function using BaseFunction.wrap() which creates either a SyncFunction
+       or AsyncFunction based on whether the function is async or not
+
+    Args:
+        func (Callable[..., Any]): The function or method to be wrapped as a tool.
+                                  Can be either sync or async function.
+
+    Returns:
+        BaseFunction: A wrapped function that can be either SyncFunction or AsyncFunction,
+                     with additional tool-specific functionality and callback handling.
+
+    Example:
+        @tool
+        def my_tool(x: int) -> str:
+            return str(x)
+
+        class MyToolkit:
+            @tool
+            def my_method(self, x: int) -> str:
+                return str(x)
+    """
     signature = inspect.signature(func)
     parameters = list(signature.parameters.values())
     if parameters and parameters[0].name == "self":

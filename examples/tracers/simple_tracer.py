@@ -18,10 +18,11 @@
 
 import json
 import warnings
-from synthora.tracers import SimpleTracer
+
 from synthora.agents import ReactAgent
 from synthora.callbacks import RichOutputHandler
 from synthora.configs import AgentConfig
+from synthora.tracers import SimpleTracer
 
 
 warnings.filterwarnings("ignore")
@@ -45,7 +46,11 @@ tracer.trace(agent)
 # agent.run("119 * 117 = ?")
 agent.run("Search Openai on Wikipedia. Outpout Your thought first!")
 # print(agent.history[0])
-
+events = []
 for event in tracer.events:
     data = event.to_dict()
-    print(json.dumps(data))
+    events.append(data)
+    # print(json.dumps(data))
+
+with open("result.json", "w") as f:
+    json.dump(events, f)

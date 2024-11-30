@@ -45,7 +45,7 @@ extensions = [
     "nbsphinx",
 ]
 
-nbsphinx_execute = 'never'
+nbsphinx_execute = "never"
 nbsphinx_allow_errors = True
 nbsphinx_prolog = r"""
 .. raw:: html
@@ -61,11 +61,7 @@ nbsphinx_prolog = r"""
 templates_path = ["_templates"]
 exclude_patterns: List[str] = []
 
-myst_enable_extensions = [
-    "colon_fence",
-    "dollarmath",
-    "amsmath"
-]
+myst_enable_extensions = ["colon_fence", "dollarmath", "amsmath"]
 
 nb_execution_mode = "off"
 nb_execution_timeout = 300
@@ -77,4 +73,3 @@ html_theme = "sphinx_book_theme"
 html_static_path = ["_static"]
 
 source_suffix = [".rst", ".md"]
-

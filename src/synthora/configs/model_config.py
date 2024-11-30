@@ -26,6 +26,16 @@ from synthora.utils import YAMLLoader
 
 
 class ModelConfig(BaseConfig):
+    """Configuration class for AI models
+
+    Attributes:
+        model_type (str): Type identifier of the model (e.g., 'gpt-4', 'claude-3')
+        name (Optional[str]): Optional custom name for the model instance
+        backend (ModelBackendType): Backend system type, defaults to OPENAI_CHAT
+        config (Optional[Dict[str, Any]]): Optional model-specific configuration parameters
+        backend_config (Optional[Dict[str, Any]]): Optional backend-specific configuration
+    """
+
     model_type: str
     name: Optional[str] = None
     backend: ModelBackendType = ModelBackendType.OPENAI_CHAT
@@ -34,6 +44,17 @@ class ModelConfig(BaseConfig):
 
     @classmethod
     def from_file(cls: Type[Self], path: Path) -> Self:
+        """Load model configuration from a YAML file
+
+        Args:
+            path (Path): Path to the YAML configuration file
+
+        Returns:
+            Self: Instance of ModelConfig
+
+        Raises:
+            ValueError: If YAML file cannot be loaded properly
+        """
         try:
             with open(path, "r") as file:
                 data = yaml.load(file, YAMLLoader)
@@ -43,4 +64,12 @@ class ModelConfig(BaseConfig):
 
     @classmethod
     def from_dict(cls: Type[Self], data: Dict[str, Any]) -> Self:
+        """Create model configuration from a dictionary
+
+        Args:
+            data (Dict[str, Any]): Dictionary containing model configuration
+
+        Returns:
+            Self: Instance of ModelConfig
+        """
         return cls(**data)

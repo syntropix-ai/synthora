@@ -21,7 +21,7 @@ from typing import Any, Callable, Dict, List, Optional, Union
 from synthora.callbacks.base_manager import AsyncCallBackManager, BaseCallBackManager
 from synthora.messages.base import BaseMessage
 from synthora.prompts.base import BasePrompt
-from synthora.types.enums import CallBackEvent, MessageRole, NodeType
+from synthora.types.enums import MessageRole, NodeType
 from synthora.types.node import Node
 
 
@@ -30,13 +30,16 @@ def macro(func: Callable[..., Any]) -> Callable[..., Any]:
     Macro functions can access the local variables of the caller function.
     """
     if inspect.iscoroutinefunction(func):
+
         async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
             caller_frame = inspect.currentframe().f_back  # type: ignore[union-attr]
             caller_locals = caller_frame.f_locals  # type: ignore[union-attr]
             kwargs["__macro_locals__"] = caller_locals
             return await func(*args, **kwargs)
+
         return async_wrapper
     else:
+
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             caller_frame = inspect.currentframe().f_back  # type: ignore[union-attr]
             caller_locals = caller_frame.f_locals  # type: ignore[union-attr]
@@ -128,7 +131,7 @@ def STR_TO_USERMESSAGE(
 
     """
     if message is None:
-        message = kwargs.get("__macro_locals__").get("message")  # type: ignore[assignment]
+        message = kwargs.get("__macro_locals__", {}).get("message")
     if isinstance(message, str):
         return BaseMessage.create_message(
             role=MessageRole.USER,
@@ -157,13 +160,14 @@ def GET_FINAL_MESSAGE(
 
     """
     if response is None:
-        response = kwargs.get("__macro_locals__").get("response")  # type: ignore[assignment]
+        response = kwargs.get("__macro_locals__", {}).get("response")
     if not isinstance(response, BaseMessage):
         tmp = None
         for res in response:  # type: ignore[union-attr]
             tmp = res
         response = tmp
     return response  # type: ignore[return-value]
+
 
 @macro
 async def ASYNC_GET_FINAL_MESSAGE(
@@ -185,7 +189,7 @@ async def ASYNC_GET_FINAL_MESSAGE(
 
     """
     if response is None:
-        response = kwargs.get("__macro_locals__").get("response")  # type: ignore[assignment]
+        response = kwargs.get("__macro_locals__", {}).get("response")
     if not isinstance(response, BaseMessage):
         tmp = None
         async for res in response:  # type: ignore[union-attr]
@@ -193,12 +197,43 @@ async def ASYNC_GET_FINAL_MESSAGE(
         response = tmp
     return response  # type: ignore[return-value]
 
+
 @macro
-async def CALL_ASYNC_CALLBACK(*args: Any,manager: Optional[Union[BaseCallBackManager, AsyncCallBackManager]] = None,  **kwargs: Dict[str, Any]) -> Any:
+async def CALL_ASYNC_CALLBACK(
+    *args: Any,
+    manager: Optional[Union[BaseCallBackManager, AsyncCallBackManager]] = None,
+    **kwargs: Dict[str, Any],
+) -> None:
+    """Asynchronously call a callback manager's methods, handling both sync and async managers.
+
+    This macro function automatically handles the callback manager's call method,
+    adapting to both synchronous and asynchronous callback managers.
+
+    Args:
+        *args: Variable positional arguments to pass to the callback
+        manager (Optional[Union[BaseCallBackManager, AsyncCallBackManager]]):
+            The callback manager to use. If None, retrieves from the caller's context
+        **kwargs: Additional keyword arguments to pass to the callback
+
+    Note:
+        - If manager is None, it attempts to get the callback_manager from the caller's context
+        - Automatically determines whether to use sync or async call based on manager type
+        - Removes internal macro locals from kwargs before calling
+
+    Example:
+        >>> await CALL_ASYNC_CALLBACK("event_name", data=event_data)
+    """
+    # If no manager provided, get it from the caller's context
     if manager is None:
         manager = kwargs.get("__macro_locals__").get("self").callback_manager  # type: ignore[union-attr]
+
+    # Remove internal macro locals from kwargs to avoid passing to callback
     kwargs.pop("__macro_locals__", None)
+
+    # Handle different types of callback managers
     if isinstance(manager, BaseCallBackManager):
-        return manager.call(*args, **kwargs)
+        # For synchronous manager, call directly
+        manager.call(*args, **kwargs)  # type: ignore[arg-type]
     else:
-        return await manager.call(*args, **kwargs)
+        # For async manager, await the call
+        await manager.call(*args, **kwargs)

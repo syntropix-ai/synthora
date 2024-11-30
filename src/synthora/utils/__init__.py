@@ -17,6 +17,14 @@
 
 from .function_schema import get_openai_tool_schema
 from .image import image2base64, is_url, parse_image
+from .macros import (
+    ASYNC_GET_FINAL_MESSAGE,
+    CALL_ASYNC_CALLBACK,
+    FORMAT_PROMPT,
+    GET_FINAL_MESSAGE,
+    STR_TO_USERMESSAGE,
+    UPDATE_SYSTEM,
+)
 from .yaml_loader import YAMLLoader
 
 
@@ -26,4 +34,10 @@ __all__ = [
     "is_url",
     "image2base64",
     "parse_image",
+    "FORMAT_PROMPT",
+    "UPDATE_SYSTEM",
+    "STR_TO_USERMESSAGE",
+    "GET_FINAL_MESSAGE",
+    "ASYNC_GET_FINAL_MESSAGE",
+    "CALL_ASYNC_CALLBACK",
 ]

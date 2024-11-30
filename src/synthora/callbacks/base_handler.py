@@ -25,7 +25,7 @@ from synthora.types.node import Node
 
 class BaseCallBackHandler(ABC):
     """Base callback handler for managing various events in the system.
-    
+
     An abstract base class that defines the interface for handling different types of events
     such as LLM operations, tool executions, and agent activities.
 
@@ -33,7 +33,7 @@ class BaseCallBackHandler(ABC):
         None: This is an abstract base class that defines only interface methods.
             Concrete implementations may add their own attributes.
     """
-    
+
     def on_llm_start(
         self,
         source: Node,
@@ -233,7 +233,7 @@ class BaseCallBackHandler(ABC):
 
 class AsyncCallBackHandler(BaseCallBackHandler):
     """Asynchronous version of the callback handler.
-    
+
     Implements the same interface as BaseCallBackHandler but with async methods
     for handling events in asynchronous contexts.
 

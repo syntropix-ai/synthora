@@ -15,12 +15,12 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
+import asyncio
 import json
 
 from synthora.agents import VanillaAgent
 from synthora.callbacks.rich_output_handler import RichOutputHandler
 from synthora.configs import AgentConfig
-import asyncio
 
 
 config = AgentConfig.from_file("examples/agents/configs/vanilla_agent.yaml")

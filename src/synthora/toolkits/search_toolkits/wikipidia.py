@@ -23,6 +23,37 @@ from synthora.types.enums import Err, Ok, Result
 def search_wikipedia(
     query: str, sentences: int = 5, auto_suggest: bool = False
 ) -> Result[str, Exception]:
+    """Search Wikipedia and return a summary of the article.
+
+    This function attempts to find and summarize a Wikipedia article based on the query.
+    If the query is ambiguous, it returns the summary of the first suggested option.
+
+    Args:
+        query (str): The search query to look up on Wikipedia
+        sentences (int, optional): Number of sentences to return in the summary. Defaults to 5
+        auto_suggest (bool, optional): Whether to auto-suggest similar article titles.
+                                     Defaults to False
+
+    Returns:
+        Result[str, Exception]: A Result object containing either:
+            - Ok(str): The article summary if successful
+            - Err(Exception): An error with description if the search fails
+
+    Raises:
+        ImportError: If the wikipedia package is not installed
+
+    Examples:
+        >>> result = search_wikipedia("Python programming")
+        >>> if result.is_ok:
+        ...     print(result.unwrap())
+        ... else:
+        ...     print(f"Error: {result.unwrap_err()}")
+
+    Note:
+        - Handles DisambiguationError by choosing the first suggested option
+        - Handles PageError by returning an error message suggesting to try another query
+        - Requires the 'wikipedia' package to be installed
+    """
     try:
         import wikipedia  # type: ignore[import-not-found]
     except ImportError:

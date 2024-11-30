@@ -38,6 +38,20 @@ from synthora.utils.image import parse_image
 
 
 class BaseMessage(BaseModel):
+    """Base message class for handling different types of chat messages.
+
+    Attributes:
+        id (Optional[str]): Message identifier
+        source (Node): Source node of the message
+        role (MessageRole): Role of the message sender
+        chunk (Optional[str]): Chunk of streamed message content
+        content (Optional[str]): Main message content
+        tool_calls (Optional[List[ChatCompletionMessageToolCall]]): Tool calls made in message
+        tool_response (Optional[Dict[str, Any]]): Response from tool execution
+        images (Optional[List[str]]): List of image URLs
+        metadata (Dict[str, Any]): Additional message metadata
+    """
+
     id: Optional[str] = None
     source: Node
     role: MessageRole
@@ -52,6 +66,14 @@ class BaseMessage(BaseModel):
 
     @model_validator(mode="after")
     def check_empty_message(self) -> Self:
+        """Validate that message has at least one content field.
+
+        Returns:
+            Self: The validated message instance
+
+        Raises:
+            ValueError: If message has no content, images, tool_calls, or tool_response
+        """
         if not any(
             getattr(self, field) is not None
             for field in ["content", "tool_calls", "tool_response", "images"]
@@ -63,10 +85,20 @@ class BaseMessage(BaseModel):
 
     @property
     def is_complete(self) -> bool:
+        """Check if message is complete.
+
+        Returns:
+            bool: True if message has a finish reason in metadata
+        """
         return bool(self.metadata.get("finish_reason", ""))
 
     @property
     def has_tool_calls(self) -> bool:
+        """Check if message contains tool calls.
+
+        Returns:
+            bool: True if message has tool_calls, False otherwise
+        """
         return bool(self.tool_calls)
 
     @classmethod
@@ -81,6 +113,24 @@ class BaseMessage(BaseModel):
         source: Node = Node(name="user", type=NodeType.USER),
         metadata: Dict[str, Any] = {},
     ) -> Self:
+        """Create a new message instance.
+
+        Args:
+            role (MessageRole): Role of message sender
+            id (Optional[str]): Message identifier
+            content (Optional[AnyStr]): Message content
+            images (Optional[List[str]]): List of image URLs
+            tool_calls (Optional[List[Dict[str, Any]]]): Tool calls to make
+            tool_response (Optional[Result]): Response from tool execution
+            source (Node): Source node, defaults to user
+            metadata (Dict[str, Any]): Additional metadata
+
+        Returns:
+            Self: New message instance
+
+        Raises:
+            ValueError: If system message contains images or tool response missing ID
+        """
         if images:
             images = [parse_image(image) for image in images]
 
@@ -125,6 +175,14 @@ class BaseMessage(BaseModel):
                 )
 
     def to_openai_message(self) -> ChatCompletionMessageParam:
+        """Convert to OpenAI message format.
+
+        Returns:
+            ChatCompletionMessageParam: Message in OpenAI format
+
+        Raises:
+            ValueError: If system message contains images
+        """
         if self.role == MessageRole.TOOL_RESPONSE:
             return ChatCompletionToolMessageParam(
                 content=str(self.content),
@@ -174,6 +232,15 @@ class BaseMessage(BaseModel):
         response: ChatCompletion,
         source: Node = Node(name="assistant", type=NodeType.AGENT),
     ) -> Self:
+        """Create message from OpenAI completion response.
+
+        Args:
+            response (ChatCompletion): OpenAI completion response
+            source (Node): Source node, defaults to assistant
+
+        Returns:
+            Self: New message instance
+        """
         choice = response.choices[0]
         metadata = {
             "created": response.created,
@@ -202,6 +269,16 @@ class BaseMessage(BaseModel):
         source: Node = Node(name="assistant", type=NodeType.AGENT),
         previous: Optional[Self] = None,
     ) -> Self:
+        """Create message from OpenAI streaming completion response.
+
+        Args:
+            response (ChatCompletionChunk): OpenAI streaming completion chunk
+            source (Node): Source node, defaults to assistant
+            previous (Optional[Self]): Previous message instance for content accumulation
+
+        Returns:
+            Self: New or updated message instance with accumulated content
+        """
         choice = response.choices[0]
         metadata = {
             "created": response.created,

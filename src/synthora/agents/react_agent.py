@@ -38,14 +38,14 @@ from synthora.utils.macros import (
 @tool
 def finish(response: str) -> str:
     """Stop the conversation and return the final response.
-    
+
     This tool should only be used when either:
     - A final answer has been determined
     - The problem cannot be solved
-    
+
     Args:
         response (str): The final response to return
-        
+
     Returns:
         str: The unchanged response string
     """
@@ -54,10 +54,10 @@ def finish(response: str) -> str:
 
 class ReactAgent(BaseAgent):
     """A ReAct (Reasoning and Acting) agent implementation.
-    
+
     This agent follows the ReAct pattern of reasoning about actions and executing them.
     It can use tools to accomplish tasks and maintains a conversation history.
-    
+
     Args:
         config (AgentConfig): Configuration for the agent
         source (Node): Source node for the agent
@@ -90,15 +90,15 @@ class ReactAgent(BaseAgent):
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute a single step of the ReAct agent's reasoning process.
-        
+
         Updates the system prompt, processes the message, and generates a response
         using the model. Will attempt up to 2 iterations if needed.
-        
+
         Args:
             message (Union[str, BaseMessage]): Input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result containing either:
                 - The model's response with potential tool calls
@@ -121,17 +121,17 @@ class ReactAgent(BaseAgent):
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute the complete ReAct agent reasoning and action loop.
-        
+
         Processes the input message and continues executing steps until either:
         - A final answer is reached
         - The 'finish' tool is called
         - An error occurs
-        
+
         Args:
             message (Union[str, BaseMessage]): Input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result containing either:
                 - The final response string
@@ -178,14 +178,14 @@ class ReactAgent(BaseAgent):
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute a single step of the ReAct agent asynchronously.
-        
+
         Note: This is a placeholder for future async implementation.
-        
+
         Args:
             message (Union[str, BaseMessage]): Input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result containing either:
                 - The step execution result
@@ -204,19 +204,18 @@ class ReactAgent(BaseAgent):
                 return Ok(response)
         return Ok(response)
 
-
     async def async_run(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
     ) -> Result[Any, Exception]:
         """Execute the ReAct agent loop asynchronously.
-        
+
         Note: This is a placeholder for future async implementation.
-        
+
         Args:
             message (Union[str, BaseMessage]): Input message to process
             *args (Any): Additional positional arguments
             **kwargs (Dict[str, Any]): Additional keyword arguments
-            
+
         Returns:
             Result[Any, Exception]: A Result containing either:
                 - The final response
@@ -258,5 +257,3 @@ class ReactAgent(BaseAgent):
                     data.content = resp_value
                     await self.async_on_end(data, *args, **kwargs)
                     return Ok(resp_value)
-
-    

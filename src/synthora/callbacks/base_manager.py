@@ -38,7 +38,7 @@ class BaseCallBackManager(ABC):
         """Initialize the callback manager.
 
         Args:
-            handlers (Optional[List[BaseCallBackHandler]], optional): Initial list of handlers. 
+            handlers (Optional[List[BaseCallBackHandler]], optional): Initial list of handlers.
                 Defaults to None.
 
         Returns:
@@ -134,7 +134,7 @@ class AsyncCallBackManager(BaseCallBackManager):
         """Initialize the async callback manager.
 
         Args:
-            handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]], optional): 
+            handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]], optional):
                 Initial list of handlers. Defaults to empty list.
 
         Returns:

@@ -24,9 +24,11 @@ import yaml
 class YAMLLoader(yaml.SafeLoader):
     def __init__(self, stream: IO[Any]) -> None:
         """
-        Initializes a new instance of the Loader class.
-        :param stream: The stream to load YAML from.
-        :type stream: IOBase
+        Initialize a custom YAML loader with support for !include and !file directives.
+
+        Args:
+            stream (IO[Any]): An input stream object containing YAML content.
+                            Must have a 'name' attribute pointing to the source file.
         """
         self._root = Path(stream.name).resolve().parent
         super(YAMLLoader, self).__init__(stream)
@@ -34,6 +36,15 @@ class YAMLLoader(yaml.SafeLoader):
         self.add_constructor("!file", YAMLLoader.file)
 
     def include(self, node: yaml.Node) -> Any:
+        """
+        Process !include directive to include and parse another YAML file.
+
+        Args:
+            node (yaml.Node): YAML node containing the path to the file to include.
+
+        Returns:
+            Any: The parsed content of the included YAML file.
+        """
         filename = Path(self.construct_scalar(node))
         if not filename.is_absolute():
             filename = self._root / filename
@@ -41,6 +52,15 @@ class YAMLLoader(yaml.SafeLoader):
             return yaml.load(f, YAMLLoader)
 
     def file(self, node: yaml.Node) -> Any:
+        """
+        Process !file directive to read raw content from another file.
+
+        Args:
+            node (yaml.Node): YAML node containing the path to the file to read.
+
+        Returns:
+            str: The raw content of the file as a string, with leading/trailing whitespace removed.
+        """
         filename = Path(self.construct_scalar(node))
         if not filename.is_absolute():
             filename = self._root / filename
