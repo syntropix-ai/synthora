@@ -23,13 +23,14 @@ from openai import AsyncOpenAI, OpenAI  # type: ignore
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.messages.base import BaseMessage
 from synthora.models.base import BaseModelBackend
-from synthora.types.enums import CallBackEvent, ModelBackendType, NodeType
+from synthora.models.openai_chat import OpenAIChatBackend
+from synthora.types.enums import CallBackEvent, MessageRole, ModelBackendType, NodeType
 from synthora.types.node import Node
 from synthora.utils.macros import CALL_ASYNC_CALLBACK
 
 
-class OpenAIChatBackend(BaseModelBackend):
-    """OpenAI Chat Completion backend implementation.
+class OpenAICompletionBackend(OpenAIChatBackend):
+    """OpenAI Completion Completion backend implementation.
 
     Attributes:
         model_type (str): The OpenAI model identifier (e.g., 'gpt-4', 'gpt-3.5-turbo')
@@ -42,45 +43,13 @@ class OpenAIChatBackend(BaseModelBackend):
         kwargs (Dict[str, Any]): Additional keyword arguments for OpenAI client
     """
 
-    def __init__(
-        self,
-        model_type: str,
-        api_key: Optional[str] = None,
-        base_url: Optional[str] = None,
-        source: Node = Node(name="assistant", type=NodeType.AGENT),
-        config: Optional[Dict[str, Any]] = None,
-        name: Optional[str] = None,
-        handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
-        **kwargs: Dict[str, Any],
-    ) -> None:
-        super().__init__(
-            model_type=model_type,
-            source=source,
-            backend_type=ModelBackendType.OPENAI_CHAT,
-            config=config,
-            name=name,
-            handlers=handlers,
-        )
-        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
-        self.base_url = base_url or os.getenv("OPENAI_BASE_URL")
-        self.kwargs = kwargs
-        if self.api_key is None:
-            raise ValueError("API Key is required for OpenAI")
-        self.kwargs["api_key"] = self.api_key  # type: ignore[assignment]
-        if self.base_url is not None:
-            self.kwargs["base_url"] = self.base_url  # type: ignore[assignment]
-        if isinstance(self.callback_manager, AsyncCallBackHandler):
-            self.client = AsyncOpenAI(**self.kwargs)
-        else:
-            self.client = OpenAI(**self.kwargs)
-
     def run(
         self,
-        messages: Union[List[BaseMessage], BaseMessage],
+        prompt: Union[str, BaseMessage],
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> Union[BaseMessage, Generator[BaseMessage, None, None]]:
-        """Synchronously generate chat completions.
+        """Synchronously generate completions.
 
         Args:
             messages: Single message or list of messages to process
@@ -93,21 +62,22 @@ class OpenAIChatBackend(BaseModelBackend):
         """
         if not isinstance(self.client, OpenAI):
             self.client = OpenAI(**self.kwargs)
-        if not isinstance(messages, list):
-            messages = [messages]
         stream = self.config.get("stream", False)
+        if isinstance(prompt, str):
+            prompt = BaseMessage(content=prompt, role=MessageRole.USER, source=self.source)
+        
         self.callback_manager.call(
             CallBackEvent.LLM_START,
             self.source,
-            messages,
+            [prompt],
             stream,
             *args,
             **kwargs,
         )
-        messages = [message.to_openai_message() for message in messages]
+        
         try:
-            resp = self.client.chat.completions.create(
-                messages=messages, model=self.model_type, **self.config
+            resp = self.client.completions.create(
+                prompt=prompt.content, model=self.model_type, **self.config
             )
         except Exception as e:
             self.callback_manager.call(
@@ -115,7 +85,6 @@ class OpenAIChatBackend(BaseModelBackend):
             )
             raise e
         if stream:
-
             def stream_messages() -> Generator[BaseMessage, None, None]:
                 try:
                     previous_message = None

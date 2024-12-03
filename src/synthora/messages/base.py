@@ -227,7 +227,7 @@ class BaseMessage(BaseModel):
                 )
 
     @classmethod
-    def from_openai_response(
+    def from_openai_chat_response(
         cls: Type[Self],
         response: ChatCompletion,
         source: Node = Node(name="assistant", type=NodeType.AGENT),
@@ -263,7 +263,7 @@ class BaseMessage(BaseModel):
         )
 
     @classmethod
-    def from_openai_stream_response(
+    def from_openai_chat_stream_response(
         cls: Type[Self],
         response: ChatCompletionChunk,
         source: Node = Node(name="assistant", type=NodeType.AGENT),

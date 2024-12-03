@@ -15,15 +15,27 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .function_schema import get_openai_tool_schema
-from .image import image2base64, is_url, parse_image
-from .yaml_loader import YAMLLoader
+
+import json
+import time
+import warnings
+
+from synthora.agents import ReactAgent
+from synthora.callbacks import RichOutputHandler
+from synthora.configs import AgentConfig
+from synthora.services.http_service import HttpService
+from synthora.tracers import SimpleTracer
 
 
-__all__ = [
-    "get_openai_tool_schema",
-    "YAMLLoader",
-    "is_url",
-    "image2base64",
-    "parse_image",
-]
+warnings.filterwarnings("ignore")
+
+config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
+
+
+agent = ReactAgent.from_config(config)
+
+http_service = HttpService()
+http_service.add(agent)
+http_service.run(host="0.0.0.0", port=8000)
+time.sleep(10)
+http_service.stop()
