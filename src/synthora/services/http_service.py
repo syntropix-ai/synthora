@@ -39,6 +39,8 @@ class HttpService(BaseService):
         except ImportError:
             raise ImportError("FastAPI or uvicorn is not installed")
         self.app = FastAPI(*args, **kwargs)
+        self.server = None
+        self.server_task = None
         
     
     def add(self, target: Union[BaseFunction, BaseAgent, BaseModelBackend], name: Optional[str] = None, method: Literal["get", "post"] = "post", use_async: bool = True) -> Self:
