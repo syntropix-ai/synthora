@@ -14,24 +14,8 @@
 # limitations under the License.
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
-from synthora.types.enums import MessageRole, NodeType
-from synthora.types.node import Node
-from .base import BaseMessage
 
+from synthora.messages import user, system
 
-def user(content: str) -> BaseMessage:
-    return BaseMessage(
-        role=MessageRole.USER,
-        source=Node(name="user", type=NodeType.USER),
-        content=content,
-    )
-
-def system(content: str) -> BaseMessage:
-    return BaseMessage(
-        role=MessageRole.SYSTEM,
-        source=Node(name="system", type=NodeType.SYSTEM),
-        content=content,
-    )
-
-
-__all__ = ["BaseMessage", "user", "system"]
+print(system("hello from system").to_openai_message())
+print(user("hello from user").to_openai_message())
