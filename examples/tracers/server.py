@@ -19,13 +19,15 @@
 import asyncio
 import json
 import warnings
-from synthora.tracers import SimpleTracer
+
+import fastapi
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from synthora.agents import ReactAgent
 from synthora.callbacks import RichOutputHandler
 from synthora.configs import AgentConfig
-import fastapi
-from fastapi.responses import StreamingResponse
-from fastapi.middleware.cors import CORSMiddleware
+from synthora.tracers import SimpleTracer
+
 
 app = fastapi.FastAPI()
 
@@ -37,20 +39,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-import json
-import warnings
-from synthora.tracers import SimpleTracer
-from synthora.agents import ReactAgent
-from synthora.callbacks import RichOutputHandler
-from synthora.configs import AgentConfig
-
 
 warnings.filterwarnings("ignore")
 
 config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
 from fastapi import BackgroundTasks
 
+
 tracer = SimpleTracer()
+
+
 @app.get("/")
 async def read_root(background_tasks: BackgroundTasks):
     # with open("result.json", "r") as f:
@@ -60,12 +58,12 @@ async def read_root(background_tasks: BackgroundTasks):
     handler = RichOutputHandler()
     agent.add_handler(handler)
 
-    
     tracer.trace(agent)
     tracer.reset()
 
-
-    asyncio.create_task(agent.async_run("Search Openai on Wikipedia. Output Your thought first!"))
+    asyncio.create_task(
+        agent.async_run("Search Openai on Wikipedia. Output Your thought first!")
+    )
 
     async def stream():
         while True:
@@ -76,5 +74,5 @@ async def read_root(background_tasks: BackgroundTasks):
                 if item["event_type"] == "on_agent_end":
                     break
             await asyncio.sleep(0.1)
-    return StreamingResponse(stream(), media_type="text/event-stream")
 
+    return StreamingResponse(stream(), media_type="text/event-stream")
