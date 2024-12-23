@@ -15,17 +15,13 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-import os
-from typing import Any, AsyncGenerator, Dict, Generator, List, Optional, Union, override
+from typing import Any, AsyncGenerator, Dict, Generator, List, Union, override
 
 from openai import AsyncOpenAI, OpenAI  # type: ignore
 
-from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.messages.base import BaseMessage
-from synthora.models.base import BaseModelBackend
 from synthora.models.openai_chat import OpenAIChatBackend
-from synthora.types.enums import CallBackEvent, MessageRole, ModelBackendType, NodeType
-from synthora.types.node import Node
+from synthora.types.enums import CallBackEvent, MessageRole
 from synthora.utils.macros import CALL_ASYNC_CALLBACK
 
 
@@ -64,8 +60,10 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             self.client = OpenAI(**self.kwargs)
         stream = self.config.get("stream", False)
         if isinstance(prompt, str):
-            prompt = BaseMessage(content=prompt, role=MessageRole.USER, source=self.source)
-        
+            prompt = BaseMessage(
+                content=prompt, role=MessageRole.USER, source=self.source
+            )
+
         self.callback_manager.call(
             CallBackEvent.LLM_START,
             self.source,
@@ -74,7 +72,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             *args,
             **kwargs,
         )
-        
+
         try:
             resp = self.client.completions.create(
                 prompt=prompt.content, model=self.model_type, **self.config
@@ -85,6 +83,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             )
             raise e
         if stream:
+
             def stream_messages() -> Generator[BaseMessage, None, None]:
                 try:
                     previous_message = None

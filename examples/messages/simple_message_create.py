@@ -15,7 +15,8 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from synthora.messages import user, system
+from synthora.messages import system, user
+
 
 print(system("hello from system").to_openai_message())
 print(user("hello from user").to_openai_message())

@@ -16,15 +16,12 @@
 #
 
 
-import json
 import time
 import warnings
 
 from synthora.agents import ReactAgent
-from synthora.callbacks import RichOutputHandler
 from synthora.configs import AgentConfig
 from synthora.services.http_service import HttpService
-from synthora.tracers import SimpleTracer
 
 
 warnings.filterwarnings("ignore")
