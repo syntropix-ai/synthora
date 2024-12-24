@@ -16,6 +16,7 @@
 #
 
 import inspect
+from asyncio import Task
 from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Self, Union
 
 from synthora.agents.base import BaseAgent
@@ -25,11 +26,12 @@ from synthora.toolkits.base import BaseFunction
 
 
 if TYPE_CHECKING:
+    from fastapi import FastAPI
     from uvicorn import Server
 
 
 def _add_agent_to_app(
-    app,
+    app: "FastAPI",
     agent: BaseAgent,
     name: Optional[str] = None,
     method: Literal["get", "post"] = "post",
@@ -48,15 +50,15 @@ def _add_agent_to_app(
     bound_method = target_method.__get__(agent)
     if use_async:
 
-        async def endpoint(**kwargs):
+        async def endpoint(**kwargs: Dict[str, Any]) -> Any:
             return await bound_method(**kwargs)
 
     else:
 
-        def endpoint(**kwargs):
+        def endpoint(**kwargs: Dict[str, Any]) -> Any:
             return bound_method(**kwargs)
 
-    endpoint.__signature__ = sig
+    endpoint.__signature__ = sig  # type: ignore[attr-defined]
     endpoint.__annotations__ = target_method.__annotations__
 
     decorator(f"/{name}", response_model=None)(endpoint)
@@ -66,13 +68,13 @@ class HttpService(BaseService):
     def __init__(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
         super().__init__()
         try:
-            import uvicorn
+            import uvicorn  # noqa
             from fastapi import FastAPI
         except ImportError:
             raise ImportError("FastAPI or uvicorn is not installed")
         self.app = FastAPI(*args, **kwargs)
         self.server: Optional[Server] = None
-        self.server_task = None
+        self.server_task: Optional[Task[Any]] = None
 
     def add(
         self,
@@ -103,13 +105,14 @@ class HttpService(BaseService):
             self.server.should_exit = True
             await self.server_task
 
-    def run(self, host: str = "127.0.0.1", port: int = 8000) -> Self:
+    def run(self, host: str = "127.0.0.1", port: int = 8000) -> Self:  # type: ignore[override]
         import uvicorn
 
         uvicorn.run(self.app, host=host, port=port)
         return self
 
-    def stop(self) -> None:
+    def stop(self) -> Self:
         import asyncio
 
         asyncio.run(self.async_stop())
+        return self

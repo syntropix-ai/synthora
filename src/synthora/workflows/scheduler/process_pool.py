@@ -15,30 +15,48 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from concurrent.futures import ProcessPoolExecutor
-from typing import Optional
+from concurrent.futures import Future, ProcessPoolExecutor
+from typing import Any, Dict, List, Optional, Union
 
 from synthora.workflows.base_task import BaseTask
 from synthora.workflows.scheduler.base import BaseScheduler
 
 
 class ProcessPoolScheduler(BaseScheduler):
-    def __init__(self, max_worker: Optional[int] = None, flat_result: bool = False):
+    def __init__(
+        self,
+        max_worker: Optional[int] = None,
+        flat_result: bool = False,
+        immutable: bool = False,
+    ) -> None:
         self.max_worker = max_worker
-        super().__init__(flat_result)
+        super().__init__(flat_result, immutable)
 
-    def _run(self, executor, pre, current, *args, **kwargs):
+    def _run(  # type: ignore[override]
+        self,
+        executor: ProcessPoolExecutor,
+        pre: Optional[List[Union["BaseScheduler", BaseTask]]],
+        current: Union["BaseScheduler", BaseTask],
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> Future[Any]:
         prev_args = self._get_result(pre)
-        args = prev_args + list(args)
+        args = tuple(prev_args) + args
         if isinstance(current, BaseTask):
             return executor.submit(current, *args, **kwargs)
         elif isinstance(current, BaseScheduler):
             return executor.submit(current.run, *args, **kwargs)
 
-    async def _async_run(self, pre, current, *args, **kwargs):
+    async def _async_run(
+        self,
+        pre: Optional[List[Union["BaseScheduler", BaseTask]]],
+        current: Union["BaseScheduler", BaseTask],
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
         raise NotImplementedError("ProcessPoolScheduler does not support async tasks")
 
-    def step(self, *args, **kwargs):
+    def step(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
         if self.cursor >= len(self.tasks):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
@@ -49,10 +67,15 @@ class ProcessPoolScheduler(BaseScheduler):
                 task._result = future.result()
         self.cursor += 1
 
-    def run(self, *args, **kwargs):
+    def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
-        self.step(*args, **kwargs)
+        if self.immutable:
+            self.step(*self._args, **self._kwargs)
+        else:
+            args = tuple(self._args) + args
+            kwargs = {**self._kwargs, **kwargs}
+            self.step(*args, **kwargs)
         while self.cursor < len(self.tasks):
             self.step()
         self._result = self._get_result(self.tasks[-1])
@@ -60,8 +83,8 @@ class ProcessPoolScheduler(BaseScheduler):
             self._result = self._result[0]
         return self._result
 
-    async def async_step(self, *args, **kwargs):
+    async def async_step(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
         raise NotImplementedError("ProcessPoolScheduler does not support async tasks")
 
-    async def async_run(self, *args, **kwargs):
+    async def async_run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
         raise NotImplementedError("ProcessPoolScheduler does not support async tasks")

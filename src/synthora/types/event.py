@@ -88,6 +88,7 @@ class TraceEvent(BaseModel):
             id=uuid.uuid4(),
             timestamp=datetime.now().timestamp(),
             event_type=type,
+            event_name=None,
             data=data,
             stack=stack,
             current=current,

@@ -16,32 +16,124 @@
 #
 
 from abc import ABC
+from copy import deepcopy
+from typing import Any, Callable, Dict, Iterable, List, Optional, Self, Union
 
 from synthora.workflows.base_task import AsyncTask, BaseTask
 
 
 class BaseScheduler(ABC):
-    def __init__(self, flat_result: bool = False):
+    def __init__(self, flat_result: bool = False, immutable: bool = False) -> None:
         self.flat_result = flat_result
-        self.states = {}
-        self.tasks = []
+        self.states: Dict[str, Any] = {}
+        self.tasks: List[List[Union[BaseScheduler, BaseTask]]] = []
         self.cursor = 0
-        self._result = None
+        self._result: Optional[Any] = None
+        self.immutable = immutable
+        self._args: List[Any] = []
+        self._kwargs: Dict[str, Any] = {}
+        self.on_error: Optional[Callable[..., Any]] = None
+        self.state = None
+        self.meta_data: Dict[str, Any] = {}
 
-    def result(self):
+    def signature(
+        self,
+        args: List[Any],
+        kwargs: Dict[str, Any],
+        immutable: bool = False,
+        on_error: Optional[Callable[..., Any]] = None,
+    ) -> Self:
+        self._args += list(args)
+        self._kwargs.update(kwargs)
+        self.immutable = immutable
+        self.on_error = on_error
+        return self
+
+    def s(self, *args: Any, **kwargs: Dict[str, Any]) -> Self:
+        self._args += list(args)
+        self._kwargs.update(kwargs)
+        return self
+
+    def si(self, *args: Any, **kwargs: Dict[str, Any]) -> Self:
+        self._args += list(args)
+        self._kwargs.update(kwargs)
+        self.immutable = True
+        return self
+
+    def set_immutable(self, immutable: bool) -> Self:
+        self.immutable = immutable
+        return self
+
+    @classmethod
+    def chain(
+        cls,
+        *tasks: Union[
+            List[Union["BaseScheduler", BaseTask]], Union["BaseScheduler", BaseTask]
+        ],
+        **kwargs: Dict[str, Any],
+    ) -> Self:
+        return cls(**kwargs).add_tasks(*tasks)  # type: ignore[arg-type]
+
+    @classmethod
+    def group(
+        cls,
+        *tasks: Union[
+            List[Union["BaseScheduler", BaseTask]], Union["BaseScheduler", BaseTask]
+        ],
+        **kwargs: Dict[str, Any],
+    ) -> Self:
+        return cls(**kwargs).add_task_group(tasks)  # type: ignore[arg-type]
+
+    @classmethod
+    def map(
+        cls,
+        workflow: Union["BaseScheduler", BaseTask],
+        data: Iterable[Any],
+        config: Dict[str, Any] = {},
+    ) -> Self:
+        scheduler = cls(**config)
+        tasks = [deepcopy(workflow).s(item) for item in data]
+        return scheduler.add_task_group(tasks)
+
+    @classmethod
+    def starmap(
+        cls,
+        workflow: Union["BaseScheduler", BaseTask],
+        data: List[Any],
+        config: Dict[str, Any] = {},
+    ) -> Self:
+        scheduler = cls(**config)
+        tasks = []
+        for item in data:
+            tasks.append(
+                deepcopy(workflow).s(**item)
+                if isinstance(item, dict)
+                else deepcopy(workflow).s(*item)
+            )
+        return scheduler.add_task_group(tasks)
+
+    def result(self) -> Optional[Any]:
         return self._result
 
-    def add_task(self, task):
+    def add_task(self, task: Union["BaseScheduler", BaseTask]) -> Self:
+        if not isinstance(task, BaseTask) and not isinstance(task, BaseScheduler):
+            raise ValueError("Invalid value, must be a Task or Scheduler")
         self.tasks.append([task])
+        return self
 
-    def add_tasks(self, *tasks):
+    def add_tasks(self, *tasks: Union["BaseScheduler", BaseTask]) -> Self:
         for task in tasks:
             self.add_task(task)
+        return self
 
-    def add_task_group(self, group):
+    def add_task_group(self, group: List[Union["BaseScheduler", BaseTask]]) -> Self:
+        for task in group:
+            if not isinstance(task, BaseTask) and not isinstance(task, BaseScheduler):
+                raise ValueError("Invalid value, must be a Task or Scheduler")
         self.tasks.append(list(group))
+        return self
 
-    def __or__(self, value):
+    def __or__(self, value: Union["BaseScheduler", BaseTask]) -> Self:
         if isinstance(value, BaseTask) or isinstance(value, BaseScheduler):
             if not self.tasks:
                 self.add_task(value)
@@ -51,43 +143,57 @@ class BaseScheduler(ABC):
         else:
             raise ValueError("Invalid value, must be a Task or Scheduler")
 
-    def __rshift__(self, value):
+    def __rshift__(self, value: Union["BaseScheduler", BaseTask]) -> Self:
         if isinstance(value, BaseTask) or isinstance(value, BaseScheduler):
             self.add_task(value)
             return self
         else:
             raise ValueError("Invalid value, must be a Task or Scheduler")
 
-    def _get_result(self, tasks):
+    def _get_result(
+        self, tasks: Optional[List[Union["BaseScheduler", BaseTask]]]
+    ) -> List[Any]:
         if tasks is None:
             return []
-        result = []
+        result: List[Any] = []
         for task in tasks:
             if task.flat_result:
-                result.extend(task.result())
+                result.extend(task.result())  # type: ignore[arg-type]
             else:
                 result.append(task.result())
         return result
 
-    def _run(self, pre, current, *args, **kwargs):
+    def _run(
+        self,
+        pre: Optional[List[Union["BaseScheduler", BaseTask]]],
+        current: Union["BaseScheduler", BaseTask],
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
         prev_args = self._get_result(pre)
-        args = prev_args + list(args)
+        _args = prev_args + list(args)
         if isinstance(current, BaseTask):
-            current(*args, **kwargs)
+            current(*_args, **kwargs)
         elif isinstance(current, BaseScheduler):
-            current.run(*args, **kwargs)
+            current.run(*_args, **kwargs)
 
-    async def _async_run(self, pre, current, *args, **kwargs):
+    async def _async_run(
+        self,
+        pre: Optional[List[Union["BaseScheduler", BaseTask]]],
+        current: Union["BaseScheduler", BaseTask],
+        *args: Any,
+        **kwargs: Dict[str, Any],
+    ) -> None:
         prev_args = self._get_result(pre)
-        args = prev_args + list(args)
+        args = tuple(prev_args) + args
         if isinstance(current, AsyncTask):
             await current(*args, **kwargs)
         elif isinstance(current, BaseTask):
             current(*args, **kwargs)
         elif isinstance(current, BaseScheduler):
-            current.async_run(*args, **kwargs)
+            await current.async_run(*args, **kwargs)
 
-    def step(self, *args, **kwargs):
+    def step(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
         if self.cursor >= len(self.tasks):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
@@ -96,10 +202,15 @@ class BaseScheduler(ABC):
             self._run(pre, task, *args, **kwargs)
         self.cursor += 1
 
-    def run(self, *args, **kwargs):
+    def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
-        self.step(*args, **kwargs)
+        if self.immutable:
+            self.step(*self._args, **self._kwargs)
+        else:
+            args = tuple(self._args) + args
+            kwargs = {**self._kwargs, **kwargs}
+            self.step(*args, **kwargs)
         while self.cursor < len(self.tasks):
             self.step()
         self._result = self._get_result(self.tasks[-1])
@@ -107,7 +218,7 @@ class BaseScheduler(ABC):
             self._result = self._result[0]
         return self._result
 
-    async def async_step(self, *args, **kwargs):
+    async def async_step(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
         if self.cursor >= len(self.tasks):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
@@ -116,10 +227,15 @@ class BaseScheduler(ABC):
             await self._async_run(pre, task, *args, **kwargs)
         self.cursor += 1
 
-    async def async_run(self, *args, **kwargs):
+    async def async_run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
-        await self.async_step(*args, **kwargs)
+        if self.immutable:
+            await self.async_step(*self._args, **self._kwargs)
+        else:
+            args = tuple(self._args) + args
+            kwargs = {**self._kwargs, **kwargs}
+            await self.async_step(*args, **kwargs)
         while self.cursor < len(self.tasks):
             await self.async_step()
         self._result = self._get_result(self.tasks[-1])
