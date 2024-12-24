@@ -15,8 +15,8 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Union
+from abc import ABC
+from typing import List, Union
 
 from synthora.agents.base import BaseAgent
 from synthora.models.base import BaseModelBackend
@@ -30,13 +30,8 @@ class BaseExecutor(ABC):
     def __init__(self, can_be_root: bool) -> None:
         self.can_be_root = can_be_root
 
-    @abstractmethod
-    def wrap(
-        self, items: Union[ItemType, List[ItemType]]
-    ) -> Union[ItemType, List[ItemType]]: ...
+    def wrap(self, item: ItemType) -> ItemType:
+        return item
 
-    @abstractmethod
-    def submit(self, func: Callable, *args: Any, **kwargs: Dict[str, Any]): ...
-
-    @abstractmethod
-    def run(self): ...
+    def wraps(self, items: List[ItemType]) -> List[ItemType]:
+        return [self.wrap(item) for item in items]

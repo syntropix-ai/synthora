@@ -17,7 +17,7 @@
 
 from typing import Any, AsyncGenerator, Dict, Generator, List, Union, override
 
-from openai import AsyncOpenAI, OpenAI  # type: ignore
+from openai import AsyncOpenAI, OpenAI
 
 from synthora.messages.base import BaseMessage
 from synthora.models.openai_chat import OpenAIChatBackend
