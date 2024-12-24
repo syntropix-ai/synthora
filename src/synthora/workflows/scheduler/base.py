@@ -19,6 +19,7 @@ from abc import ABC
 from copy import deepcopy
 from typing import Any, Callable, Dict, Iterable, List, Optional, Self, Union
 
+from synthora.types.enums import TaskState
 from synthora.workflows.base_task import AsyncTask, BaseTask
 
 
@@ -33,7 +34,7 @@ class BaseScheduler(ABC):
         self._args: List[Any] = []
         self._kwargs: Dict[str, Any] = {}
         self.on_error: Optional[Callable[..., Any]] = None
-        self.state = None
+        self.state = TaskState.PENDING
         self.meta_data: Dict[str, Any] = {}
 
     def signature(
@@ -62,6 +63,10 @@ class BaseScheduler(ABC):
 
     def set_immutable(self, immutable: bool) -> Self:
         self.immutable = immutable
+        return self
+
+    def set_flat_result(self, flat_result: bool) -> Self:
+        self.flat_result = flat_result
         return self
 
     @classmethod

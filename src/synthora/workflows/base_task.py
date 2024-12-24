@@ -16,7 +16,13 @@
 #
 
 from abc import ABC
-from typing import Any, Callable, Dict, List, Optional, Self
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Self, Union
+
+from synthora.types.enums import TaskState
+
+
+if TYPE_CHECKING:
+    from synthora.workflows.scheduler.base import BaseScheduler
 
 
 class BaseTask(ABC):
@@ -28,7 +34,7 @@ class BaseTask(ABC):
     ) -> None:
         self.func = func
         self.immutable = immutable
-        self.state = None
+        self.state = TaskState.PENDING
         self.meta_data: Dict[str, Any] = {}
         self.on_error: Optional[Callable[..., Any]] = None
         self._args: List[Any] = []
@@ -75,6 +81,16 @@ class BaseTask(ABC):
         kwargs.update(self._kwargs)
         self._result = self.func(*args, **kwargs)
         return self._result
+
+    def __or__(self, other: Union["BaseScheduler", "BaseTask"]) -> "BaseScheduler":
+        from synthora.utils.default import DEFAULT_GROUP_SCHEDULER
+
+        return DEFAULT_GROUP_SCHEDULER() | self | other
+
+    def __rshift__(self, other: Union["BaseScheduler", "BaseTask"]) -> "BaseScheduler":
+        from synthora.utils.default import DEFAULT_CHAIN_SCHEDULER
+
+        return DEFAULT_CHAIN_SCHEDULER() >> self >> other
 
 
 class AsyncTask(BaseTask):
