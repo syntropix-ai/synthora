@@ -41,7 +41,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
 
     def run(
         self,
-        prompt: Union[str, BaseMessage],
+        prompt: Union[str, BaseMessage],  # type: ignore[override]
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> Union[BaseMessage, Generator[BaseMessage, None, None]]:

@@ -16,9 +16,10 @@
 #
 
 from synthora.workflows import BaseTask, ProcessPoolScheduler
+from synthora.workflows.scheduler.base import BaseScheduler
 
 
-def add(x, y):
+def add(x: int, y: int) -> int:
     return x + y
 
 
@@ -28,21 +29,27 @@ flow >> BaseTask(add) >> BaseTask(add).s(1) >> BaseTask(add).s(2) >> BaseTask(ad
 
 print(flow.run(1, 2))
 
-flow = ProcessPoolScheduler()
+flow1 = ProcessPoolScheduler()
 
-flow | BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).s(3)
+flow1 | BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).s(3)
+flow1.s(1)
 
-print(flow.run(1))
+print(flow1.run())
 
-flow = ProcessPoolScheduler()
+flow2 = BaseScheduler.chain(
+    BaseTask(add), BaseTask(add).s(1), BaseTask(add).s(2), BaseTask(add).s(3)
+)
+print(flow2.run(1, 1))
 
-flow | BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).si(1, 2)
+flow3 = BaseScheduler.group(
+    BaseTask(add),
+    BaseTask(add),
+    BaseTask(add),
+)
+print(flow3.run(1, 1))
 
-print(flow.run(1))
+flow4 = BaseScheduler.map(BaseTask(add).s(1), range(5))
+print(flow4.run())
 
-flow1 = ProcessPoolScheduler(flat_result=True)
-flow2 = ProcessPoolScheduler()
-
-flow1 | BaseTask(add).si(1, 1) | BaseTask(add).si(1, 2)
-flow2 >> BaseTask(add).s(1) >> flow1 >> BaseTask(add) | BaseTask(add).si(1, 2)
-print(flow2.run(1))
+flow5 = BaseScheduler.starmap(BaseTask(add), [(1, 1), (1, 2), (1, 3)])
+print(flow5.run())
