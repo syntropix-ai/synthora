@@ -118,3 +118,10 @@ class CallBackEvent(str, Enum):
     AGENT_END = "on_agent_end"
     AGENT_ERROR = "on_agent_error"
     CUSTOM = "custom"
+
+
+class TaskState(str, Enum):
+    PENDING = "pending"
+    RUNNING = "running"
+    SUCCESS = "success"
+    FAILURE = "failure"
