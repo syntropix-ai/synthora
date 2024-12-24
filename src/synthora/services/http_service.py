@@ -16,12 +16,16 @@
 #
 
 import inspect
-from typing import Any, Dict, Literal, Optional, Self, Union
+from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Self, Union
 
 from synthora.agents.base import BaseAgent
 from synthora.models.base import BaseModelBackend
 from synthora.services.base import BaseService
 from synthora.toolkits.base import BaseFunction
+
+
+if TYPE_CHECKING:
+    from uvicorn import Server
 
 
 def _add_agent_to_app(
@@ -67,7 +71,7 @@ class HttpService(BaseService):
         except ImportError:
             raise ImportError("FastAPI or uvicorn is not installed")
         self.app = FastAPI(*args, **kwargs)
-        self.server = None
+        self.server: Optional[Server] = None
         self.server_task = None
 
     def add(
@@ -83,6 +87,7 @@ class HttpService(BaseService):
             _add_agent_to_app(self.app, target, name, method, use_async)
         else:
             raise NotImplementedError(f"Unsupported target type: {type(target)}")
+        return self
 
     async def async_run(self, host: str = "127.0.0.1", port: int = 8000) -> None:
         import asyncio
@@ -98,10 +103,11 @@ class HttpService(BaseService):
             self.server.should_exit = True
             await self.server_task
 
-    def run(self, host: str = "127.0.0.1", port: int = 8000) -> None:
+    def run(self, host: str = "127.0.0.1", port: int = 8000) -> Self:
         import uvicorn
 
         uvicorn.run(self.app, host=host, port=port)
+        return self
 
     def stop(self) -> None:
         import asyncio

@@ -20,6 +20,7 @@ from typing import Callable, Dict, Optional, Self, Union
 
 from synthora.agents.base import BaseAgent
 from synthora.models.base import BaseModelBackend
+from synthora.toolkits.base import BaseFunction
 
 
 class BaseService(ABC):
@@ -29,7 +30,7 @@ class BaseService(ABC):
     @abstractmethod
     def add(
         self,
-        target: Union[Callable, BaseAgent, BaseModelBackend],
+        target: Union[BaseFunction, BaseAgent, BaseModelBackend],
         name: Optional[str] = None,
     ) -> Self: ...
 

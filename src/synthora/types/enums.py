@@ -117,3 +117,4 @@ class CallBackEvent(str, Enum):
     AGENT_START = "on_agent_start"
     AGENT_END = "on_agent_end"
     AGENT_ERROR = "on_agent_error"
+    CUSTOM = "custom"

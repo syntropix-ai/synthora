@@ -17,7 +17,7 @@
 
 import uuid
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -36,6 +36,7 @@ class TraceEvent(BaseModel):
         id (UUID): Unique identifier for the trace event
         timestamp (float): Unix timestamp when the event occurred
         event_type (CallBackEvent): Type of the callback event (e.g., agent_start, llm_end)
+        event_name (Optional[str]): Name of the event, defaults to None
         data (Any): The primary data associated with the event (e.g., messages, results)
         stack (List[Node]): The execution stack at the time of the event
         current (Node): The currently active node when the event occurred
@@ -45,6 +46,7 @@ class TraceEvent(BaseModel):
     id: UUID
     timestamp: float
     event_type: CallBackEvent
+    event_name: Optional[str]
 
     data: Any
     stack: List[Node]

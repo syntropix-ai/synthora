@@ -18,7 +18,7 @@
 import os
 from typing import Any, AsyncGenerator, Dict, Generator, List, Optional, Union, override
 
-from openai import AsyncOpenAI, OpenAI  # type: ignore
+from openai import AsyncOpenAI, OpenAI
 
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.messages.base import BaseMessage
