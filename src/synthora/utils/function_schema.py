@@ -18,7 +18,7 @@
 from inspect import Parameter, signature
 from typing import Any, Callable, Dict
 
-from docstring_parser import parse  # type: ignore[import-not-found]
+from docstring_parser import parse
 from pydantic import create_model
 from pydantic.fields import FieldInfo
 

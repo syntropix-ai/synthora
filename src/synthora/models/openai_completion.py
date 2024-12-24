@@ -17,7 +17,7 @@
 
 from typing import Any, AsyncGenerator, Dict, Generator, List, Union, override
 
-from openai import AsyncOpenAI, OpenAI  # type: ignore
+from openai import AsyncOpenAI, OpenAI
 
 from synthora.messages.base import BaseMessage
 from synthora.models.openai_chat import OpenAIChatBackend
@@ -41,7 +41,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
 
     def run(
         self,
-        prompt: Union[str, BaseMessage],
+        prompt: Union[str, BaseMessage],  # type: ignore[override]
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> Union[BaseMessage, Generator[BaseMessage, None, None]]:

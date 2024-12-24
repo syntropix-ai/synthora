@@ -15,23 +15,34 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from abc import ABC
-from typing import List, Union
-
-from synthora.agents.base import BaseAgent
-from synthora.models.base import BaseModelBackend
-from synthora.toolkits.base import BaseFunction
+from synthora.workflows import BaseScheduler, BaseTask
 
 
-ItemType = Union[BaseAgent, BaseFunction, BaseModelBackend]
+def add(x: int, y: int) -> int:
+    return x + y
 
 
-class BaseExecutor(ABC):
-    def __init__(self, can_be_root: bool) -> None:
-        self.can_be_root = can_be_root
+flow = BaseScheduler()
 
-    def wrap(self, item: ItemType) -> ItemType:
-        return item
+flow >> BaseTask(add) >> BaseTask(add).s(1) >> BaseTask(add).s(2) >> BaseTask(add).s(3)
 
-    def wraps(self, items: List[ItemType]) -> List[ItemType]:
-        return [self.wrap(item) for item in items]
+print(flow.run(1, 2))
+
+flow = BaseScheduler()
+
+flow | BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).s(3)
+
+print(flow.run(1))
+
+flow = BaseScheduler()
+
+flow | BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).si(1, 2)
+
+print(flow.run(1))
+
+flow1 = BaseScheduler(flat_result=True)
+flow2 = BaseScheduler()
+
+flow1 | BaseTask(add).si(1, 1) | BaseTask(add).si(1, 2)
+flow2 >> BaseTask(add).s(1) >> flow1 >> BaseTask(add) | BaseTask(add).si(1, 2)
+print(flow2.run(1))

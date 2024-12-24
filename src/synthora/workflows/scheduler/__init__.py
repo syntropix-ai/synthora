@@ -15,23 +15,9 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from abc import ABC
-from typing import List, Union
-
-from synthora.agents.base import BaseAgent
-from synthora.models.base import BaseModelBackend
-from synthora.toolkits.base import BaseFunction
+from .base import BaseScheduler
+from .process_pool import ProcessPoolScheduler
+from .thread_pool import ThreadPoolScheduler
 
 
-ItemType = Union[BaseAgent, BaseFunction, BaseModelBackend]
-
-
-class BaseExecutor(ABC):
-    def __init__(self, can_be_root: bool) -> None:
-        self.can_be_root = can_be_root
-
-    def wrap(self, item: ItemType) -> ItemType:
-        return item
-
-    def wraps(self, items: List[ItemType]) -> List[ItemType]:
-        return [self.wrap(item) for item in items]
+__all__ = ["BaseScheduler", "ProcessPoolScheduler", "ThreadPoolScheduler"]
