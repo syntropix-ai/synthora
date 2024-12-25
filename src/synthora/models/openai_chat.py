@@ -96,6 +96,10 @@ class OpenAIChatBackend(BaseModelBackend):
         if not isinstance(messages, list):
             messages = [messages]
         stream = self.config.get("stream", False)
+        messages = [message.to_openai_message() for message in messages]
+        kwargs = {**self.config, **kwargs}
+        kwargs["model"] = self.model_type
+        kwargs["messages"] = messages
         self.callback_manager.call(
             CallBackEvent.LLM_START,
             self.source,
@@ -104,11 +108,8 @@ class OpenAIChatBackend(BaseModelBackend):
             *args,
             **kwargs,
         )
-        messages = [message.to_openai_message() for message in messages]
         try:
-            resp = self.client.chat.completions.create(
-                messages=messages, model=self.model_type, **self.config
-            )
+            resp = self.client.chat.completions.create(*args, **kwargs)
         except Exception as e:
             self.callback_manager.call(
                 CallBackEvent.LLM_ERROR, self.source, e, stream, *args, **kwargs
