@@ -18,7 +18,5 @@
 from .basic_context import BasicContext
 from .multiprocess_context import MultiProcessContext
 
-__all__ = [
-    "BasicContext",
-    "MultiProcessContext"
-]
+
+__all__ = ["BasicContext", "MultiProcessContext"]

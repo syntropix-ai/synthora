@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from synthora.workflows import BaseScheduler, BaseTask, task
+from synthora.workflows import task
 
 
 @task
@@ -27,8 +27,10 @@ def add1(x: int, y: int) -> int:
 def add2(x: int, y: int) -> int:
     return x + y
 
+
 @task
 async def add3(x: int, y: int) -> int:
     return x + y
+
 
 print(add1, add2, add3)
