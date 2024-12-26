@@ -16,7 +16,7 @@
 #
 
 from threading import Lock
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Union, cast
 
 from synthora.types.enums import TaskState
 from synthora.workflows.base_task import BaseTask
@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from synthora.workflows.scheduler.base import BaseScheduler
 
 
-class ManagerContext(dict, BaseContext):
+class ManagerContext(dict, BaseContext):  # type: ignore[type-arg]
     def __init__(self, data: Any, lock: Lock, workflow: "BaseScheduler") -> None:
         super().__init__()
         self._data = data
@@ -36,7 +36,7 @@ class ManagerContext(dict, BaseContext):
 
     @property
     def lock(self) -> Lock:
-        return self._data["__lock"]
+        return cast(Lock, self._data["__lock"])
 
     def acquire(self) -> None:
         self.lock.acquire()
@@ -98,7 +98,7 @@ class ManagerContext(dict, BaseContext):
 
     @property
     def workflow(self) -> "BaseScheduler":
-        return self._data["__workflow"]
+        return cast("BaseScheduler", self._data["__workflow"])
 
-    def __contains__(self, key):
+    def __contains__(self, key: Any) -> Any:
         return self._data.__contains__(key)

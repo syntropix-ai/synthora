@@ -37,19 +37,4 @@ flow | BaseTask(add, "2").s(1) | BaseTask(add, "3").s(2) | BaseTask(add, "4").s(
 # ctx._data["__workflow"] = flow
 # flow.set_context(ctx._data)
 
-print(flow.run(1), flow.context["ans"])
-print(flow.get_task("2").state, flow.context.get_state("2"))
-# flow = flow.context.workflow
-# print(flow.get_task("2").state)
-# for task in flow.tasks[0]:
-#     print(task.state)
-# print(flow.context.get_state("2"))
-
-
-# flow = BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).si(1, 2)
-
-# print(flow.run(1))
-
-# flow1 = (BaseTask(add).si(1, 1) | BaseTask(add).si(1, 2)).set_flat_result(True)
-# flow2 = BaseTask(add).s(1) >> flow1 >> (BaseTask(add) | BaseTask(add).si(1, 2))
-# print(flow2.run(1))
+print(flow.run(1), flow.get_context()["ans"])

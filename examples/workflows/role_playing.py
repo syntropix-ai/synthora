@@ -16,15 +16,12 @@
 #
 
 
-import asyncio
-import json
 import warnings
 
 from synthora.agents import VanillaAgent
-from synthora.callbacks import RichOutputHandler
 from synthora.configs import AgentConfig
+from synthora.types.enums import Result
 from synthora.workflows import BaseTask
-from synthora.workflows.scheduler.process_pool import ProcessPoolScheduler
 from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
 
 
@@ -36,8 +33,9 @@ agent1 = VanillaAgent.from_config(config)
 agent2 = VanillaAgent.from_config(config)
 
 
-def convert(resp):
+def convert(resp: Result[str, Exception]) -> str:
     return resp.unwrap()
+
 
 prompt1 = "Please debate: What came first, the chicken or the egg? Your argument is that the egg came first."
 prompt2 = "Please debate: What came first, the chicken or the egg? Your argument is that the chicken came first."
@@ -46,7 +44,7 @@ for round in range(2):
     flow1 = (BaseTask(agent1.run) >> BaseTask(convert)).s(prompt1)
     flow2 = (BaseTask(agent2.run) >> BaseTask(convert)).s(prompt2)
     flow = ThreadPoolScheduler.group(flow1, flow2)
-    
+
     prompt2, prompt1 = flow.run()
     print(prompt1)
     print("=" * 30)

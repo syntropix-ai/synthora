@@ -35,19 +35,4 @@ flow = (
     >> BaseTask(add, "9").s(3)
 )
 
-print(flow.run(1, 2), flow.context["ans"])
-print(flow.get_task("3").state, flow.context.get_state("3"))
-
-
-# flow = BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).s(3)
-
-# print(flow.run(1))
-
-
-# flow = BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).si(1, 2)
-
-# print(flow.run(1))
-
-# flow1 = (BaseTask(add).si(1, 1) | BaseTask(add).si(1, 2)).set_flat_result(True)
-# flow2 = BaseTask(add).s(1) >> flow1 >> (BaseTask(add) | BaseTask(add).si(1, 2))
-# print(flow2.run(1))
+print(flow.run(1, 2), flow.get_context()["ans"])
