@@ -15,29 +15,8 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Optional, Self, Union
-
-from synthora.agents.base import BaseAgent
-from synthora.models.base import BaseModelBackend
-from synthora.toolkits.base import BaseFunction
+from .basic_context import BasicContext
+from .multiprocess_context import MultiProcessContext
 
 
-class BaseService(ABC):
-    def __init__(self) -> None:
-        self.service_map: Dict[
-            str, Union[Callable[..., Any], BaseAgent, BaseModelBackend]
-        ] = {}
-
-    @abstractmethod
-    def add(
-        self,
-        target: Union[BaseFunction, BaseAgent, BaseModelBackend],
-        name: Optional[str] = None,
-    ) -> Self: ...
-
-    @abstractmethod
-    def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Self: ...
-
-    @abstractmethod
-    def stop(self) -> Self: ...
+__all__ = ["BasicContext", "MultiProcessContext"]

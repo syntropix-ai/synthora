@@ -19,8 +19,10 @@
 import asyncio
 import json
 import warnings
+from typing import Any
 
 import fastapi
+from fastapi import BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from synthora.agents import ReactAgent
@@ -43,14 +45,13 @@ app.add_middleware(
 warnings.filterwarnings("ignore")
 
 config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
-from fastapi import BackgroundTasks
 
 
 tracer = SimpleTracer()
 
 
 @app.get("/")
-async def read_root(background_tasks: BackgroundTasks):
+async def read_root(background_tasks: BackgroundTasks) -> StreamingResponse:
     # with open("result.json", "r") as f:
     #     data = json.load(f)
     global tracer
@@ -65,7 +66,7 @@ async def read_root(background_tasks: BackgroundTasks):
         agent.async_run("Search Openai on Wikipedia. Output Your thought first!")
     )
 
-    async def stream():
+    async def stream() -> Any:
         while True:
             if tracer.events:
                 item = tracer.events.pop(0).to_dict()

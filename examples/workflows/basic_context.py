@@ -14,3 +14,25 @@
 # limitations under the License.
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
+
+from synthora.workflows import BaseTask
+from synthora.workflows.context.base import BaseContext
+
+
+def add(ctx: BaseContext, x: int, y: int) -> int:
+    if "ans" not in ctx:
+        ctx["ans"] = [x + y]
+    else:
+        ctx["ans"].append(x + y)
+    print(ctx.get_state(f"{x + y}"))
+    return x + y
+
+
+flow = (
+    BaseTask(add, "3")
+    >> BaseTask(add, "4").s(1)
+    >> BaseTask(add, "6").s(2)
+    >> BaseTask(add, "9").s(3)
+)
+
+print(flow.run(1, 2), flow.get_context()["ans"])

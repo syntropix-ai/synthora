@@ -55,7 +55,7 @@ def search_wikipedia(
         - Requires the 'wikipedia' package to be installed
     """
     try:
-        import wikipedia  # type: ignore[import-not-found]
+        import wikipedia
     except ImportError:
         raise ImportError(
             "Could not import wikipedia. Please install it using `pip install wikipedia`"

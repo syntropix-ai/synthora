@@ -15,28 +15,23 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, List, Union
-
-from synthora.agents.base import BaseAgent
-from synthora.models.base import BaseModelBackend
-from synthora.toolkits.base import BaseFunction
+from synthora.workflows import BaseTask
+from synthora.workflows.context.base import BaseContext
+from synthora.workflows.scheduler.process_pool import ProcessPoolScheduler
 
 
-ItemType = Union[BaseAgent, BaseFunction, BaseModelBackend]
+def add(ctx: BaseContext, x: int, y: int) -> int:
+    with ctx:
+        print(ctx.get_state(f"{x + y}"))
+        if "ans" not in ctx:
+            ctx["ans"] = [x + y]
+        else:
+            ctx["ans"] = ctx["ans"] + [x + y]
+    return x + y
 
 
-class BaseExecutor(ABC):
-    def __init__(self, can_be_root: bool) -> None:
-        self.can_be_root = can_be_root
+flow = ProcessPoolScheduler()
+flow | BaseTask(add, "2").s(1) | BaseTask(add, "3").s(2) | BaseTask(add, "4").s(3)
 
-    @abstractmethod
-    def wrap(
-        self, items: Union[ItemType, List[ItemType]]
-    ) -> Union[ItemType, List[ItemType]]: ...
 
-    @abstractmethod
-    def submit(self, func: Callable, *args: Any, **kwargs: Dict[str, Any]): ...
-
-    @abstractmethod
-    def run(self): ...
+print(flow.run(1), flow.get_context()["ans"])
