@@ -32,9 +32,6 @@ def add(ctx: BaseContext, x: int, y: int) -> int:
 
 flow = ProcessPoolScheduler()
 flow | BaseTask(add, "2").s(1) | BaseTask(add, "3").s(2) | BaseTask(add, "4").s(3)
-# flow.need_context(flow.tasks[0][0])
-# ctx = ManagerContext(flow)
-# ctx._data["__workflow"] = flow
-# flow.set_context(ctx._data)
+
 
 print(flow.run(1), flow.get_context()["ans"])
