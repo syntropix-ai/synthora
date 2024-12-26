@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from synthora.workflows import BaseScheduler, BaseTask
+from synthora.workflows import BaseTask
 
 
 def add(x: int, y: int) -> int:
@@ -39,3 +39,5 @@ print(flow.run(1))
 flow1 = (BaseTask(add).si(1, 1) | BaseTask(add).si(1, 2)).set_flat_result(True)
 flow2 = BaseTask(add).s(1) >> flow1 >> (BaseTask(add) | BaseTask(add).si(1, 2))
 print(flow2.run(1))
+
+print(flow2)

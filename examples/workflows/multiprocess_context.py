@@ -15,19 +15,18 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from synthora.types.enums import TaskState
-from synthora.workflows import BaseScheduler, BaseTask
+from synthora.workflows import BaseTask
 from synthora.workflows.context.base import BaseContext
-from synthora.workflows.context.manager_context import ManagerContext
 from synthora.workflows.scheduler.process_pool import ProcessPoolScheduler
+
 
 def add(ctx: BaseContext, x: int, y: int) -> int:
     with ctx:
         print(ctx.get_state(f"{x + y}"))
-        if 'ans' not in ctx:
-            ctx['ans'] = [x + y]
+        if "ans" not in ctx:
+            ctx["ans"] = [x + y]
         else:
-            ctx['ans'] = ctx['ans'] + [x + y]
+            ctx["ans"] = ctx["ans"] + [x + y]
     return x + y
 
 
@@ -38,7 +37,7 @@ flow | BaseTask(add, "2").s(1) | BaseTask(add, "3").s(2) | BaseTask(add, "4").s(
 # ctx._data["__workflow"] = flow
 # flow.set_context(ctx._data)
 
-print(flow.run(1), flow.context['ans'])
+print(flow.run(1), flow.context["ans"])
 print(flow.get_task("2").state, flow.context.get_state("2"))
 # flow = flow.context.workflow
 # print(flow.get_task("2").state)

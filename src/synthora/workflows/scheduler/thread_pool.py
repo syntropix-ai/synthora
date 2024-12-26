@@ -16,13 +16,11 @@
 #
 
 from concurrent.futures import Future, ThreadPoolExecutor
-from multiprocessing.managers import SyncManager
 from typing import Any, Dict, List, Optional, Union, override
 
 from synthora.types.enums import TaskState
 from synthora.workflows.base_task import BaseTask
 from synthora.workflows.context.basic_context import BasicContext
-from synthora.workflows.context.manager_context import ManagerContext
 from synthora.workflows.scheduler.base import BaseScheduler
 
 
@@ -84,7 +82,7 @@ class ThreadPoolScheduler(BaseScheduler):
                 except:
                     task.state = TaskState.FAILURE
                     task.meta_data["error"] = future.exception()
-                    
+
         self.cursor += 1
 
     def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
@@ -92,7 +90,7 @@ class ThreadPoolScheduler(BaseScheduler):
             raise RuntimeError("No tasks to run")
         if self.context is None:
             self.set_context(BasicContext(self))
-            
+
         self.state = TaskState.RUNNING
         if self.immutable:
             self.step(*self._args, **self._kwargs)

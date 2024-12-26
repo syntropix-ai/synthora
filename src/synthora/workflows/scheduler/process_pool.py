@@ -21,8 +21,8 @@ from typing import Any, Dict, List, Optional, Union
 
 from synthora.types.enums import TaskState
 from synthora.workflows.base_task import BaseTask
-from synthora.workflows.scheduler.base import BaseScheduler
 from synthora.workflows.context.manager_context import ManagerContext
+from synthora.workflows.scheduler.base import BaseScheduler
 
 
 class ProcessPoolScheduler(BaseScheduler):
@@ -75,7 +75,7 @@ class ProcessPoolScheduler(BaseScheduler):
                     self.context.set_state(task.name, TaskState.RUNNING)
                     task.state = TaskState.RUNNING
                     futures.append(self._run(pool, pre, task, *args, **kwargs))
-            
+
             as_completed(futures)
             for task, future in zip(current, futures):
                 try:
@@ -99,7 +99,8 @@ class ProcessPoolScheduler(BaseScheduler):
             manager.start()
             data = manager.dict()
             lock = manager.Lock()
-            self.set_context(ManagerContext(data, lock, self))
+            context = ManagerContext(data, lock, self)
+            self.set_context(context)
         self.state = TaskState.RUNNING
         self.context.set_state(self.name, TaskState.RUNNING)
         if self.immutable:
@@ -113,7 +114,7 @@ class ProcessPoolScheduler(BaseScheduler):
             if state != TaskState.RUNNING:
                 break
             self.step()
-        
+
         self._result = self._get_result(self.tasks[self.cursor - 1])
         if len(self._result) == 1:
             self._result = self._result[0]

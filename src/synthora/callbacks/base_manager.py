@@ -17,7 +17,7 @@
 
 from abc import ABC
 from typing import Any, Dict, List, Optional, Union
-from multiprocessing import shared_memory
+
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.types.enums import CallBackEvent
 from synthora.types.node import Node
