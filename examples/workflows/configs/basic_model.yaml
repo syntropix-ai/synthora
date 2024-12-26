@@ -14,3 +14,11 @@
 # limitations under the License.
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
+
+name: searcher
+model_type: gpt-4o
+backend: openai_chat
+config:
+  temperature: 0
+  top_p: 1.0
+  stream: true

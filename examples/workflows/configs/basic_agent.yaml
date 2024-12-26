@@ -14,3 +14,12 @@
 # limitations under the License.
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
+
+name: Vanilla
+type: vanilla
+model: !include basic_model.yaml
+prompt: "You are an AI Assistant. You are here to help me with my queries. Your name is vanilla."
+tools:
+  - synthora.toolkits.BasicMathToolkit
+  - target: synthora.agents.VanillaAgent
+    args: !include vanilla_agent.yaml

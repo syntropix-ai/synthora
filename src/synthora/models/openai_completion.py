@@ -17,7 +17,7 @@
 
 from typing import Any, AsyncGenerator, Dict, Generator, List, Union, override
 
-from openai import AsyncOpenAI, OpenAI  # type: ignore
+from openai import AsyncOpenAI, OpenAI
 
 from synthora.messages.base import BaseMessage
 from synthora.models.openai_chat import OpenAIChatBackend
@@ -41,7 +41,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
 
     def run(
         self,
-        prompt: Union[str, BaseMessage],
+        prompt: Union[str, BaseMessage],  # type: ignore[override]
         *args: Any,
         **kwargs: Dict[str, Any],
     ) -> Union[BaseMessage, Generator[BaseMessage, None, None]]:
@@ -56,7 +56,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             BaseMessage or Generator[BaseMessage, None, None]: Generated response(s)
             If stream=True, returns a generator of message chunks
         """
-        if not isinstance(self.client, OpenAI):
+        if not self.client or not isinstance(self.client, OpenAI):
             self.client = OpenAI(**self.kwargs)
         stream = self.config.get("stream", False)
         if isinstance(prompt, str):
@@ -139,7 +139,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             BaseMessage or AsyncGenerator[BaseMessage, None]: Generated response(s)
             If stream=True, returns an async generator of message chunks
         """
-        if not isinstance(self.client, AsyncOpenAI):
+        if not self.client or not isinstance(self.client, AsyncOpenAI):
             self.client = AsyncOpenAI(**self.kwargs)
         if not isinstance(messages, list):
             messages = [messages]

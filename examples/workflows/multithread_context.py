@@ -15,19 +15,22 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from typing import Any, Callable, Dict, List, Union
+from synthora.workflows import BaseTask
+from synthora.workflows.context.base import BaseContext
+from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
 
-from synthora.executors.base import BaseExecutor, ItemType
+
+def add(ctx: BaseContext, x: int, y: int) -> int:
+    with ctx:
+        print(ctx.get_state(f"{x + y}"))
+        if "ans" not in ctx:
+            ctx["ans"] = [x + y]
+        else:
+            ctx["ans"] = ctx["ans"] + [x + y]
+    return x + y
 
 
-class SequentialExecutor(BaseExecutor):
-    def __init__(self):
-        super().__init__(True)
+flow = ThreadPoolScheduler()
+flow | BaseTask(add, "2").s(1) | BaseTask(add, "3").s(2) | BaseTask(add, "4").s(3)
 
-    def wrap(
-        self, items: Union[ItemType, List[ItemType]]
-    ) -> Union[ItemType, List[ItemType]]:
-        return items
-
-    def submit(self, func: Callable, *args: Any, **kwargs: Dict[str, Any]):
-        pass
+print(flow.run(1))
