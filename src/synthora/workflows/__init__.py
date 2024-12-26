@@ -15,21 +15,23 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from typing import Any, Callable, Optional
-from .base_task import AsyncTask, BaseTask
-from .scheduler import BaseScheduler, ProcessPoolScheduler, ThreadPoolScheduler
-from .context import BasicContext, MultiProcessContext
 import inspect
+from typing import Any, Callable, Optional, Union
+
+from .base_task import AsyncTask, BaseTask
+from .context import BasicContext, MultiProcessContext
+from .scheduler import BaseScheduler, ProcessPoolScheduler, ThreadPoolScheduler
 
 
 def task(
-    func=None,
+    func: Optional[Callable[..., Any]] = None,
     *,
     name: Optional[str] = None,
     immutable: bool = False,
     flat_result: bool = False,
-):
+) -> Union[Callable[..., BaseTask], BaseTask]:
     if func is None:
+
         def decorator(inner_func: Callable[..., Any]) -> BaseTask:
             if inspect.iscoroutinefunction(inner_func):
                 return AsyncTask(
