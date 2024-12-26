@@ -114,7 +114,6 @@ class ProcessPoolScheduler(BaseScheduler):
             if state != TaskState.RUNNING:
                 break
             self.step()
-
         self._result = self._get_result(self.tasks[self.cursor - 1])
         if len(self._result) == 1:
             self._result = self._result[0]
