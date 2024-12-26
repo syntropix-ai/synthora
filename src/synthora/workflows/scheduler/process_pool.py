@@ -21,7 +21,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from synthora.types.enums import TaskState
 from synthora.workflows.base_task import BaseTask
-from synthora.workflows.context.manager_context import ManagerContext
+from synthora.workflows.context.multiprocess_context import MultiProcessContext
 from synthora.workflows.scheduler.base import BaseScheduler
 
 
@@ -29,7 +29,7 @@ class ProcessPoolScheduler(BaseScheduler):
     def __init__(
         self,
         name: Optional[str] = None,
-        context: Optional[ManagerContext] = None,
+        context: Optional[MultiProcessContext] = None,
         max_worker: Optional[int] = None,
         flat_result: bool = False,
         immutable: bool = False,
@@ -99,7 +99,7 @@ class ProcessPoolScheduler(BaseScheduler):
             manager.start()
             data = manager.dict()
             lock = manager.Lock()
-            context = ManagerContext(data, lock, self)
+            context = MultiProcessContext(data, lock, self)
             self.set_context(context)
         self.state = TaskState.RUNNING
         self.get_context().set_state(self.name, TaskState.RUNNING)

@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from synthora.workflows.scheduler.base import BaseScheduler
 
 
-class ManagerContext(dict, BaseContext):  # type: ignore[type-arg]
+class MultiProcessContext(dict, BaseContext):  # type: ignore[type-arg]
     def __init__(self, data: Any, lock: Lock, workflow: "BaseScheduler") -> None:
         super().__init__()
         self._data = data

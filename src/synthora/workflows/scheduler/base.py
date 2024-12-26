@@ -188,11 +188,11 @@ class BaseScheduler(ABC):
         return self
 
     def __rshift__(self, value: Union["BaseScheduler", BaseTask]) -> Self:
-        if isinstance(value, BaseTask):
+        if isinstance(value, BaseTask) or isinstance(value, BaseScheduler):
             self.add_task(value)
             return self
         else:
-            raise ValueError("Invalid value, must be a Task")
+            raise ValueError("Invalid value, must be a Task or Scheduler")
 
     def _get_result(
         self, tasks: Optional[List[Union["BaseScheduler", BaseTask]]]

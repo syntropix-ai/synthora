@@ -15,10 +15,20 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .basic_context import BasicContext
-from .multiprocess_context import MultiProcessContext
+from synthora.workflows import BaseScheduler, BaseTask, task
 
-__all__ = [
-    "BasicContext",
-    "MultiProcessContext"
-]
+
+@task
+def add1(x: int, y: int) -> int:
+    return x + y
+
+
+@task(name="add2")
+def add2(x: int, y: int) -> int:
+    return x + y
+
+@task
+async def add3(x: int, y: int) -> int:
+    return x + y
+
+print(add1, add2, add3)
