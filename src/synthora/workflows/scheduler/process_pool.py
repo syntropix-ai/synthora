@@ -20,17 +20,19 @@ from typing import Any, Dict, List, Optional, Union
 
 from synthora.workflows.base_task import BaseTask
 from synthora.workflows.scheduler.base import BaseScheduler
+from synthora.workflows.context.manager_context import ManagerContext
 
 
 class ProcessPoolScheduler(BaseScheduler):
     def __init__(
         self,
+        name: Optional[str] = None,
         max_worker: Optional[int] = None,
         flat_result: bool = False,
         immutable: bool = False,
     ) -> None:
         self.max_worker = max_worker
-        super().__init__(flat_result, immutable)
+        super().__init__(name, None, flat_result, immutable)
 
     def _run(  # type: ignore[override]
         self,
@@ -43,6 +45,8 @@ class ProcessPoolScheduler(BaseScheduler):
         prev_args = self._get_result(pre)
         args = tuple(prev_args) + args
         if isinstance(current, BaseTask):
+            if self.need_context(current):
+                return executor.submit(current, self.context, *args, **kwargs)
             return executor.submit(current, *args, **kwargs)
         elif isinstance(current, BaseScheduler):
             return executor.submit(current.run, *args, **kwargs)
@@ -70,6 +74,8 @@ class ProcessPoolScheduler(BaseScheduler):
     def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
+        if self.context is None:
+            self.set_context(ManagerContext(self))
         if self.immutable:
             self.step(*self._args, **self._kwargs)
         else:
