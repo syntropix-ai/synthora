@@ -343,6 +343,7 @@ class BaseScheduler(ABC):
                 for i in str(task).split("\n"):
                     if i:
                         rep += f"\t{i}\n"
+            rep += "\n"
         return rep
 
     def __repr__(self) -> str:
