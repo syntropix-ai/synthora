@@ -100,8 +100,8 @@ class OpenAIChatBackend(BaseModelBackend):
         kwargs = {**self.config, **kwargs}
         if "tools" in kwargs and not kwargs["tools"]:
             del kwargs["tools"]
-        kwargs["model"] = self.model_type
-        kwargs["messages"] = messages
+        kwargs["model"] = self.model_type  # type: ignore[assignment]
+        kwargs["messages"] = messages  # type: ignore[assignment]
         self.callback_manager.call(
             CallBackEvent.LLM_START,
             self.source,
@@ -177,8 +177,8 @@ class OpenAIChatBackend(BaseModelBackend):
             messages = [messages]
         stream = self.config.get("stream", False)
         kwargs = {**self.config, **kwargs}
-        kwargs["model"] = self.model_type
-        kwargs["messages"] = messages
+        kwargs["model"] = self.model_type  # type: ignore[assignment]
+        kwargs["messages"] = messages  # type: ignore[assignment]
         if "tools" in kwargs and not kwargs["tools"]:
             del kwargs["tools"]
         await CALL_ASYNC_CALLBACK(

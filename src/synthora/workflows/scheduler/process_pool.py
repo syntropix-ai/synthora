@@ -71,8 +71,8 @@ class ProcessPoolScheduler(BaseScheduler):
         with ProcessPoolExecutor(self.max_worker) as pool:
             futures = []
             for task in current:
-                if self.context.get_state(task.name) == TaskState.PENDING:
-                    self.context.set_state(task.name, TaskState.RUNNING)
+                if self.get_context().get_state(task.name) == TaskState.PENDING:
+                    self.get_context().set_state(task.name, TaskState.RUNNING)
                     task.state = TaskState.RUNNING
                     futures.append(self._run(pool, pre, task, *args, **kwargs))
 
@@ -81,13 +81,13 @@ class ProcessPoolScheduler(BaseScheduler):
                 try:
                     task._result = future.result()
                     task.state = TaskState.COMPLETED
-                    self.context.set_result(task.name, task._result)
-                    self.context.set_state(task.name, TaskState.COMPLETED)
-                except:
-                    self.context.set_state(task.name, TaskState.FAILED)
+                    self.get_context().set_result(task.name, task._result)
+                    self.get_context().set_state(task.name, TaskState.COMPLETED)
+                except Exception:
+                    self.get_context().set_state(task.name, TaskState.FAILURE)
                     task.meta_data["error"] = future.exception()
-                    self.state = TaskState.FAILED
-                    self.context.set_state(self.name, TaskState.FAILED)
+                    self.state = TaskState.FAILURE
+                    self.get_context().set_state(self.name, TaskState.FAILURE)
 
         self.cursor += 1
 
@@ -102,7 +102,7 @@ class ProcessPoolScheduler(BaseScheduler):
             context = ManagerContext(data, lock, self)
             self.set_context(context)
         self.state = TaskState.RUNNING
-        self.context.set_state(self.name, TaskState.RUNNING)
+        self.get_context().set_state(self.name, TaskState.RUNNING)
         if self.immutable:
             self.step(*self._args, **self._kwargs)
         else:
@@ -110,7 +110,7 @@ class ProcessPoolScheduler(BaseScheduler):
             kwargs = {**self._kwargs, **kwargs}
             self.step(*args, **kwargs)
         while self.cursor < len(self.tasks):
-            state = self.context.get_state(self.name)
+            state = self.get_context().get_state(self.name)
             if state != TaskState.RUNNING:
                 break
             self.step()
@@ -118,9 +118,9 @@ class ProcessPoolScheduler(BaseScheduler):
         self._result = self._get_result(self.tasks[self.cursor - 1])
         if len(self._result) == 1:
             self._result = self._result[0]
-        self.context.set_result(self.name, self._result)
+        self.get_context().set_result(self.name, self._result)
         if self.cursor == len(self.tasks):
-            self.context.set_state(self.name, TaskState.COMPLETED)
+            self.get_context().set_state(self.name, TaskState.COMPLETED)
             self.state = TaskState.COMPLETED
         return self._result
 

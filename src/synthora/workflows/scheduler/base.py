@@ -282,7 +282,7 @@ class BaseScheduler(ABC):
         self._result = self._get_result(self.tasks[-1])
         if len(self._result) == 1:
             self._result = self._result[0]
-        self.context.set_result(self.name, self._result)
+        self.get_context().set_result(self.name, self._result)
 
         return self._result
 
@@ -350,5 +350,10 @@ class BaseScheduler(ABC):
                         rep += f"\t{i}\n"
         return rep
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.__str__()
+
+    def get_context(self) -> BaseContext:
+        if self.context is None:
+            raise ValueError("Context is not set")
+        return self.context

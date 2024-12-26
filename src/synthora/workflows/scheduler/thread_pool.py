@@ -79,7 +79,7 @@ class ThreadPoolScheduler(BaseScheduler):
                 try:
                     task._result = future.result()
                     task.state = TaskState.COMPLETED
-                except:
+                except Exception:
                     task.state = TaskState.FAILURE
                     task.meta_data["error"] = future.exception()
 

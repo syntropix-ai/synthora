@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from synthora.workflows.scheduler.base import BaseScheduler
 
 
-class BasicContext(dict, BaseContext):
+class BasicContext(dict, BaseContext):  # type: ignore[type-arg]
     def __init__(self, workflow: "BaseScheduler") -> None:
         super().__init__()
         self._workflow = workflow
@@ -48,7 +48,8 @@ class BasicContext(dict, BaseContext):
         self._workflow.state = TaskState.COMPLETED
 
     def skip(self, name: str) -> None:
-        self.get_task(name).state = TaskState.SKIPPED
+        if task := self.get_task(name):
+            task.state = TaskState.SKIPPED
 
     def get_state(self, name: str) -> TaskState:
         if task := self.get_task(name):
