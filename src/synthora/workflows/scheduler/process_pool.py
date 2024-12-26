@@ -15,9 +15,11 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from concurrent.futures import Future, ProcessPoolExecutor
+from concurrent.futures import Future, ProcessPoolExecutor, as_completed
+from multiprocessing.managers import SyncManager
 from typing import Any, Dict, List, Optional, Union
 
+from synthora.types.enums import TaskState
 from synthora.workflows.base_task import BaseTask
 from synthora.workflows.scheduler.base import BaseScheduler
 from synthora.workflows.context.manager_context import ManagerContext
@@ -27,12 +29,13 @@ class ProcessPoolScheduler(BaseScheduler):
     def __init__(
         self,
         name: Optional[str] = None,
+        context: Optional[ManagerContext] = None,
         max_worker: Optional[int] = None,
         flat_result: bool = False,
         immutable: bool = False,
     ) -> None:
         self.max_worker = max_worker
-        super().__init__(name, None, flat_result, immutable)
+        super().__init__(name, context, flat_result, immutable)
 
     def _run(  # type: ignore[override]
         self,
@@ -66,16 +69,39 @@ class ProcessPoolScheduler(BaseScheduler):
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
         current = self.tasks[self.cursor]
         with ProcessPoolExecutor(self.max_worker) as pool:
-            futures = [self._run(pool, pre, task, *args, **kwargs) for task in current]
+            futures = []
+            for task in current:
+                if self.context.get_state(task.name) == TaskState.PENDING:
+                    self.context.set_state(task.name, TaskState.RUNNING)
+                    task.state = TaskState.RUNNING
+                    futures.append(self._run(pool, pre, task, *args, **kwargs))
+            
+            as_completed(futures)
             for task, future in zip(current, futures):
-                task._result = future.result()
+                try:
+                    task._result = future.result()
+                    task.state = TaskState.COMPLETED
+                    self.context.set_result(task.name, task._result)
+                    self.context.set_state(task.name, TaskState.COMPLETED)
+                except:
+                    self.context.set_state(task.name, TaskState.FAILED)
+                    task.meta_data["error"] = future.exception()
+                    self.state = TaskState.FAILED
+                    self.context.set_state(self.name, TaskState.FAILED)
+
         self.cursor += 1
 
     def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
         if self.context is None:
-            self.set_context(ManagerContext(self))
+            manager = SyncManager()
+            manager.start()
+            data = manager.dict()
+            lock = manager.Lock()
+            self.set_context(ManagerContext(data, lock, self))
+        self.state = TaskState.RUNNING
+        self.context.set_state(self.name, TaskState.RUNNING)
         if self.immutable:
             self.step(*self._args, **self._kwargs)
         else:
@@ -83,10 +109,18 @@ class ProcessPoolScheduler(BaseScheduler):
             kwargs = {**self._kwargs, **kwargs}
             self.step(*args, **kwargs)
         while self.cursor < len(self.tasks):
+            state = self.context.get_state(self.name)
+            if state != TaskState.RUNNING:
+                break
             self.step()
-        self._result = self._get_result(self.tasks[-1])
+        
+        self._result = self._get_result(self.tasks[self.cursor - 1])
         if len(self._result) == 1:
             self._result = self._result[0]
+        self.context.set_result(self.name, self._result)
+        if self.cursor == len(self.tasks):
+            self.context.set_state(self.name, TaskState.COMPLETED)
+            self.state = TaskState.COMPLETED
         return self._result
 
     async def async_step(self, *args: Any, **kwargs: Dict[str, Any]) -> None:

@@ -15,34 +15,23 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
+from synthora.types.enums import TaskState
 from synthora.workflows import BaseScheduler, BaseTask
 from synthora.workflows.context.base import BaseContext
+from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
 
 def add(ctx: BaseContext, x: int, y: int) -> int:
-    if 'ans' not in ctx:
-        ctx['ans'] = [x + y]
-    else:
-        ctx['ans'].append(x + y)
-    print(ctx.get_state(f"{x + y}"))
+    with ctx:
+        print(ctx.get_state(f"{x + y}"))
+        if 'ans' not in ctx:
+            ctx['ans'] = [x + y]
+        else:
+            ctx['ans'] = ctx['ans'] + [x + y]
     return x + y
 
 
-flow = BaseTask(add, "3") >> BaseTask(add, "4").s(1) >> BaseTask(add, "6").s(2) >> BaseTask(add, "9").s(3)
+flow = ThreadPoolScheduler()
+flow | BaseTask(add, "2").s(1) | BaseTask(add, "3").s(2) | BaseTask(add, "4").s(3)
 
-print(flow.run(1, 2), flow.context['ans'])
-print(flow.get_task("3").state, flow.context.get_state("3"))
+print(flow.run(1))
 
-
-
-# flow = BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).s(3)
-
-# print(flow.run(1))
-
-
-# flow = BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).si(1, 2)
-
-# print(flow.run(1))
-
-# flow1 = (BaseTask(add).si(1, 1) | BaseTask(add).si(1, 2)).set_flat_result(True)
-# flow2 = BaseTask(add).s(1) >> flow1 >> (BaseTask(add) | BaseTask(add).si(1, 2))
-# print(flow2.run(1))

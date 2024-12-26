@@ -44,6 +44,8 @@ class BaseScheduler(ABC):
         self.meta_data: Dict[str, Any] = {}
 
     def get_task(self, name: str) -> Optional[Union["BaseScheduler", BaseTask]]:
+        if self.name == name:
+            return self
         for task_group in self.tasks:
             for task in task_group:
                 if task.name == name:
@@ -230,7 +232,15 @@ class BaseScheduler(ABC):
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
         current = self.tasks[self.cursor]
         for task in current:
-            self._run(pre, task, *args, **kwargs)
+            if task.state == TaskState.PENDING:
+                task.state = TaskState.RUNNING
+                try:
+                    self._run(pre, task, *args, **kwargs)
+                    task.state = TaskState.COMPLETED
+                except Exception as e:
+                    task.state = TaskState.FAILED
+                    task.meta_data["error"] = str(e)
+                
         self.cursor += 1
 
     def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
@@ -238,6 +248,7 @@ class BaseScheduler(ABC):
             raise RuntimeError("No tasks to run")
         if self.context is None:
             self.set_context(BasicContext(self))
+        self.state = TaskState.RUNNING
         if self.immutable:
             self.step(*self._args, **self._kwargs)
         else:
@@ -245,10 +256,14 @@ class BaseScheduler(ABC):
             kwargs = {**self._kwargs, **kwargs}
             self.step(*args, **kwargs)
         while self.cursor < len(self.tasks):
+            if self.state != TaskState.RUNNING:
+                break
             self.step()
         self._result = self._get_result(self.tasks[-1])
         if len(self._result) == 1:
             self._result = self._result[0]
+        self.context.set_result(self.name, self._result)
+        
         return self._result
 
     async def async_step(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
@@ -289,8 +304,6 @@ class BaseScheduler(ABC):
         type_hints = get_type_hints(task.func)
 
         for name in sig.parameters:
-            if name in type_hints:
-                print(name, type_hints[name])
             if name in type_hints and issubclass(type_hints[name], BaseContext):
                 return True
         return False

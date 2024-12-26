@@ -8,18 +8,16 @@ if TYPE_CHECKING:
     from synthora.workflows.scheduler.base import BaseScheduler
 
 
-class ManagerContext(SyncManager, BaseContext):
-    def __init__(self, workflow: "BaseScheduler") -> None:
+class ManagerContext(dict, BaseContext):
+    def __init__(self, data: Any, lock: Lock, workflow: "BaseScheduler") -> None:
         super().__init__()
-        self.start()
-
-        self.data = self.dict()
-        self.data["__workflow"] = workflow
-        self.data["__lock"] = self.Lock()
+        self._data = data
+        self._data["__workflow"] = workflow
+        self._data["__lock"] = lock
 
     @property
     def lock(self) -> Lock:
-        return self.data["__lock"]
+        return self._data["__lock"]
 
     def acquire(self) -> None:
         self.lock.acquire()
@@ -31,19 +29,25 @@ class ManagerContext(SyncManager, BaseContext):
         return self.workflow.get_task(name)
 
     def end(self) -> None:
-        self.workflow.state = TaskState.COMPLETED
+        workflow = self.workflow
+        workflow.state = TaskState.COMPLETED
+        self._data["__workflow"] = workflow
 
     def skip(self, name: str) -> None:
-        self.get_task(name).state = TaskState.SKIPPED
+        workflow = self.workflow
+        if not (task := workflow.get_task(name)):
+            raise KeyError(f"Task {name} not found")
+        task.state = TaskState.SKIPPED
+        self._data["__workflow"] = workflow
 
     def __getitem__(self, key: str) -> Any:
         if not key.startswith("__"):
-            return self.data[key]
+            return self._data[key]
         raise KeyError(f"Key {key} is not allowed")
 
     def __setitem__(self, key: str, value: Any) -> None:
         if not key.startswith("__"):
-            self.data[key] = value
+            self._data[key] = value
         else:
             raise KeyError(f"Key {key} is not allowed")
 
@@ -53,8 +57,10 @@ class ManagerContext(SyncManager, BaseContext):
         raise KeyError(f"Task {name} not found")
 
     def set_state(self, name: str, state: TaskState) -> None:
-        if task := self.get_task(name):
+        workflow = self.workflow
+        if task := workflow.get_task(name):
             task.state = state
+            self._data["__workflow"] = workflow
         else:
             raise KeyError(f"Task {name} not found")
 
@@ -64,11 +70,16 @@ class ManagerContext(SyncManager, BaseContext):
         raise KeyError(f"Task {name} not found")
 
     def set_result(self, name: str, result: Any) -> None:
-        if task := self.get_task(name):
+        workflow = self.workflow
+        if task := workflow.get_task(name):
             task._result = result
+            self._data["__workflow"] = workflow
         else:
             raise KeyError(f"Task {name} not found")
 
     @property
     def workflow(self) -> "BaseScheduler":
-        return self.data["__workflow"]
+        return self._data["__workflow"]
+
+    def __contains__(self, key):
+        return self._data.__contains__(key)
