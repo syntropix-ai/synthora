@@ -47,6 +47,11 @@ class BaseTask(ABC):
 
     def result(self) -> Optional[Any]:
         return self._result
+    
+    def reset(self) -> Self:
+        self.state = TaskState.PENDING
+        self._result = None
+        return self
 
     def signature(
         self,
@@ -94,6 +99,12 @@ class BaseTask(ABC):
         from synthora.utils.default import DEFAULT_CHAIN_SCHEDULER
 
         return DEFAULT_CHAIN_SCHEDULER() >> self >> other
+    
+    def __str__(self) -> str:
+        return self.name
+    
+    def __repr__(self) -> str:
+        return self.name
 
 
 class AsyncTask(BaseTask):

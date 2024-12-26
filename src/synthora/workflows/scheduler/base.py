@@ -17,10 +17,20 @@
 
 from abc import ABC
 from copy import deepcopy
-from typing import Any, Callable, Dict, Iterable, List, Optional, Self, Union
-from uuid import uuid4
 from inspect import signature
-from typing import get_type_hints
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Self,
+    Union,
+    get_type_hints,
+)
+from uuid import uuid4
+
 from synthora.types.enums import TaskState
 from synthora.workflows.base_task import AsyncTask, BaseTask
 from synthora.workflows.context.base import BaseContext
@@ -28,9 +38,15 @@ from synthora.workflows.context.basic_context import BasicContext
 
 
 class BaseScheduler(ABC):
-    def __init__(self, name: Optional[str] = None, context: Optional[BaseContext] = None, flat_result: bool = False, immutable: bool = False) -> None:
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        context: Optional[BaseContext] = None,
+        flat_result: bool = False,
+        immutable: bool = False,
+    ) -> None:
         self.name = name or str(uuid4())
-        self.context = context        
+        self.context = context
         self.flat_result = flat_result
         self.states: Dict[str, Any] = {}
         self.tasks: List[List[Union[BaseScheduler, BaseTask]]] = []
@@ -158,21 +174,25 @@ class BaseScheduler(ABC):
         return self
 
     def __or__(self, value: Union["BaseScheduler", BaseTask]) -> Self:
-        if isinstance(value, BaseTask) or isinstance(value, BaseScheduler):
+        if isinstance(value, BaseTask):
             if not self.tasks:
                 self.add_task(value)
             else:
                 self.tasks[-1].append(value)
             return self
         else:
-            raise ValueError("Invalid value, must be a Task or Scheduler")
+            raise ValueError("Invalid value, must be a Task")
+
+    def __invert__(self) -> Self:
+        self.tasks.append([])
+        return self
 
     def __rshift__(self, value: Union["BaseScheduler", BaseTask]) -> Self:
-        if isinstance(value, BaseTask) or isinstance(value, BaseScheduler):
+        if isinstance(value, BaseTask):
             self.add_task(value)
             return self
         else:
-            raise ValueError("Invalid value, must be a Task or Scheduler")
+            raise ValueError("Invalid value, must be a Task")
 
     def _get_result(
         self, tasks: Optional[List[Union["BaseScheduler", BaseTask]]]
@@ -238,9 +258,9 @@ class BaseScheduler(ABC):
                     self._run(pre, task, *args, **kwargs)
                     task.state = TaskState.COMPLETED
                 except Exception as e:
-                    task.state = TaskState.FAILED
+                    task.state = TaskState.FAILURE
                     task.meta_data["error"] = str(e)
-                
+
         self.cursor += 1
 
     def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
@@ -263,7 +283,7 @@ class BaseScheduler(ABC):
         if len(self._result) == 1:
             self._result = self._result[0]
         self.context.set_result(self.name, self._result)
-        
+
         return self._result
 
     async def async_step(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
@@ -304,6 +324,31 @@ class BaseScheduler(ABC):
         type_hints = get_type_hints(task.func)
 
         for name in sig.parameters:
-            if name in type_hints and issubclass(type_hints[name], BaseContext):
-                return True
+            try:
+                if name in type_hints and issubclass(type_hints[name], BaseContext):
+                    return True
+            except Exception:
+                pass
         return False
+
+    def reset(self) -> Self:
+        self.cursor = 0
+        self._result = None
+        self.state = TaskState.PENDING
+        for task_group in self.tasks:
+            for task in task_group:
+                task.reset()
+        self.context = None
+        return self
+
+    def __str__(self) -> str:
+        rep = f"{self.name}:\n"
+        for task_group in self.tasks:
+            for task in task_group:
+                for i in str(task).split("\n"):
+                    if i:
+                        rep += f"\t{i}\n"
+        return rep
+
+    def __repr__(self):
+        return self.__str__()

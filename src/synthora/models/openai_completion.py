@@ -56,7 +56,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             BaseMessage or Generator[BaseMessage, None, None]: Generated response(s)
             If stream=True, returns a generator of message chunks
         """
-        if not isinstance(self.client, OpenAI):
+        if not self.client or not isinstance(self.client, OpenAI):
             self.client = OpenAI(**self.kwargs)
         stream = self.config.get("stream", False)
         if isinstance(prompt, str):
@@ -139,7 +139,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             BaseMessage or AsyncGenerator[BaseMessage, None]: Generated response(s)
             If stream=True, returns an async generator of message chunks
         """
-        if not isinstance(self.client, AsyncOpenAI):
+        if not self.client or not isinstance(self.client, AsyncOpenAI):
             self.client = AsyncOpenAI(**self.kwargs)
         if not isinstance(messages, list):
             messages = [messages]
