@@ -39,7 +39,6 @@ class BaseTask(ABC):
         self.immutable = immutable
         self.state = TaskState.PENDING
         self.meta_data: Dict[str, Any] = {}
-        self.on_error: Optional[Callable[..., Any]] = None
         self._args: List[Any] = []
         self._kwargs: Dict[str, Any] = {}
         self._result: Optional[Any] = None
@@ -58,12 +57,10 @@ class BaseTask(ABC):
         args: List[Any],
         kwargs: Dict[str, Any],
         immutable: bool = False,
-        on_error: Optional[Callable[..., Any]] = None,
     ) -> Self:
         self._args += list(args)
         self._kwargs.update(kwargs)
         self.immutable = immutable
-        self.on_error = on_error
         return self
 
     def s(self, *args: Any, **kwargs: Dict[str, Any]) -> Self:
