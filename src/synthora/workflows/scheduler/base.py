@@ -18,13 +18,19 @@
 from abc import ABC
 from copy import deepcopy
 from typing import Any, Callable, Dict, Iterable, List, Optional, Self, Union
-
+from uuid import uuid4
+from inspect import signature
+from typing import get_type_hints
 from synthora.types.enums import TaskState
 from synthora.workflows.base_task import AsyncTask, BaseTask
+from synthora.workflows.context.base import BaseContext
+from synthora.workflows.context.basic_context import BasicContext
 
 
 class BaseScheduler(ABC):
-    def __init__(self, flat_result: bool = False, immutable: bool = False) -> None:
+    def __init__(self, name: Optional[str] = None, context: Optional[BaseContext] = None, flat_result: bool = False, immutable: bool = False) -> None:
+        self.name = name or str(uuid4())
+        self.context = context        
         self.flat_result = flat_result
         self.states: Dict[str, Any] = {}
         self.tasks: List[List[Union[BaseScheduler, BaseTask]]] = []
@@ -36,6 +42,17 @@ class BaseScheduler(ABC):
         self.on_error: Optional[Callable[..., Any]] = None
         self.state = TaskState.PENDING
         self.meta_data: Dict[str, Any] = {}
+
+    def get_task(self, name: str) -> Optional[Union["BaseScheduler", BaseTask]]:
+        for task_group in self.tasks:
+            for task in task_group:
+                if task.name == name:
+                    return task
+                if isinstance(task, BaseScheduler):
+                    sub_task = task.get_task(name)
+                    if sub_task:
+                        return sub_task
+        return None
 
     def signature(
         self,
@@ -178,7 +195,10 @@ class BaseScheduler(ABC):
         prev_args = self._get_result(pre)
         _args = prev_args + list(args)
         if isinstance(current, BaseTask):
-            current(*_args, **kwargs)
+            if self.need_context(current):
+                current(self.context, *_args, **kwargs)
+            else:
+                current(*_args, **kwargs)
         elif isinstance(current, BaseScheduler):
             current.run(*_args, **kwargs)
 
@@ -192,9 +212,15 @@ class BaseScheduler(ABC):
         prev_args = self._get_result(pre)
         args = tuple(prev_args) + args
         if isinstance(current, AsyncTask):
-            await current(*args, **kwargs)
+            if self.need_context(current):
+                await current(self.context, *args, **kwargs)
+            else:
+                await current(*args, **kwargs)
         elif isinstance(current, BaseTask):
-            current(*args, **kwargs)
+            if self.need_context(current):
+                current(self.context, *args, **kwargs)
+            else:
+                current(*args, **kwargs)
         elif isinstance(current, BaseScheduler):
             await current.async_run(*args, **kwargs)
 
@@ -210,6 +236,8 @@ class BaseScheduler(ABC):
     def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
+        if self.context is None:
+            self.set_context(BasicContext(self))
         if self.immutable:
             self.step(*self._args, **self._kwargs)
         else:
@@ -247,3 +275,22 @@ class BaseScheduler(ABC):
         if len(self._result) == 1:
             self._result = self._result[0]
         return self._result
+
+    def set_context(self, context: BaseContext) -> Self:
+        self.context = context
+        for task in self.tasks:
+            for sub_task in task:
+                if isinstance(sub_task, BaseScheduler):
+                    sub_task.set_context(context)
+        return self
+
+    def need_context(self, task: BaseTask) -> bool:
+        sig = signature(task.func)
+        type_hints = get_type_hints(task.func)
+
+        for name in sig.parameters:
+            if name in type_hints:
+                print(name, type_hints[name])
+            if name in type_hints and issubclass(type_hints[name], BaseContext):
+                return True
+        return False

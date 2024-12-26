@@ -17,6 +17,7 @@
 
 from abc import ABC
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Self, Union
+from uuid import uuid4
 
 from synthora.types.enums import TaskState
 
@@ -29,10 +30,12 @@ class BaseTask(ABC):
     def __init__(
         self,
         func: Callable[..., Any],
+        name: Optional[str] = None,
         immutable: bool = False,
         flat_result: bool = False,
     ) -> None:
         self.func = func
+        self.name = name or str(uuid4())
         self.immutable = immutable
         self.state = TaskState.PENDING
         self.meta_data: Dict[str, Any] = {}

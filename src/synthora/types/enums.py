@@ -123,5 +123,6 @@ class CallBackEvent(str, Enum):
 class TaskState(str, Enum):
     PENDING = "pending"
     RUNNING = "running"
-    SUCCESS = "success"
+    COMPLETED = "completed"
     FAILURE = "failure"
+    SKIPPED = "skipped"
