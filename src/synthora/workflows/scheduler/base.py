@@ -20,7 +20,6 @@ from copy import deepcopy
 from inspect import signature
 from typing import (
     Any,
-    Callable,
     Dict,
     Iterable,
     List,
@@ -48,14 +47,12 @@ class BaseScheduler(ABC):
         self.name = name or str(uuid4())
         self.context = context
         self.flat_result = flat_result
-        self.states: Dict[str, Any] = {}
         self.tasks: List[List[Union[BaseScheduler, BaseTask]]] = []
         self.cursor = 0
         self._result: Optional[Any] = None
         self.immutable = immutable
         self._args: List[Any] = []
         self._kwargs: Dict[str, Any] = {}
-        self.on_error: Optional[Callable[..., Any]] = None
         self.state = TaskState.PENDING
         self.meta_data: Dict[str, Any] = {}
 
@@ -77,12 +74,10 @@ class BaseScheduler(ABC):
         args: List[Any],
         kwargs: Dict[str, Any],
         immutable: bool = False,
-        on_error: Optional[Callable[..., Any]] = None,
     ) -> Self:
         self._args += list(args)
         self._kwargs.update(kwargs)
         self.immutable = immutable
-        self.on_error = on_error
         return self
 
     def s(self, *args: Any, **kwargs: Dict[str, Any]) -> Self:
