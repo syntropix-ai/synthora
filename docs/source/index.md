@@ -61,22 +61,15 @@ To install Synthora Python Library from PyPI, simply run:
 
 ```python
 
-from synthora.agents import VanillaAgent
-from synthora.configs import AgentConfig
-from synthora.callbacks import RichOutputHandler
-
 import warnings
+
+from synthora.callbacks import RichOutputHandler
+from synthora.agents import VanillaAgent
+
 warnings.filterwarnings("ignore")
 
-config = AgentConfig.from_file("examples/agents/configs/vanilla_agent.yaml")
-
-agent = VanillaAgent.from_config(config)
-handler = RichOutputHandler()
-agent.tools[0].callback_manager.add(handler)
-agent.model.callback_manager.add(handler)
-agent.callback_manager.add(handler)
-
-agent.run("Search Openai on Wikipedia")
+agent = VanillaAgent.default("You are a Vanilla Agent.", handlers=[RichOutputHandler()])
+agent.run("Hi! How are you?")
 ```
 
 ```{toctree}
@@ -86,6 +79,7 @@ agent.run("Search Openai on Wikipedia")
 
 tutorial/config
 tutorial/callback
+tutorial/workflow
 ```
 
 ```{toctree}
@@ -108,6 +102,7 @@ synthora.models
 synthora.prompts
 synthora.toolkits
 synthora.callbacks
+synthora.workflows
 synthoraa.tracers
 synthora.types
 synthora.utils
