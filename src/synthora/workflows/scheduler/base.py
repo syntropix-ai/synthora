@@ -134,7 +134,7 @@ class BaseScheduler(ABC):
     def starmap(
         cls,
         workflow: Union["BaseScheduler", BaseTask],
-        data: List[Any],
+        data: Iterable[Any],
         config: Dict[str, Any] = {},
     ) -> Self:
         scheduler = cls(**config)

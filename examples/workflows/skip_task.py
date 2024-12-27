@@ -56,4 +56,3 @@ flow >> BaseTask(add, "skip").si(1, 2)
 
 
 print(flow.run(1), flow.get_context()["ans"])
-
