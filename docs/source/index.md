@@ -50,7 +50,7 @@ Isn't it beautiful if one shares his effort in specialized intelligence, allowin
 
 ## Installation
 
-To install Syntropix Python Library from PyPI, simply run:
+To install Synthora Python Library from PyPI, simply run:
 
 ```shell Shell
  pip install synthora
