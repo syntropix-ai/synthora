@@ -58,6 +58,16 @@ class BaseAgent(ABC):
         callback_manager (CallbackManager): Manages event callbacks
     """
 
+    @staticmethod
+    @abstractmethod
+    def default(
+        prompt: str,
+        name: str = "Base",
+        model_type: str = "gpt-4o",
+        tools: List[Union["BaseAgent", BaseFunction]] = [],
+        handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
+    ) -> "BaseAgent": ...
+
     def __init__(
         self,
         config: AgentConfig,
