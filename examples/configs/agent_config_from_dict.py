@@ -16,9 +16,11 @@
 #
 
 import json
+
 from synthora.agents.vanilla_agent import VanillaAgent
 from synthora.callbacks.rich_output_handler import RichOutputHandler
 from synthora.configs import AgentConfig
+
 
 data = json.loads(
     """
@@ -71,9 +73,7 @@ data = json.loads(
     """
 )
 
-config = AgentConfig.from_dict(
-    data
-)
+config = AgentConfig.from_dict(data)
 agent = VanillaAgent.from_config(config)
 agent.add_handler(RichOutputHandler())
 

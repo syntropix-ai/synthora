@@ -16,6 +16,7 @@
 #
 from synthora.types.enums import MessageRole, NodeType
 from synthora.types.node import Node
+
 from .base import BaseMessage
 
 
@@ -25,6 +26,7 @@ def user(content: str) -> BaseMessage:
         source=Node(name="user", type=NodeType.USER),
         content=content,
     )
+
 
 def system(content: str) -> BaseMessage:
     return BaseMessage(

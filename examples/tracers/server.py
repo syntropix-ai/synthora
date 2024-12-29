@@ -19,13 +19,17 @@
 import asyncio
 import json
 import warnings
-from synthora.tracers import SimpleTracer
+from typing import Any
+
+import fastapi
+from fastapi import BackgroundTasks
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from synthora.agents import ReactAgent
 from synthora.callbacks import RichOutputHandler
 from synthora.configs import AgentConfig
-import fastapi
-from fastapi.responses import StreamingResponse
-from fastapi.middleware.cors import CORSMiddleware
+from synthora.tracers import SimpleTracer
+
 
 app = fastapi.FastAPI()
 
@@ -37,22 +41,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-import json
-import warnings
-from synthora.tracers import SimpleTracer
-from synthora.agents import ReactAgent
-from synthora.callbacks import RichOutputHandler
-from synthora.configs import AgentConfig
-
 
 warnings.filterwarnings("ignore")
 
 config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
-from fastapi import BackgroundTasks
+
 
 tracer = SimpleTracer()
+
+
 @app.get("/")
-async def read_root(background_tasks: BackgroundTasks):
+async def read_root(background_tasks: BackgroundTasks) -> StreamingResponse:
     # with open("result.json", "r") as f:
     #     data = json.load(f)
     global tracer
@@ -60,14 +59,14 @@ async def read_root(background_tasks: BackgroundTasks):
     handler = RichOutputHandler()
     agent.add_handler(handler)
 
-    
     tracer.trace(agent)
     tracer.reset()
 
+    asyncio.create_task(
+        agent.async_run("Search Openai on Wikipedia. Output Your thought first!")
+    )
 
-    asyncio.create_task(agent.async_run("Search Openai on Wikipedia. Output Your thought first!"))
-
-    async def stream():
+    async def stream() -> Any:
         while True:
             if tracer.events:
                 item = tracer.events.pop(0).to_dict()
@@ -76,5 +75,5 @@ async def read_root(background_tasks: BackgroundTasks):
                 if item["event_type"] == "on_agent_end":
                     break
             await asyncio.sleep(0.1)
-    return StreamingResponse(stream(), media_type="text/event-stream")
 
+    return StreamingResponse(stream(), media_type="text/event-stream")

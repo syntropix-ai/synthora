@@ -15,24 +15,23 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-
-import time
-import warnings
-
-from synthora.agents import ReactAgent
-from synthora.configs import AgentConfig
-from synthora.services.http_service import HttpService
+from synthora.workflows import BaseTask
+from synthora.workflows.context.base import BaseContext
+from synthora.workflows.scheduler.process_pool import ProcessPoolScheduler
 
 
-warnings.filterwarnings("ignore")
+def add(ctx: BaseContext, x: int, y: int) -> int:
+    with ctx:
+        print(ctx.get_state(f"{x + y}"))
+        if "ans" not in ctx:
+            ctx["ans"] = [x + y]
+        else:
+            ctx["ans"] = ctx["ans"] + [x + y]
+    return x + y
 
-config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
+
+flow = ProcessPoolScheduler()
+flow | BaseTask(add, "2").s(1) | BaseTask(add, "3").s(2) | BaseTask(add, "4").s(3)
 
 
-agent = ReactAgent.from_config(config)
-
-http_service = HttpService()
-http_service.add(agent)
-http_service.run(host="0.0.0.0", port=8000)
-time.sleep(10)
-http_service.stop()
+print(flow.run(1), flow.get_context()["ans"])

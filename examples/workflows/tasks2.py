@@ -15,24 +15,29 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-
-import time
-import warnings
-
-from synthora.agents import ReactAgent
-from synthora.configs import AgentConfig
-from synthora.services.http_service import HttpService
+from synthora.workflows import BaseTask
 
 
-warnings.filterwarnings("ignore")
+def add(x: int, y: int) -> int:
+    return x + y
 
-config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
+
+flow = BaseTask(add) >> BaseTask(add).s(1) >> BaseTask(add).s(2) >> BaseTask(add).s(3)
+
+print(flow.run(1, 2))
 
 
-agent = ReactAgent.from_config(config)
+flow = BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).s(3)
 
-http_service = HttpService()
-http_service.add(agent)
-http_service.run(host="0.0.0.0", port=8000)
-time.sleep(10)
-http_service.stop()
+print(flow.run(1))
+
+
+flow = BaseTask(add).s(1) | BaseTask(add).s(2) | BaseTask(add).si(1, 2)
+
+print(flow.run(1))
+
+flow1 = (BaseTask(add).si(1, 1) | BaseTask(add).si(1, 2)).set_flat_result(True)
+flow2 = BaseTask(add).s(1) >> flow1 >> (BaseTask(add) | BaseTask(add).si(1, 2))
+print(flow2.run(1))
+
+print(flow2)
