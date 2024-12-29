@@ -15,24 +15,9 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-
-import time
-import warnings
-
-from synthora.agents import ReactAgent
-from synthora.configs import AgentConfig
-from synthora.services.http_service import HttpService
+from synthora.workflows.scheduler.base import BaseScheduler
+from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
 
 
-warnings.filterwarnings("ignore")
-
-config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
-
-
-agent = ReactAgent.from_config(config)
-
-http_service = HttpService()
-http_service.add(agent)
-http_service.run(host="0.0.0.0", port=8000)
-time.sleep(10)
-http_service.stop()
+DEFAULT_CHAIN_SCHEDULER = BaseScheduler
+DEFAULT_GROUP_SCHEDULER = ThreadPoolScheduler

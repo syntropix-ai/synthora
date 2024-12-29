@@ -15,24 +15,17 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
+name: WebSearcher
+description: "This agent is a simple AI assistant that can help you search the web."
+type: react
+model: !include basic_model.yaml
+prompt: |
+  You are a task-solving assistant with access to tools. Follow these rules:
 
-import time
-import warnings
+  - Start by generating a "Thought" to explain your reasoning about how to solve the problem, and why you are using the tool.
+  - Then call the necessary tool to solve the problem.
+  - If you determine that no further tools are required and the task is complete, call the "finish" tool to provide the final response.
 
-from synthora.agents import ReactAgent
-from synthora.configs import AgentConfig
-from synthora.services.http_service import HttpService
-
-
-warnings.filterwarnings("ignore")
-
-config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
-
-
-agent = ReactAgent.from_config(config)
-
-http_service = HttpService()
-http_service.add(agent)
-http_service.run(host="0.0.0.0", port=8000)
-time.sleep(10)
-http_service.stop()
+  YOU MUST Output the thought first!
+tools:
+  - synthora.toolkits.SearchToolkit

@@ -15,24 +15,8 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-
-import time
-import warnings
-
-from synthora.agents import ReactAgent
-from synthora.configs import AgentConfig
-from synthora.services.http_service import HttpService
+from .basic_context import BasicContext
+from .multiprocess_context import MultiProcessContext
 
 
-warnings.filterwarnings("ignore")
-
-config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
-
-
-agent = ReactAgent.from_config(config)
-
-http_service = HttpService()
-http_service.add(agent)
-http_service.run(host="0.0.0.0", port=8000)
-time.sleep(10)
-http_service.stop()
+__all__ = ["BasicContext", "MultiProcessContext"]
