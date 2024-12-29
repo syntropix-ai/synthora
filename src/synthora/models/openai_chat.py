@@ -171,11 +171,12 @@ class OpenAIChatBackend(BaseModelBackend):
             BaseMessage or AsyncGenerator[BaseMessage, None]: Generated response(s)
             If stream=True, returns an async generator of message chunks
         """
-        if not self.client or isinstance(self.client, AsyncOpenAI):
+        if not self.client or not isinstance(self.client, AsyncOpenAI):
             self.client = AsyncOpenAI(**self.kwargs)
         if not isinstance(messages, list):
             messages = [messages]
         stream = self.config.get("stream", False)
+        messages = [message.to_openai_message() for message in messages]
         kwargs = {**self.config, **kwargs}
         kwargs["model"] = self.model_type  # type: ignore[assignment]
         kwargs["messages"] = messages  # type: ignore[assignment]
@@ -187,13 +188,10 @@ class OpenAIChatBackend(BaseModelBackend):
             *args,
             **kwargs,
         )
-        messages = [message.to_openai_message() for message in messages]
         try:
-            resp = await self.client.chat.completions.create(
-                messages=messages, model=self.model_type, **kwargs
-            )
+            resp = await self.client.chat.completions.create(*args, **kwargs)
         except Exception as e:
-            await self.callback_manager.call(  # type: ignore[func-returns-value]
+            await CALL_ASYNC_CALLBACK(
                 CallBackEvent.LLM_ERROR, self.source, e, *args, **kwargs
             )
             raise e
