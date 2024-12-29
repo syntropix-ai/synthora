@@ -74,12 +74,14 @@ agent.run("Hi! How are you?")
 
 ```{toctree}
 :caption: Tutorial
-:maxdepth: 2
+:maxdepth: 5
 :hidden:
 
-tutorial/config
+tutorial/agent_config
+tutorial/message
 tutorial/callback
 tutorial/workflow
+
 ```
 
 ```{toctree}
@@ -92,19 +94,8 @@ cookbook/chat_with_agent.ipynb
 
 ```{toctree}
 :caption: Contents
-:maxdepth: 2
+:maxdepth: 1
 :hidden:
 
-synthora.agents
-synthora.configs
-synthora.messages
-synthora.models
-synthora.prompts
-synthora.toolkits
-synthora.callbacks
-synthora.workflows
-synthoraa.tracers
-synthora.types
-synthora.utils
 synthora
 ```

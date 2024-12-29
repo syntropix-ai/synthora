@@ -216,6 +216,30 @@ class BaseTask(ABC):
         """
         return self.name
 
+    def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+        r"""Call the task.
+
+        Args:
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Any: The computed result of the task.
+        """
+        return self(*args, **kwargs)
+
+    async def async_run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+        r"""Call the task asynchronously.
+
+        Args:
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Any: The computed result of the task.
+        """
+        raise NotImplementedError
+
 
 class AsyncTask(BaseTask):
     async def __call__(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
@@ -235,3 +259,15 @@ class AsyncTask(BaseTask):
         kwargs.update(self._kwargs)
         self._result = await self.func(*args, **kwargs)
         return self._result
+
+    async def async_run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+        r"""Call the task asynchronously.
+
+        Args:
+            *args: Additional positional arguments.
+            **kwargs: Additional keyword arguments.
+
+        Returns:
+            Any: The computed result of the task.
+        """
+        return await self(*args, **kwargs)

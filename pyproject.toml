@@ -69,6 +69,10 @@ wikipedia = "^1.4.0"
 [tool.poetry.group.toolkits-webpage.dependencies]
 trafilatura = "^2.0.0"
 
+
+[tool.poetry.group.service.dependencies]
+slack-bolt = "^1.22.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
