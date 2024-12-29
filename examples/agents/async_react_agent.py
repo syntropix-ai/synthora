@@ -32,7 +32,15 @@ config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
 print(json.dumps(config.model_dump(), indent=2))
 
 agent = ReactAgent.from_config(config)
+
 handler = RichOutputHandler()
 agent.add_handler(handler)
+print(agent.callback_manager)
 
-asyncio.run(agent.async_run("Search Openai on Wikipedia. Outpout Your thought first!"))
+asyncio.run(
+    agent.async_run(
+        """Consider a regular octagon.
+        How many different triangles can be formed if the octagon is placed inside a circle and we can also use
+        the center of the circle as a vertex for the triangles? Let's think step by step."""
+    )
+)
