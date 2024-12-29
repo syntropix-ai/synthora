@@ -36,4 +36,12 @@ def system(content: str) -> BaseMessage:
     )
 
 
-__all__ = ["BaseMessage", "user", "system"]
+def assistant(content: str, name: str = "assitant") -> BaseMessage:
+    return BaseMessage(
+        role=MessageRole.ASSISTANT,
+        source=Node(name=name, type=NodeType.AGENT),
+        content=content,
+    )
+
+
+__all__ = ["BaseMessage", "user", "system", "assistant"]

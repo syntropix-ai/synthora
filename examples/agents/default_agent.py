@@ -18,9 +18,8 @@
 
 import warnings
 
-from synthora.callbacks import RichOutputHandler
 from synthora.agents import ReactAgent, VanillaAgent
-
+from synthora.callbacks import RichOutputHandler
 
 
 warnings.filterwarnings("ignore")
@@ -28,5 +27,7 @@ warnings.filterwarnings("ignore")
 agent = ReactAgent.default("You are a React Agent.")
 print(agent.run("Hi! How are you?").unwrap())
 
-agent = VanillaAgent.default("You are a Vanilla Agent.", handlers=[RichOutputHandler()])
-agent.run("Hi! How are you?")
+agent_v = VanillaAgent.default(
+    "You are a Vanilla Agent.", handlers=[RichOutputHandler()]
+)
+agent_v.run("Hi! How are you?")

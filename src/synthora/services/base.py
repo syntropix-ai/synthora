@@ -21,6 +21,8 @@ from typing import Any, Callable, Dict, Optional, Self, Union
 from synthora.agents.base import BaseAgent
 from synthora.models.base import BaseModelBackend
 from synthora.toolkits.base import BaseFunction
+from synthora.workflows.base_task import BaseTask
+from synthora.workflows.scheduler.base import BaseScheduler
 
 
 class BaseService(ABC):
@@ -32,7 +34,9 @@ class BaseService(ABC):
     @abstractmethod
     def add(
         self,
-        target: Union[BaseFunction, BaseAgent, BaseModelBackend],
+        target: Union[
+            BaseFunction, BaseAgent, BaseModelBackend, BaseTask, BaseScheduler
+        ],
         name: Optional[str] = None,
     ) -> Self: ...
 
