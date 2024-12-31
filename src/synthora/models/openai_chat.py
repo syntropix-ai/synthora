@@ -109,7 +109,10 @@ class OpenAIChatBackend(BaseModelBackend):
             **kwargs,
         )
         try:
-            resp = self.client.chat.completions.create(*args, **kwargs)
+            if kwargs.get("response_format", None) is not None:
+                resp = self.client.beta.chat.completions.parse(*args, **kwargs)
+            else:
+                resp = self.client.chat.completions.create(*args, **kwargs)
         except Exception as e:
             self.callback_manager.call(
                 CallBackEvent.LLM_ERROR, self.source, e, *args, **kwargs
@@ -189,7 +192,10 @@ class OpenAIChatBackend(BaseModelBackend):
             **kwargs,
         )
         try:
-            resp = await self.client.chat.completions.create(*args, **kwargs)
+            if kwargs.get("response_format", None) is not None:
+                resp = self.client.beta.chat.completions.parse(*args, **kwargs)
+            else:
+                resp = await self.client.chat.completions.create(*args, **kwargs)
         except Exception as e:
             await CALL_ASYNC_CALLBACK(
                 CallBackEvent.LLM_ERROR, self.source, e, *args, **kwargs

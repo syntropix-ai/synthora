@@ -16,7 +16,7 @@
 #
 
 from copy import deepcopy
-from typing import Any, AnyStr, Dict, List, Optional, Self, Type
+from typing import Any, AnyStr, Dict, List, Optional, Self, Type, Union
 
 from pydantic import BaseModel, model_validator
 
@@ -45,10 +45,13 @@ class BaseMessage(BaseModel):
         source (Node): Source node of the message
         role (MessageRole): Role of the message sender
         chunk (Optional[str]): Chunk of streamed message content
+        parsed (Optional[Any]): Parsed message content
         content (Optional[str]): Main message content
         tool_calls (Optional[List[ChatCompletionMessageToolCall]]): Tool calls made in message
         tool_response (Optional[Dict[str, Any]]): Response from tool execution
         images (Optional[List[str]]): List of image URLs
+        origional_response (Optional[Union[ChatCompletion, ChatCompletionChunk]]):
+            Original response from OpenAI
         metadata (Dict[str, Any]): Additional message metadata
     """
 
@@ -57,10 +60,12 @@ class BaseMessage(BaseModel):
     role: MessageRole
 
     chunk: Optional[str] = None
+    parsed: Optional[Any] = None
     content: Optional[str] = None
     tool_calls: Optional[List[ChatCompletionMessageToolCall]] = None
     tool_response: Optional[Dict[str, Any]] = None
     images: Optional[List[str]] = None
+    origional_response: Optional[Union[ChatCompletion, ChatCompletionChunk]] = None
 
     metadata: Dict[str, Any] = {}
 
@@ -253,6 +258,10 @@ class BaseMessage(BaseModel):
         tool_calls = choice.message.tool_calls
         if not tool_calls and choice.message.function_call:
             tool_calls = [choice.message.function_call]
+        try:
+            parsed = choice.message.parsed
+        except AttributeError:
+            parsed = None
         return cls(
             id=response.id,
             source=source,
@@ -260,6 +269,8 @@ class BaseMessage(BaseModel):
             content=choice.message.content,
             metadata=metadata,
             tool_calls=tool_calls,
+            origional_response=response,
+            parsed=parsed,
         )
 
     @classmethod
@@ -329,4 +340,5 @@ class BaseMessage(BaseModel):
             content=content,
             metadata=metadata,
             tool_calls=previous_tool_calls,
+            origional_response=response,
         )
