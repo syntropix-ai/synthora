@@ -17,6 +17,7 @@
 
 from .function_schema import get_openai_tool_schema
 from .image import image2base64, is_url, parse_image
+from .pydantic_model import get_pydantic_model
 from .yaml_loader import YAMLLoader
 
 
@@ -26,4 +27,5 @@ __all__ = [
     "is_url",
     "image2base64",
     "parse_image",
+    "get_pydantic_model",
 ]

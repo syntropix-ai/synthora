@@ -173,7 +173,7 @@ class VanillaAgent(BaseAgent):
             data = response.unwrap()
             if not data.tool_calls:
                 self.on_end(data)
-                return Ok(data.content)
+                return Ok(data)
 
             for tool_call in data.tool_calls:
                 func = tool_call.function
@@ -251,7 +251,7 @@ class VanillaAgent(BaseAgent):
             data = response.unwrap()
             if not data.tool_calls:
                 await self.async_on_end(data, *args, **kwargs)
-                return Ok(data.content)
+                return Ok(data)
 
             for tool_call in data.tool_calls:
                 func = tool_call.function
