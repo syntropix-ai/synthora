@@ -23,6 +23,8 @@ from synthora.agents.base import BaseAgent
 from synthora.models.base import BaseModelBackend
 from synthora.services.base import BaseService
 from synthora.toolkits.base import BaseFunction
+from synthora.workflows.base_task import BaseTask
+from synthora.workflows.scheduler.base import BaseScheduler
 
 
 if TYPE_CHECKING:
@@ -78,7 +80,9 @@ class HttpService(BaseService):
 
     def add(
         self,
-        target: Union[BaseFunction, BaseAgent, BaseModelBackend],
+        target: Union[
+            BaseFunction, BaseAgent, BaseModelBackend, BaseTask, BaseScheduler
+        ],
         name: Optional[str] = None,
         method: Literal["get", "post"] = "post",
         use_async: bool = True,

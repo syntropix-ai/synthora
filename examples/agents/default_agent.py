@@ -15,10 +15,19 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-name: WebSearcher
-description: "This agent is a simple AI assistant that can help you search the web."
-type: react
-model: !include basic_model.yaml
-prompt: !prompt ZeroShotReactPrompt
-tools:
-  - synthora.toolkits.SearchToolkit
+
+import warnings
+
+from synthora.agents import ReactAgent, VanillaAgent
+from synthora.callbacks import RichOutputHandler
+
+
+warnings.filterwarnings("ignore")
+
+agent = ReactAgent.default("You are a React Agent.")
+print(agent.run("Hi! How are you?").unwrap())
+
+agent_v = VanillaAgent.default(
+    "You are a Vanilla Agent.", handlers=[RichOutputHandler()]
+)
+agent_v.run("Hi! How are you?")

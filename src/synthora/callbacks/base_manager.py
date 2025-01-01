@@ -47,6 +47,23 @@ class BaseCallBackManager(ABC):
         self.handlers = handlers or []
         self.source: Optional[Node] = None
 
+    def to_async(self) -> "AsyncCallBackManager":
+        """Convert the callback manager to an asynchronous version.
+
+        Returns:
+            AsyncCallBackManager: Asynchronous version of the callback manager
+        """
+        return AsyncCallBackManager(handlers=self.handlers)
+
+    def to_sync(self) -> "BaseCallBackManager":
+        """Convert the callback manager to a synchronous version.
+
+        Returns:
+            BaseCallBackManager: Synchronous version of the callback manager
+        """
+
+        return self
+
     def add(self, handler: BaseCallBackHandler) -> None:
         """Add a new callback handler.
 
@@ -142,6 +159,22 @@ class AsyncCallBackManager(BaseCallBackManager):
         """
         self.handlers = handlers
         self.source: Optional[Node] = None
+
+    def to_async(self) -> "AsyncCallBackManager":
+        """Convert the callback manager to an asynchronous version.
+
+        Returns:
+            AsyncCallBackManager: Asynchronous version of the callback manager
+        """
+        return self
+
+    def to_sync(self) -> "BaseCallBackManager":
+        """Convert the callback manager to a synchronous version.
+
+        Returns:
+            BaseCallBackManager: Synchronous version of the callback manager
+        """
+        return BaseCallBackManager(handlers=self.handlers)
 
     async def call(  # type: ignore[override]
         self, event: CallBackEvent, *args: Any, **kwargs: Dict[str, Any]

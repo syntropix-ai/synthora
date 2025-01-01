@@ -16,24 +16,25 @@
 #
 
 
-from typing import Dict, List
 import warnings
+from typing import Dict, List
 
 from synthora.agents import VanillaAgent
 from synthora.agents.base import BaseAgent
 from synthora.configs import AgentConfig
 from synthora.messages.base import BaseMessage
-from synthora.types.enums import Result
-from synthora.workflows import BaseTask, task
+from synthora.workflows import task
 from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
 
 
 warnings.filterwarnings("ignore")
 
+
 @task
 def generate_data(agent: BaseAgent, prompt: str) -> List[BaseMessage]:
-    _ =  agent.run(prompt)
+    _ = agent.run(prompt)
     return agent.history
+
 
 @task
 def convert(*resps: List[BaseMessage]) -> List[Dict[str, str]]:
@@ -41,12 +42,13 @@ def convert(*resps: List[BaseMessage]) -> List[Dict[str, str]]:
     for resp in resps:
         data.append(
             {
-                "prompt": resp[0].content,
-                "instruct": resp[1].content,
-                "response": resp[2].content,
+                "prompt": str(resp[0].content),
+                "instruct": str(resp[1].content),
+                "response": str(resp[2].content),
             }
         )
     return data
+
 
 config = AgentConfig.from_file("examples/workflows/configs/vanilla_agent.yaml")
 

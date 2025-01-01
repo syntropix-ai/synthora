@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from typing import Any, AsyncGenerator, Dict, Generator, List, Union, override
+from typing import Any, AsyncGenerator, Dict, Generator, Union, override
 
 from openai import AsyncOpenAI, OpenAI
 
@@ -63,6 +63,9 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             prompt = BaseMessage(
                 content=prompt, role=MessageRole.USER, source=self.source
             )
+        kwargs["prompt"] = prompt.content
+        kwargs["model"] = self.model_type
+        kwargs.update(self.config)
 
         self.callback_manager.call(
             CallBackEvent.LLM_START,
@@ -74,9 +77,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
         )
 
         try:
-            resp = self.client.completions.create(
-                prompt=prompt.content, model=self.model_type, **self.config
-            )
+            resp = self.client.completions.create(*args, **kwargs)
         except Exception as e:
             self.callback_manager.call(
                 CallBackEvent.LLM_ERROR, self.source, e, stream, *args, **kwargs
@@ -124,11 +125,11 @@ class OpenAICompletionBackend(OpenAIChatBackend):
     @override
     async def async_run(
         self,
-        messages: Union[List[BaseMessage], BaseMessage],
+        prompt: Union[str, BaseMessage],  # type: ignore[override]
         *args: Any,
         **kwargs: Dict[str, Any],
-    ) -> Union[BaseMessage, AsyncGenerator[BaseMessage, None]]:
-        """Asynchronously generate chat completions.
+    ) -> Union[BaseMessage, Generator[BaseMessage, None, None]]:
+        """Synchronously generate completions.
 
         Args:
             messages: Single message or list of messages to process
@@ -136,29 +137,33 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             **kwargs: Additional keyword arguments
 
         Returns:
-            BaseMessage or AsyncGenerator[BaseMessage, None]: Generated response(s)
-            If stream=True, returns an async generator of message chunks
+            BaseMessage or Generator[BaseMessage, None, None]: Generated response(s)
+            If stream=True, returns a generator of message chunks
         """
         if not self.client or not isinstance(self.client, AsyncOpenAI):
             self.client = AsyncOpenAI(**self.kwargs)
-        if not isinstance(messages, list):
-            messages = [messages]
         stream = self.config.get("stream", False)
-        await CALL_ASYNC_CALLBACK(
+        if isinstance(prompt, str):
+            prompt = BaseMessage(
+                content=prompt, role=MessageRole.USER, source=self.source
+            )
+        kwargs["prompt"] = prompt.content
+        kwargs["model"] = self.model_type
+        kwargs.update(self.config)
+
+        CALL_ASYNC_CALLBACK(
             CallBackEvent.LLM_START,
             self.source,
-            messages,
+            [prompt],
             stream,
             *args,
             **kwargs,
         )
-        messages = [message.to_openai_message() for message in messages]
+
         try:
-            resp = await self.client.chat.completions.create(
-                messages=messages, model=self.model_type, **self.config
-            )
+            resp = await self.client.completions.create(*args, **kwargs)
         except Exception as e:
-            await self.callback_manager.call(  # type: ignore[func-returns-value]
+            CALL_ASYNC_CALLBACK(
                 CallBackEvent.LLM_ERROR, self.source, e, stream, *args, **kwargs
             )
             raise e

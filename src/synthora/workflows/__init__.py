@@ -29,7 +29,7 @@ def task(
     name: Optional[str] = None,
     immutable: bool = False,
     flat_result: bool = False,
-) -> Union[Callable[..., BaseTask], BaseTask]:
+) -> BaseTask:
     if func is None:
 
         def decorator(inner_func: Callable[..., Any]) -> BaseTask:
@@ -41,7 +41,7 @@ def task(
                 inner_func, name=name, immutable=immutable, flat_result=flat_result
             )
 
-        return decorator
+        return decorator  # type: ignore[return-value]
     else:
         if inspect.iscoroutinefunction(func):
             return AsyncTask(

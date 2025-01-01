@@ -20,6 +20,7 @@ import warnings
 
 from synthora.agents import VanillaAgent
 from synthora.configs import AgentConfig
+from synthora.messages.base import BaseMessage
 from synthora.types.enums import Result
 from synthora.workflows import BaseTask
 from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
@@ -33,8 +34,8 @@ agent1 = VanillaAgent.from_config(config)
 agent2 = VanillaAgent.from_config(config)
 
 
-def convert(resp: Result[str, Exception]) -> str:
-    return resp.unwrap()
+def convert(resp: Result[BaseMessage, Exception]) -> str:
+    return resp.unwrap().content
 
 
 prompt1 = "Please debate: What came first, the chicken or the egg? Your argument is that the egg came first."

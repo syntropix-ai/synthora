@@ -15,10 +15,25 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-name: WebSearcher
-description: "This agent is a simple AI assistant that can help you search the web."
-type: react
-model: !include basic_model.yaml
-prompt: !prompt ZeroShotReactPrompt
-tools:
-  - synthora.toolkits.SearchToolkit
+import json
+
+from synthora.agents import VanillaAgent
+from synthora.configs import AgentConfig
+from synthora.utils import get_pydantic_model
+
+
+config = AgentConfig.from_file("examples/agents/configs/vanilla_agent_without_tools.yaml")
+
+resp_format = get_pydantic_model(
+    '{"location": "Beijing", "date": "2023-09-01", "temperature": 30.0}'
+)
+
+agent = VanillaAgent.from_config(config)
+agent.model.config["response_format"] = get_pydantic_model(resp_format)
+del agent.model.config["stream"] 
+
+print(
+    agent.run(
+        "Format: Today is 2023-09-01, the temperature in Beijing is 30 degrees."
+    )
+)

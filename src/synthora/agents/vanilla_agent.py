@@ -18,12 +18,15 @@
 from typing import Any, Dict, List, Union, cast
 
 from synthora.agents import BaseAgent
+from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.configs.agent_config import AgentConfig
+from synthora.configs.model_config import ModelConfig
 from synthora.messages.base import BaseMessage
+from synthora.models import create_model_from_config
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import BaseFunction
-from synthora.types.enums import MessageRole, Ok, Result
+from synthora.types.enums import AgentType, MessageRole, NodeType, Ok, Result
 from synthora.types.node import Node
 from synthora.utils.macros import (
     ASYNC_GET_FINAL_MESSAGE,
@@ -47,6 +50,48 @@ class VanillaAgent(BaseAgent):
         prompt (BasePrompt): The prompt template for the agent
         tools (List[Union[BaseAgent, BaseFunction]], optional): List of available tools. Defaults to [].
     """
+
+    @staticmethod
+    def default(
+        prompt: str,
+        name: str = "Vanilla",
+        model_type: str = "gpt-4o",
+        tools: List[Union["BaseAgent", BaseFunction]] = [],
+        handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
+    ) -> "VanillaAgent":
+        r"""Create a default VanillaAgent instance.
+
+        Args:
+            prompt (str): The prompt template for the agent
+            name (str, optional): The agent name. Defaults to "Vanilla".
+            model_type (str, optional): The model type. Defaults to "gpt-4o".
+            tools (List[Union[BaseAgent, BaseFunction]], optional): List of available tools. Defaults to [].
+            handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]], optional): List of callback handlers. Defaults to [].
+
+        Returns:
+            VanillaAgent: A new VanillaAgent instance
+        """
+        config = AgentConfig(
+            name=name,
+            type=AgentType.VANILLA,
+            model=ModelConfig(model_type=model_type, name=model_type),
+            prompt=BasePrompt(prompt),
+            tools=tools,
+        )
+        node = Node(name=name, type=NodeType.AGENT)
+        model = create_model_from_config(config.model, node)  # type: ignore[arg-type]
+        agent = VanillaAgent(
+            config,
+            Node(name=name, type=NodeType.AGENT),
+            model,
+            config.prompt,  # type: ignore[arg-type]
+            config.tools,  # type: ignore[arg-type]
+        )
+        if handlers:
+            for handler in handlers:
+                agent.add_handler(handler)
+
+        return agent
 
     def __init__(
         self,
@@ -128,7 +173,7 @@ class VanillaAgent(BaseAgent):
             data = response.unwrap()
             if not data.tool_calls:
                 self.on_end(data)
-                return Ok(data.content)
+                return Ok(data)
 
             for tool_call in data.tool_calls:
                 func = tool_call.function
@@ -206,7 +251,7 @@ class VanillaAgent(BaseAgent):
             data = response.unwrap()
             if not data.tool_calls:
                 await self.async_on_end(data, *args, **kwargs)
-                return Ok(data.content)
+                return Ok(data)
 
             for tool_call in data.tool_calls:
                 func = tool_call.function

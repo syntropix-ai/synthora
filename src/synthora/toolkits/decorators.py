@@ -50,6 +50,7 @@ def tool(func: Callable[..., Any]) -> BaseFunction:
     """
     signature = inspect.signature(func)
     parameters = list(signature.parameters.values())
+    target = BaseFunction.wrap(func)
     if parameters and parameters[0].name == "self":
-        setattr(func, "_flag", True)
-    return BaseFunction.wrap(func)
+        setattr(target, "_flag", True)
+    return target

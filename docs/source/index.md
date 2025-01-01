@@ -50,7 +50,7 @@ Isn't it beautiful if one shares his effort in specialized intelligence, allowin
 
 ## Installation
 
-To install Syntropix Python Library from PyPI, simply run:
+To install Synthora Python Library from PyPI, simply run:
 
 ```shell Shell
  pip install synthora
@@ -61,31 +61,27 @@ To install Syntropix Python Library from PyPI, simply run:
 
 ```python
 
-from synthora.agents import VanillaAgent
-from synthora.configs import AgentConfig
-from synthora.callbacks import RichOutputHandler
-
 import warnings
+
+from synthora.callbacks import RichOutputHandler
+from synthora.agents import VanillaAgent
+
 warnings.filterwarnings("ignore")
 
-config = AgentConfig.from_file("examples/agents/configs/vanilla_agent.yaml")
-
-agent = VanillaAgent.from_config(config)
-handler = RichOutputHandler()
-agent.tools[0].callback_manager.add(handler)
-agent.model.callback_manager.add(handler)
-agent.callback_manager.add(handler)
-
-agent.run("Search Openai on Wikipedia")
+agent = VanillaAgent.default("You are a Vanilla Agent.", handlers=[RichOutputHandler()])
+agent.run("Hi! How are you?")
 ```
 
 ```{toctree}
 :caption: Tutorial
-:maxdepth: 2
+:maxdepth: 5
 :hidden:
 
-tutorial/config
+tutorial/agent_config
+tutorial/message
 tutorial/callback
+tutorial/workflow
+
 ```
 
 ```{toctree}
@@ -98,18 +94,8 @@ cookbook/chat_with_agent.ipynb
 
 ```{toctree}
 :caption: Contents
-:maxdepth: 2
+:maxdepth: 1
 :hidden:
 
-synthora.agents
-synthora.configs
-synthora.messages
-synthora.models
-synthora.prompts
-synthora.toolkits
-synthora.callbacks
-synthoraa.tracers
-synthora.types
-synthora.utils
 synthora
 ```

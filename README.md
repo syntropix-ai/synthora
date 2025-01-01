@@ -50,7 +50,7 @@ Isn't it beautiful if one shares his effort in specialized intelligence, allowin
 
 ## Installation
 
-To install Syntropix Python Library from PyPI, simply run:
+To install Synthora Python Library from PyPI, simply run:
 
 ```shell Shell
  pip install synthora
@@ -61,18 +61,13 @@ To install Syntropix Python Library from PyPI, simply run:
 
 ```python
 
-from synthora.agents import VanillaAgent
-from synthora.configs import AgentConfig
-from synthora.callbacks import RichOutputHandler
-
 import warnings
+
+from synthora.callbacks import RichOutputHandler
+from synthora.agents import VanillaAgent
+
 warnings.filterwarnings("ignore")
 
-config = AgentConfig.from_file("examples/agents/configs/vanilla_agent.yaml")
-
-agent = VanillaAgent.from_config(config)
-handler = RichOutputHandler()
-agent.callback_manager.add(handler)
-
-agent.run("Search Openai on Wikipedia")
+agent = VanillaAgent.default("You are a Vanilla Agent.", handlers=[RichOutputHandler()])
+agent.run("Hi! How are you?")
 ```

@@ -20,6 +20,8 @@ from typing import IO, Any
 
 import yaml
 
+from synthora.prompts import buildin
+
 
 class YAMLLoader(yaml.SafeLoader):
     def __init__(self, stream: IO[Any]) -> None:
@@ -34,6 +36,7 @@ class YAMLLoader(yaml.SafeLoader):
         super(YAMLLoader, self).__init__(stream)
         self.add_constructor("!include", YAMLLoader.include)
         self.add_constructor("!file", YAMLLoader.file)
+        self.add_constructor("!prompt", YAMLLoader.prompt)
 
     def include(self, node: yaml.Node) -> Any:
         """
@@ -66,3 +69,17 @@ class YAMLLoader(yaml.SafeLoader):
             filename = self._root / filename
         with open(filename, "r") as f:
             return f.read().strip()
+
+    def prompt(self, node: yaml.Node) -> Any:
+        """
+        Process !prompt directive to read user input from the console.
+
+        Args:
+            node (yaml.Node): YAML node containing the prompt message.
+
+        Returns:
+            str: The user input as a string.
+        """
+        name = self.construct_scalar(node)
+        prompt_message = getattr(buildin, name)
+        return prompt_message

@@ -16,7 +16,6 @@
 #
 
 
-import time
 import warnings
 
 from synthora.agents import ReactAgent
@@ -34,5 +33,4 @@ agent = ReactAgent.from_config(config)
 http_service = HttpService()
 http_service.add(agent)
 http_service.run(host="0.0.0.0", port=8000)
-time.sleep(10)
 http_service.stop()

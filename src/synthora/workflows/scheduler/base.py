@@ -128,13 +128,15 @@ class BaseScheduler(ABC):
     ) -> Self:
         scheduler = cls(**config)
         tasks = [deepcopy(workflow).s(item) for item in data]
+        for task in tasks:
+            task.name = str(uuid4())
         return scheduler.add_task_group(tasks)
 
     @classmethod
     def starmap(
         cls,
         workflow: Union["BaseScheduler", BaseTask],
-        data: List[Any],
+        data: Iterable[Any],
         config: Dict[str, Any] = {},
     ) -> Self:
         scheduler = cls(**config)
@@ -145,6 +147,7 @@ class BaseScheduler(ABC):
                 if isinstance(item, dict)
                 else deepcopy(workflow).s(*item)
             )
+            tasks[-1].name = str(uuid4())
         return scheduler.add_task_group(tasks)
 
     def result(self) -> Optional[Any]:
