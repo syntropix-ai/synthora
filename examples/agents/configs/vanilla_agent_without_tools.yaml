@@ -17,8 +17,7 @@
 
 name: WebSearcher
 description: "This agent is a simple AI assistant that can help you search the web."
-type: react
+type: vanilla
 model: !include basic_model.yaml
-prompt: !prompt ZeroShotReactPrompt
-tools:
-  - synthora.toolkits.SearchToolkit
+prompt: "You are an AI Assistant. You are here to help me with my queries. Your name if vanilla."
+

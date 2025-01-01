@@ -15,10 +15,18 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-name: WebSearcher
-description: "This agent is a simple AI assistant that can help you search the web."
-type: react
-model: !include basic_model.yaml
-prompt: !prompt ZeroShotReactPrompt
-tools:
-  - synthora.toolkits.SearchToolkit
+import json
+
+from synthora.toolkits.webpage_toolkit import TrafilaturaWebpageReader
+
+
+reader = TrafilaturaWebpageReader(False)
+tool = reader.sync_tools[0]
+
+print(json.dumps(tool.schema, indent=2))
+
+print(
+    tool.run(
+        "https://github.com/adbar/trafilatura/blob/master/docs/Trafilatura_Overview.ipynb"
+    )
+)

@@ -40,5 +40,5 @@ agent.add_handler(handler)
 
 # agent.run("What's your name?")
 # agent.run("119 * 117 = ?")
-agent.run("Search Openai on Wikipedia. Outpout Your thought first!")
+agent.run("Search Openai on Wikipedia.")
 # print(agent.history[0])
