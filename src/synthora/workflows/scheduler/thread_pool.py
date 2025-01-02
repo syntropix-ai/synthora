@@ -68,10 +68,11 @@ class ThreadPoolScheduler(BaseScheduler):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
         current = self.tasks[self.cursor]
+        self.get_context().set_cursor(self.cursor)
         with ThreadPoolExecutor(self.max_worker) as pool:
             futures = []
             for task in current:
-                if task.state == TaskState.PENDING:
+                if task.state != TaskState.SKIPPED:
                     task.state = TaskState.RUNNING
                     futures.append(self._run(pool, pre, task, *args, **kwargs))
 
@@ -83,7 +84,7 @@ class ThreadPoolScheduler(BaseScheduler):
                     task.state = TaskState.FAILURE
                     task.meta_data["error"] = future.exception()
 
-        self.cursor += 1
+        self.cursor = self.get_context().get_cursor() + 1
 
     def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
         if len(self.tasks) == 0:
@@ -102,7 +103,7 @@ class ThreadPoolScheduler(BaseScheduler):
             if self.state != TaskState.RUNNING:
                 break
             self.step()
-        self._result = self._get_result(self.tasks[-1])
+        self._result = self._get_result(self.tasks[self.cursor - 1])
         if len(self._result) == 1:
             self._result = self._result[0]
         self.state = TaskState.COMPLETED

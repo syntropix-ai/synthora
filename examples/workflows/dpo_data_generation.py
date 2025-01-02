@@ -16,21 +16,17 @@
 #
 
 
-from copy import deepcopy
+import json
 import warnings
-from typing import Any, Dict, List, Tuple
+from copy import deepcopy
+from typing import Any, Dict, List
 
 from synthora.agents import VanillaAgent
-from synthora.agents.base import BaseAgent
-from synthora.configs import AgentConfig
 from synthora.messages import user
 from synthora.messages.base import BaseMessage
 from synthora.utils.pydantic_model import get_pydantic_model
-from synthora.workflows import task
 from synthora.workflows.base_task import BaseTask
-from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
 from synthora.workflows.scheduler.process_pool import ProcessPoolScheduler
-import json
 
 
 warnings.filterwarnings("ignore")
@@ -65,9 +61,10 @@ def score_response(
 
 def generate_data(system1: str, system2: str, prompt: str) -> Dict[str, Any]:
     agent1, agent2 = VanillaAgent.default(system1), VanillaAgent.default(system2)
-    flow = (BaseTask(agent1.run) | BaseTask(agent2.run)).s(prompt) 
+    flow = (BaseTask(agent1.run) | BaseTask(agent2.run)).s(prompt)
     _ = flow.run()
     return score_response(agent1.history, agent2.history, prompt)
+
 
 if __name__ == "__main__":
     system_message = "You are an AI Assistant."
@@ -85,4 +82,3 @@ if __name__ == "__main__":
     with open("examples/workflows/data/results.jsonl", "w") as f:
         for result in results:
             f.write(json.dumps(result) + "\n")
-    
