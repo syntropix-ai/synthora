@@ -18,5 +18,4 @@
 from synthora.memories.base import BaseMemory
 
 
-class FullContextMemory(BaseMemory):
-    pass
+class FullContextMemory(BaseMemory): ...
