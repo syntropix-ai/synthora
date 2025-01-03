@@ -39,6 +39,21 @@ class SummaryMemory(BaseMemory):
         if len(self) > self.n:
             self._summarize()
 
+    async def async_append(self, message: BaseMessage) -> None:
+        super().append(message)
+        if len(self) > self.n:
+            await self._async_summarize()
+
+    def _get_history(self, messages: list[BaseMessage]) -> list[BaseMemory]:
+        return [
+            system("You are a helpful assistant who can summarize conversations."),
+            user("Below are the messages you need to summarize."),
+            *messages,
+            user(
+                "Now make an objective summary of the conversation in third person. Only return the summary, no other text."
+            ),
+        ]
+
     def _summarize(self) -> None:
         messages_to_summarize = list(
             filter(lambda message: message.role != MessageRole.SYSTEM, self)
@@ -46,16 +61,31 @@ class SummaryMemory(BaseMemory):
         if len(messages_to_summarize) <= 1:
             return
 
-        history = [
-            system("You are a helpful assistant who can summarize conversations."),
-            user("Below are the messages you need to summarize."),
-            *messages_to_summarize,
-            user(
-                "Now make an objective summary of the conversation in third person. Only return the summary, no other text."
-            ),
-        ]
+        history = self._get_history(messages_to_summarize)
 
         summary = self.summary_model.run(history).content
+        index = self.index(messages_to_summarize[-1])
+        self[index].content = textwrap.dedent(
+            f"""\
+            This is the summary of our previous conversation:
+            <summary>
+            {summary}
+            </summary>
+            """
+        )
+        for i in messages_to_summarize[:-1]:
+            self.remove(i)
+
+    async def _async_summarize(self) -> None:
+        messages_to_summarize = list(
+            filter(lambda message: message.role != MessageRole.SYSTEM, self)
+        )[: self.cache_size]
+        if len(messages_to_summarize) <= 1:
+            return
+
+        history = self._get_history(messages_to_summarize)
+
+        summary = await self.summary_model.async_run(history).content
         index = self.index(messages_to_summarize[-1])
         self[index].content = textwrap.dedent(
             f"""\

@@ -30,6 +30,9 @@ class RecentNMemory(BaseMemory):
         if len(self) > self.n:
             self._remove_exceeded_messages()
 
+    async def async_append(self, message: BaseMessage) -> None:
+        self.append(message)
+
     def _remove_exceeded_messages(self) -> None:
         messages_to_remove = filter(
             lambda message: message.role != MessageRole.SYSTEM, self
