@@ -249,8 +249,9 @@ class BaseScheduler(ABC):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
         current = self.tasks[self.cursor]
+        self.get_context().set_cursor(self.cursor)
         for task in current:
-            if task.state == TaskState.PENDING:
+            if task.state != TaskState.SKIPPED:
                 task.state = TaskState.RUNNING
                 try:
                     self._run(pre, task, *args, **kwargs)
@@ -259,7 +260,7 @@ class BaseScheduler(ABC):
                     task.state = TaskState.FAILURE
                     task.meta_data["error"] = str(e)
 
-        self.cursor += 1
+        self.cursor = self.get_context().get_cursor() + 1
 
     def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
         if len(self.tasks) == 0:
@@ -268,7 +269,10 @@ class BaseScheduler(ABC):
             self.set_context(BasicContext(self))
         self.state = TaskState.RUNNING
         if self.immutable:
-            self.step(*self._args, **self._kwargs)
+            if args and isinstance(args[0], BaseContext):
+                self.step(args[0], *self._args, **self._kwargs)
+            else:
+                self.step(*self._args, **self._kwargs)
         else:
             args = tuple(self._args) + args
             kwargs = {**self._kwargs, **kwargs}
@@ -277,7 +281,7 @@ class BaseScheduler(ABC):
             if self.state != TaskState.RUNNING:
                 break
             self.step()
-        self._result = self._get_result(self.tasks[-1])
+        self._result = self._get_result(self.tasks[self.cursor - 1])
         if len(self._result) == 1:
             self._result = self._result[0]
         self.get_context().set_result(self.name, self._result)
@@ -289,22 +293,35 @@ class BaseScheduler(ABC):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
         current = self.tasks[self.cursor]
+        self.get_context().set_cursor(self.cursor)
         for task in current:
-            await self._async_run(pre, task, *args, **kwargs)
-        self.cursor += 1
+            if task.state != TaskState.SKIPPED:
+                task.state = TaskState.RUNNING
+                try:
+                    await self._async_run(pre, task, *args, **kwargs)
+                    task.state = TaskState.COMPLETED
+                except Exception as e:
+                    task.state = TaskState.FAILURE
+                    task.meta_data["error"] = str(e)
+        self.cursor = self.get_context().get_cursor() + 1
 
     async def async_run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
         if self.immutable:
-            await self.async_step(*self._args, **self._kwargs)
+            if args and isinstance(args[0], BaseContext):
+                await self.async_step(args[0], *self._args, **self._kwargs)
+            else:
+                await self.async_step(*self._args, **self._kwargs)
         else:
             args = tuple(self._args) + args
             kwargs = {**self._kwargs, **kwargs}
             await self.async_step(*args, **kwargs)
         while self.cursor < len(self.tasks):
+            if self.state != TaskState.RUNNING:
+                break
             await self.async_step()
-        self._result = self._get_result(self.tasks[-1])
+        self._result = self._get_result(self.tasks[self.cursor - 1])
         if len(self._result) == 1:
             self._result = self._result[0]
         return self._result

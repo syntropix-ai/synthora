@@ -20,4 +20,3 @@ description: "This agent is a simple AI assistant that can help you search the w
 type: vanilla
 model: !include basic_model.yaml
 prompt: "You are an AI Assistant. You are here to help me with my queries. Your name if vanilla."
-

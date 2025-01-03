@@ -30,6 +30,7 @@ class BasicContext(dict, BaseContext):  # type: ignore[type-arg]
     def __init__(self, workflow: "BaseScheduler") -> None:
         super().__init__()
         self._workflow = workflow
+        self._cursor = 0
 
     @property
     def lock(self) -> None:
@@ -76,3 +77,9 @@ class BasicContext(dict, BaseContext):  # type: ignore[type-arg]
     @property
     def workflow(self) -> "BaseScheduler":
         return self._workflow
+
+    def get_cursor(self) -> int:
+        return self._cursor
+
+    def set_cursor(self, cursor: int) -> None:
+        self._cursor = cursor

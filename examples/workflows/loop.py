@@ -15,24 +15,25 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
+from synthora.types.enums import TaskState
+from synthora.workflows import BaseTask
+from synthora.workflows.context.base import BaseContext
+from synthora.workflows.scheduler.base import BaseScheduler
 
-from synthora.agents import VanillaAgent
-from synthora.configs import AgentConfig
-from synthora.utils import get_pydantic_model
+
+def add(ctx: BaseContext) -> int:
+    with ctx:
+        a = ctx.get('a', 1)
+        b = ctx.get('b', 1)
+        ctx['ans'] = a + b
+        ctx['a'] = a + 1
+        ctx['b'] = b + 1
+        if a + b < 5:
+            ctx.set_cursor(-1)
+    return a + b
 
 
-config = AgentConfig.from_file(
-    "examples/agents/configs/vanilla_agent_without_tools.yaml"
-)
+flow = BaseScheduler() >> BaseTask(add) >> BaseTask(add).si()
 
-resp_format = get_pydantic_model(
-    '{"location": "Beijing", "date": "2023-09-01", "temperature": 30.0}'
-)
 
-agent = VanillaAgent.from_config(config)
-agent.model.config["response_format"] = get_pydantic_model(resp_format)
-del agent.model.config["stream"]
-
-print(
-    agent.run("Format: Today is 2023-09-01, the temperature in Beijing is 30 degrees.")
-)
+print(flow.run(), flow.get_context()["ans"])

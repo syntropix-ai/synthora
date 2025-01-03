@@ -68,10 +68,11 @@ class ProcessPoolScheduler(BaseScheduler):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
         current = self.tasks[self.cursor]
+        self.get_context().set_cursor(self.cursor)
         with ProcessPoolExecutor(self.max_worker) as pool:
             futures = []
             for task in current:
-                if self.get_context().get_state(task.name) == TaskState.PENDING:
+                if self.get_context().get_state(task.name) != TaskState.SKIPPED:
                     self.get_context().set_state(task.name, TaskState.RUNNING)
                     task.state = TaskState.RUNNING
                     futures.append(self._run(pool, pre, task, *args, **kwargs))
@@ -89,7 +90,7 @@ class ProcessPoolScheduler(BaseScheduler):
                     self.state = TaskState.FAILURE
                     self.get_context().set_state(self.name, TaskState.FAILURE)
 
-        self.cursor += 1
+        self.cursor = self.get_context().get_cursor() + 1
 
     def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
         if len(self.tasks) == 0:
