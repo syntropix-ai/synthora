@@ -15,24 +15,8 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-import json
-
-from synthora.agents import VanillaAgent
-from synthora.configs import AgentConfig
+from synthora.memories.base import BaseMemory
 
 
-config = AgentConfig.from_file("examples/agents/configs/vanilla_agent.yaml")
-# print(config)
-
-agent = VanillaAgent.from_config(config)
-print(json.dumps(agent.schema, indent=2))
-
-while True:
-    user_input = input("Enter a query: ")
-    if user_input == "exit":
-        break
-    print(agent.run(user_input).unwrap().content)
-
-print("History:")
-for message in agent.history:
-    print(f"{message.role}: {message.content}")
+class FullContextMemory(BaseMemory):
+    pass
