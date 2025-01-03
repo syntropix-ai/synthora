@@ -23,28 +23,17 @@ from synthora.types.enums import MessageRole
 class RecentNMemory(BaseMemory):
     def __init__(self, n: int) -> None:
         super().__init__()
-        self._n = n
-        self._count = 0
+        self.n = n
 
     def append(self, message: BaseMessage) -> None:
-        if message.role != MessageRole.SYSTEM:
-            self._count += 1
-
-        if self._count > self._n:
+        super().append(message)
+        if len(self) > self.n:
             self._remove_exceeded_messages()
 
-        super().append(message)
-
     def _remove_exceeded_messages(self) -> None:
-        messages_to_remove = []
+        messages_to_remove = filter(
+            lambda message: message.role != MessageRole.SYSTEM, self
+        )
 
-        for message in self:
-            if message.role == MessageRole.SYSTEM:
-                continue
-            messages_to_remove.append(message)
-            self._count -= 1
-            if self._count <= self._n:
-                break
-
-        for message in messages_to_remove:
-            self.remove(message)
+        while len(self) > self.n and messages_to_remove:
+            self.remove(next(messages_to_remove))

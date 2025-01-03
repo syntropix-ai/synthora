@@ -19,5 +19,4 @@ from abc import ABC
 from synthora.messages import BaseMessage
 
 
-class BaseMemory(ABC, list[BaseMessage]):
-    pass
+class BaseMemory(ABC, list[BaseMessage]): ...

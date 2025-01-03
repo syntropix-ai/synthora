@@ -25,50 +25,45 @@ from synthora.types.enums import MessageRole
 
 
 class SummaryMemory(BaseMemory):
-    def __init__(self, n: int, summary_model: BaseModelBackend) -> None:
+    def __init__(
+        self, n: int, cache_size: int, prompt: str, summary_model: BaseModelBackend
+    ) -> None:
         super().__init__()
-        self._n = n
-        self._count = 0
-        self._summary_model = summary_model
+        self.n = n
+        self.prompt = prompt
+        self.cache_size = cache_size
+        self.summary_model = summary_model
 
     def append(self, message: BaseMessage) -> None:
-        if message.role != MessageRole.SYSTEM:
-            self._count += 1
-
-        if self._count > self._n:
+        super().append(message)
+        if len(self) > self.n:
             self._summarize()
 
-        super().append(message)
-
     def _summarize(self) -> None:
-        messages_to_summarize = []
-        cache = []
+        messages_to_summarize = list(
+            filter(lambda message: message.role != MessageRole.SYSTEM, self)
+        )[: self.cache_size]
+        if len(messages_to_summarize) <= 1:
+            return
 
-        for message in self:
-            if message.role == MessageRole.SYSTEM:
-                continue
-            cache.append(message)
-            if message.role == MessageRole.USER:
-                messages_to_summarize += cache
-                cache = []
+        history = [
+            system("You are a helpful assistant who can summarize conversations."),
+            user("Below are the messages you need to summarize."),
+            *messages_to_summarize,
+            user(
+                "Now make an objective summary of the conversation in third person. Only return the summary, no other text."
+            ),
+        ]
 
-        history_str = "Here is the history of the conversation:\n<history>\n"
-        last_user_message = messages_to_summarize[-1]
-        for message in messages_to_summarize[:-1]:
-            self.remove(message)
-            history_str += f"{message.role.value}: {message.content}\n"
-        history_str += "</history>\nNow make an objective summary of the conversation in third person. Only return the summary, no other text."
-
-        history = [system("You are a helpful assistant."), user(history_str)]
-
-        summary = self._summary_model.run(history).content
-        last_user_message.content = textwrap.dedent(
+        summary = self.summary_model.run(history).content
+        index = self.index(messages_to_summarize[-1])
+        self[index].content = textwrap.dedent(
             f"""\
             This is the summary of our previous conversation:
             <summary>
             {summary}
             </summary>
-            Now the query is:
-            {last_user_message.content}
             """
         )
+        for i in messages_to_summarize[:-1]:
+            self.remove(i)
