@@ -17,17 +17,34 @@
 
 from synthora.memories.base import BaseMemory
 from synthora.messages.base import BaseMessage
+from synthora.types.enums import MessageRole
 
 
-class ListMemory(BaseMemory):
-    def __init__(self) -> None:
-        self.messages: list[BaseMessage] = []
+class RecentNMemory(BaseMemory):
+    def __init__(self, n: int) -> None:
+        super().__init__()
+        self._n = n
+        self._count = 0
 
     def append(self, message: BaseMessage) -> None:
-        self.messages.append(message)
+        if message.role != MessageRole.SYSTEM:
+            self._count += 1
 
-    def clear(self) -> None:
-        self.messages = []
+        if self._count > self._n:
+            self._remove_exceeded_messages()
 
-    def get_all(self) -> list[BaseMessage]:
-        return self.messages
+        super().append(message)
+
+    def _remove_exceeded_messages(self) -> None:
+        messages_to_remove = []
+
+        for message in self:
+            if message.role == MessageRole.SYSTEM:
+                continue
+            messages_to_remove.append(message)
+            self._count -= 1
+            if self._count <= self._n:
+                break
+
+        for message in messages_to_remove:
+            self.remove(message)
