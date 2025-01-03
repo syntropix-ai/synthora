@@ -54,16 +54,7 @@ class SummaryMemory(BaseMemory):
             ),
         ]
 
-    def _summarize(self) -> None:
-        messages_to_summarize = list(
-            filter(lambda message: message.role != MessageRole.SYSTEM, self)
-        )[: self.cache_size]
-        if len(messages_to_summarize) <= 1:
-            return
-
-        history = self._get_history(messages_to_summarize)
-
-        summary = self.summary_model.run(history).content
+    def _update(self, summary: str, messages_to_summarize: list[BaseMessage]) -> None:
         index = self.index(messages_to_summarize[-1])
         self[index].content = textwrap.dedent(
             f"""\
@@ -75,6 +66,18 @@ class SummaryMemory(BaseMemory):
         )
         for i in messages_to_summarize[:-1]:
             self.remove(i)
+
+    def _summarize(self) -> None:
+        messages_to_summarize = list(
+            filter(lambda message: message.role != MessageRole.SYSTEM, self)
+        )[: self.cache_size]
+        if len(messages_to_summarize) <= 1:
+            return
+
+        history = self._get_history(messages_to_summarize)
+
+        summary = self.summary_model.run(history).content
+        self._update(summary, messages_to_summarize)
 
     async def _async_summarize(self) -> None:
         messages_to_summarize = list(
@@ -86,14 +89,4 @@ class SummaryMemory(BaseMemory):
         history = self._get_history(messages_to_summarize)
 
         summary = await self.summary_model.async_run(history).content
-        index = self.index(messages_to_summarize[-1])
-        self[index].content = textwrap.dedent(
-            f"""\
-            This is the summary of our previous conversation:
-            <summary>
-            {summary}
-            </summary>
-            """
-        )
-        for i in messages_to_summarize[:-1]:
-            self.remove(i)
+        self._update(summary, messages_to_summarize)
