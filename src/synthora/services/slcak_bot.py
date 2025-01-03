@@ -16,9 +16,12 @@
 #
 
 import os
+import re
+from copy import deepcopy
 from typing import Any, Dict, Optional, Self, Union
 
 from slack_bolt import App
+from slack_bolt.adapter.socket_mode import SocketModeHandler
 
 from synthora.agents.base import BaseAgent
 from synthora.models.base import BaseModelBackend
@@ -29,28 +32,73 @@ from synthora.workflows.scheduler.base import BaseScheduler
 
 
 class SlackBotService(BaseService):
-    def __init__(self, api_key: Optional[str] = None) -> None:
-        self.api_key = api_key or os.environ.get("SLACK_API_KEY", None)
-        if not self.api_key:
-            raise ValueError("API key is required to run the SlackBotService.")
-        self.app = App(token=self.api_key)
+    def __init__(
+        self, bot_token: Optional[str] = None, app_token: Optional[str] = None
+    ) -> None:
+        self.bot_token = bot_token or os.environ.get("SLACK_BOT_TOKEN", None)
+        if not self.bot_token:
+            raise ValueError("SLACK_BOT_TOKEN is required to run the SlackBotService.")
+        self.app_token = app_token or os.environ.get("SLACK_APP_TOKEN", None)
+        if not self.app_token:
+            raise ValueError("SLACK_APP_TOKEN is required to run the SlackBotService.")
+        self.app = App(token=self.bot_token)
+        self.agent_map = {}
         super().__init__()
 
     def add(
         self,
         target: Union[
-            BaseFunction, BaseAgent, BaseModelBackend, BaseTask, BaseScheduler
+            BaseAgent, BaseModelBackend, BaseFunction, BaseTask, BaseScheduler
         ],
         name: Optional[str] = None,
     ) -> Self:
+        if len(self.service_map) > 0:
+            raise ValueError(
+                "SlackBotService can only have one target. You can add multiple services manually."
+            )
         if isinstance(target, BaseAgent):
-            self.service_map[name or target.name] = target
+            target.model.client = None
+
+            def _target(event, say):
+                user = event["user"]
+                text = event["text"]
+                channel = event["channel"]
+
+                text = re.sub(r"<@.*?>", "", text, count=1)
+                print(f"{user} said: {text} in channel {channel}")
+                if user not in self.agent_map:
+                    self.agent_map[user] = deepcopy(target)
+
+                prompt = f"{user} said: {text} in channel {channel}"
+                resp = self.agent_map[user].run(prompt)
+
+                if resp.is_ok:
+                    say(
+                        blocks=[
+                            {
+                                "type": "context",
+                                "elements": [{"type": "mrkdwn", "text": text}],
+                            },
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": resp.unwrap().content,
+                                },
+                            },
+                        ]
+                    )
+                else:
+                    say(f"An error occurred: {resp.unwrap_err_val()}")
+
+            self.service_map[name] = target
+            self.app.event("app_mention")(_target)
         return self
 
     def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Self:
-        # if "app_token" not in kwargs:
-        #     kwargs["app_token"] = self.api_key
-        # SocketModeHandler(self.app, *args, **kwargs).start()
+        if "app_token" not in kwargs:
+            kwargs["app_token"] = self.app_token
+        SocketModeHandler(self.app, *args, **kwargs).start()
         return self
 
     def stop(self) -> Self:

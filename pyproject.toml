@@ -32,6 +32,7 @@ openai = "^1.55.0"
 rich = "^13.9.4"
 websockets = "^14.1"
 fastapi = "^0.115.5"
+python-dotenv = "^1.0.1"
 
 
 [tool.poetry.group.quality.dependencies]
