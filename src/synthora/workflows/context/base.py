@@ -71,3 +71,9 @@ class BaseContext(ABC):
 
     @abstractmethod
     def __contains__(self, key: str) -> Any: ...
+
+    @abstractmethod
+    def get_cursor(self) -> int: ...
+
+    @abstractmethod
+    def set_cursor(self, cursor: int) -> None: ...

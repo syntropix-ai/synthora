@@ -166,7 +166,12 @@ class BaseTask(ABC):
             Any: The computed result of the task.
         """
         if self.immutable:
-            self._result = self.func(*self._args, **self._kwargs)
+            from synthora.workflows.context.base import BaseContext
+
+            if args and isinstance(args[0], BaseContext):
+                self._result = self.func(args[0], *self._args, **self._kwargs)
+            else:
+                self._result = self.func(*self._args, **self._kwargs)
             return self._result
         args += tuple(self._args)
         kwargs.update(self._kwargs)
@@ -253,7 +258,12 @@ class AsyncTask(BaseTask):
             Any: The computed result of the task.
         """
         if self.immutable:
-            self._result = await self.func(*self._args, **self._kwargs)
+            from synthora.workflows.context.base import BaseContext
+
+            if args and isinstance(args[0], BaseContext):
+                self._result = await self.func(args[0], *self._args, **self._kwargs)
+            else:
+                self._result = await self.func(*self._args, **self._kwargs)
             return self._result
         args += tuple(self._args)
         kwargs.update(self._kwargs)

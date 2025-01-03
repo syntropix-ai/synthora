@@ -33,6 +33,7 @@ class MultiProcessContext(dict, BaseContext):  # type: ignore[type-arg]
         self._data = data
         self._data["__workflow"] = workflow
         self._data["__lock"] = lock
+        self._data["__cursor"] = 0
 
     @property
     def lock(self) -> Lock:
@@ -102,3 +103,9 @@ class MultiProcessContext(dict, BaseContext):  # type: ignore[type-arg]
 
     def __contains__(self, key: Any) -> Any:
         return self._data.__contains__(key)
+
+    def get_cursor(self) -> int:
+        return self._data["__cursor"]
+
+    def set_cursor(self, cursor: int) -> None:
+        self._data["__cursor"] = cursor
