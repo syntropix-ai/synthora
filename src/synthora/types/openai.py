@@ -50,20 +50,22 @@ from openai.types.chat.chat_completion_user_message_param import (
 from openai.types.completion_usage import CompletionUsage
 
 
-ChatCompletion = ChatCompletion
-Choice = Choice
-ChatCompletionAssistantMessageParam = ChatCompletionAssistantMessageParam
-ChatCompletionChunk = ChatCompletionChunk
-ChatCompletionFunctionMessageParam = ChatCompletionFunctionMessageParam
-ChatCompletionMessage = ChatCompletionMessage
-ChatCompletionMessageParam = ChatCompletionMessageParam
-ChatCompletionSystemMessageParam = ChatCompletionSystemMessageParam
-ChatCompletionUserMessageParam = ChatCompletionUserMessageParam
-ChatCompletionToolMessageParam = ChatCompletionToolMessageParam
-CompletionUsage = CompletionUsage
-ParsedChatCompletion = ParsedChatCompletion
-ChatCompletionContentPartParam = ChatCompletionContentPartParam
-ChatCompletionMessageToolCallParam = ChatCompletionMessageToolCallParam
-ChatCompletionContentPartImageParam = ChatCompletionContentPartImageParam
-ChatCompletionContentPartTextParam = ChatCompletionContentPartTextParam
-ChatCompletionMessageToolCall = ChatCompletionMessageToolCall
+__all__ = [
+    "ChatCompletion",
+    "Choice",
+    "ChatCompletionAssistantMessageParam",
+    "ChatCompletionChunk",
+    "ChatCompletionFunctionMessageParam",
+    "ChatCompletionMessage",
+    "ChatCompletionMessageParam",
+    "ChatCompletionSystemMessageParam",
+    "ChatCompletionUserMessageParam",
+    "ChatCompletionToolMessageParam",
+    "CompletionUsage",
+    "ParsedChatCompletion",
+    "ChatCompletionContentPartParam",
+    "ChatCompletionMessageToolCallParam",
+    "ChatCompletionContentPartImageParam",
+    "ChatCompletionContentPartTextParam",
+    "ChatCompletionMessageToolCall",
+]
