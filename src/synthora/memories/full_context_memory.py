@@ -16,6 +16,9 @@
 #
 
 from synthora.memories.base import BaseMemory
+from synthora.messages.base import BaseMessage
 
 
-class FullContextMemory(BaseMemory): ...
+class FullContextMemory(BaseMemory):
+    async def async_append(self, message: BaseMessage) -> None:
+        super().append(message)
