@@ -15,13 +15,15 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from typing import Any, AsyncGenerator, Dict, Generator, Union, override
+from typing import Any, AsyncGenerator, Dict, Generator, List, Optional, Union, override
 
 from openai import AsyncOpenAI, OpenAI
 
+from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.messages.base import BaseMessage
 from synthora.models.openai_chat import OpenAIChatBackend
 from synthora.types.enums import CallBackEvent, MessageRole
+from synthora.types.node import Node
 from synthora.utils.macros import CALL_ASYNC_CALLBACK
 
 
@@ -38,6 +40,31 @@ class OpenAICompletionBackend(OpenAIChatBackend):
         handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]]): Callback handlers. Defaults to []
         kwargs (Dict[str, Any]): Additional keyword arguments for OpenAI client
     """
+
+    @staticmethod
+    def default(  # type: ignore[override]
+        model_type: Optional[str] = None,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        source: Optional[Node] = None,
+        config: Optional[Dict[str, Any]] = None,
+        name: Optional[str] = None,
+        handlers: Optional[
+            List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
+        ] = None,
+        **kwargs: Dict[str, Any],
+    ) -> "OpenAIChatBackend":
+        r"""Return the default OpenAI Chat model backend."""
+        return OpenAIChatBackend(
+            model_type=model_type or "gpt-4o",
+            api_key=api_key,
+            base_url=base_url,
+            source=source,
+            config=config,
+            name=name,
+            handlers=handlers,
+            **kwargs,
+        )
 
     def run(
         self,
@@ -63,8 +90,8 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             prompt = BaseMessage(
                 content=prompt, role=MessageRole.USER, source=self.source
             )
-        kwargs["prompt"] = prompt.content
-        kwargs["model"] = self.model_type
+        kwargs["prompt"] = str(prompt.content)  # type: ignore[assignment]
+        kwargs["model"] = str(self.model_type)  # type: ignore[assignment]
         kwargs.update(self.config)
 
         self.callback_manager.call(
@@ -128,7 +155,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
         prompt: Union[str, BaseMessage],  # type: ignore[override]
         *args: Any,
         **kwargs: Dict[str, Any],
-    ) -> Union[BaseMessage, Generator[BaseMessage, None, None]]:
+    ) -> Union[BaseMessage, AsyncGenerator[BaseMessage, None]]:
         """Synchronously generate completions.
 
         Args:
@@ -147,8 +174,8 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             prompt = BaseMessage(
                 content=prompt, role=MessageRole.USER, source=self.source
             )
-        kwargs["prompt"] = prompt.content
-        kwargs["model"] = self.model_type
+        kwargs["prompt"] = str(prompt.content)  # type: ignore[assignment]
+        kwargs["model"] = str(self.model_type)  # type: ignore[assignment]
         kwargs.update(self.config)
 
         CALL_ASYNC_CALLBACK(

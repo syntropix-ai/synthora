@@ -19,13 +19,13 @@ from __future__ import annotations
 
 import inspect
 import json
-from typing import Callable, Type, Union
+from typing import Any, Callable, Type, Union
 
 from pydantic import BaseModel, create_model
 
 
 def get_pydantic_model(
-    input_data: Union[str, Type[BaseModel], Callable],
+    input_data: Union[str, Type[BaseModel], Callable[..., Any]],
 ) -> Type[BaseModel]:
     r"""A multi-purpose function that can be used as a normal function,
         a class decorator, or a function decorator.
@@ -48,7 +48,7 @@ def get_pydantic_model(
             "TemporaryModel",
             **{key: (type(value), None) for key, value in data_dict.items()},
         )
-        return TemporaryModel(**data_dict).__class__
+        return TemporaryModel(**data_dict).__class__  # type: ignore[no-any-return]
 
     elif callable(input_data):
         WrapperClass = create_model(  # type: ignore[call-overload]
@@ -58,7 +58,7 @@ def get_pydantic_model(
                 for name, param in inspect.signature(input_data).parameters.items()
             },
         )
-        return WrapperClass
+        return WrapperClass  # type: ignore[no-any-return]
     if issubclass(input_data, BaseModel):
         return input_data
     raise ValueError("Invalid input data provided.")

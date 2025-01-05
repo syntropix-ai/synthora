@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from synthora.workflows.scheduler.base import BaseScheduler
 
 
-class MultiProcessContext(dict, BaseContext):  # type: ignore[type-arg]
+class MultiProcessContext(BaseContext):
     def __init__(self, data: Any, lock: Lock, workflow: "BaseScheduler") -> None:
         super().__init__()
         self._data = data
@@ -105,7 +105,7 @@ class MultiProcessContext(dict, BaseContext):  # type: ignore[type-arg]
         return self._data.__contains__(key)
 
     def get_cursor(self) -> int:
-        return self._data["__cursor"]
+        return cast(int, self._data["__cursor"])
 
     def set_cursor(self, cursor: int) -> None:
         self._data["__cursor"] = cursor
