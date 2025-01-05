@@ -52,7 +52,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
         handlers: Optional[
             List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
         ] = None,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> "OpenAIChatBackend":
         r"""Return the default OpenAI Chat model backend."""
         return OpenAIChatBackend(
@@ -70,7 +70,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
         self,
         prompt: Union[str, BaseMessage],  # type: ignore[override]
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Union[BaseMessage, Generator[BaseMessage, None, None]]:
         """Synchronously generate completions.
 
@@ -90,8 +90,8 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             prompt = BaseMessage(
                 content=prompt, role=MessageRole.USER, source=self.source
             )
-        kwargs["prompt"] = str(prompt.content)  # type: ignore[assignment]
-        kwargs["model"] = str(self.model_type)  # type: ignore[assignment]
+        kwargs["prompt"] = prompt.content
+        kwargs["model"] = self.model_type
         kwargs.update(self.config)
 
         self.callback_manager.call(
@@ -154,7 +154,7 @@ class OpenAICompletionBackend(OpenAIChatBackend):
         self,
         prompt: Union[str, BaseMessage],  # type: ignore[override]
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Union[BaseMessage, AsyncGenerator[BaseMessage, None]]:
         """Synchronously generate completions.
 
@@ -174,8 +174,8 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             prompt = BaseMessage(
                 content=prompt, role=MessageRole.USER, source=self.source
             )
-        kwargs["prompt"] = str(prompt.content)  # type: ignore[assignment]
-        kwargs["model"] = str(self.model_type)  # type: ignore[assignment]
+        kwargs["prompt"] = prompt.content
+        kwargs["model"] = self.model_type
         kwargs.update(self.config)
 
         CALL_ASYNC_CALLBACK(

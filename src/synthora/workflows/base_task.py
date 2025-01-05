@@ -111,7 +111,7 @@ class BaseTask(ABC):
         self.immutable = immutable
         return self
 
-    def s(self, *args: Any, **kwargs: Dict[str, Any]) -> Self:
+    def s(self, *args: Any, **kwargs: Any) -> Self:
         r"""Set the signature of the task.
         This is a shorthand method to set the arguments and keyword arguments of the task.
 
@@ -126,7 +126,7 @@ class BaseTask(ABC):
         self._kwargs.update(kwargs)
         return self
 
-    def si(self, *args: Any, **kwargs: Dict[str, Any]) -> Self:
+    def si(self, *args: Any, **kwargs: Any) -> Self:
         r"""Set the signature of the task and make it immutable.
         This is a shorthand method to set the arguments and keyword arguments of the task.
 
@@ -155,7 +155,7 @@ class BaseTask(ABC):
         self.immutable = immutable
         return self
 
-    def __call__(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
         r"""Call the task.
 
         Args:
@@ -221,7 +221,7 @@ class BaseTask(ABC):
         """
         return self.name
 
-    def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+    def run(self, *args: Any, **kwargs: Any) -> Any:
         r"""Call the task.
 
         Args:
@@ -233,7 +233,7 @@ class BaseTask(ABC):
         """
         return self(*args, **kwargs)
 
-    async def async_run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+    async def async_run(self, *args: Any, **kwargs: Any) -> Any:
         r"""Call the task asynchronously.
 
         Args:
@@ -247,7 +247,7 @@ class BaseTask(ABC):
 
 
 class AsyncTask(BaseTask):
-    async def __call__(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+    async def __call__(self, *args: Any, **kwargs: Any) -> Any:
         r"""Call the task asynchronously.
 
         Args:
@@ -270,7 +270,7 @@ class AsyncTask(BaseTask):
         self._result = await self.func(*args, **kwargs)
         return self._result
 
-    async def async_run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+    async def async_run(self, *args: Any, **kwargs: Any) -> Any:
         r"""Call the task asynchronously.
 
         Args:

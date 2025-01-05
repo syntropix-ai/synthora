@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, List, Optional, Union, cast
 
 from synthora.agents import BaseAgent
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
@@ -136,7 +136,7 @@ class ReactAgent(BaseAgent):
         )
 
     def step(
-        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
         """Execute a single step of the ReAct agent's reasoning process.
 
@@ -167,7 +167,7 @@ class ReactAgent(BaseAgent):
         return Ok(response)
 
     def run(
-        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
         """Execute the complete ReAct agent reasoning and action loop.
 
@@ -224,7 +224,7 @@ class ReactAgent(BaseAgent):
                     return Ok(resp_value)
 
     async def async_step(
-        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
         """Execute a single step of the ReAct agent asynchronously.
 
@@ -254,7 +254,7 @@ class ReactAgent(BaseAgent):
         return Ok(response)
 
     async def async_run(
-        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
         """Execute the ReAct agent loop asynchronously.
 

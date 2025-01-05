@@ -53,7 +53,7 @@ class OpenAIChatBackend(BaseModelBackend):
         handlers: Optional[
             List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
         ] = None,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> "OpenAIChatBackend":
         r"""Return the default OpenAI Chat model backend."""
         return OpenAIChatBackend(
@@ -78,7 +78,7 @@ class OpenAIChatBackend(BaseModelBackend):
         handlers: Optional[
             List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
         ] = None,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         source = source or Node(name=model_type or "assistant", type=NodeType.AGENT)
         handlers = handlers or []
@@ -96,9 +96,9 @@ class OpenAIChatBackend(BaseModelBackend):
         self.kwargs = kwargs
         if self.api_key is None:
             raise ValueError("API Key is required for OpenAI")
-        self.kwargs["api_key"] = self.api_key  # type: ignore[assignment]
+        self.kwargs["api_key"] = self.api_key
         if self.base_url is not None:
-            self.kwargs["base_url"] = self.base_url  # type: ignore[assignment]
+            self.kwargs["base_url"] = self.base_url
         if isinstance(self.callback_manager, AsyncCallBackHandler):
             self.client = AsyncOpenAI(**self.kwargs)
         else:
@@ -108,7 +108,7 @@ class OpenAIChatBackend(BaseModelBackend):
         self,
         messages: Union[List[BaseMessage], BaseMessage],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Union[BaseMessage, Generator[BaseMessage, None, None]]:
         """Synchronously generate chat completions.
 
@@ -130,8 +130,8 @@ class OpenAIChatBackend(BaseModelBackend):
         kwargs = {**self.config, **kwargs}
         if "tools" in kwargs and not kwargs["tools"]:
             del kwargs["tools"]
-        kwargs["model"] = self.model_type  # type: ignore[assignment]
-        kwargs["messages"] = messages  # type: ignore[assignment]
+        kwargs["model"] = self.model_type
+        kwargs["messages"] = messages
         self.callback_manager.call(
             CallBackEvent.LLM_START,
             self.source,
@@ -191,7 +191,7 @@ class OpenAIChatBackend(BaseModelBackend):
         self,
         messages: Union[List[BaseMessage], BaseMessage],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Union[BaseMessage, AsyncGenerator[BaseMessage, None]]:
         """Asynchronously generate chat completions.
 
@@ -211,8 +211,8 @@ class OpenAIChatBackend(BaseModelBackend):
         stream = self.config.get("stream", False)
         messages = [message.to_openai_message() for message in messages]
         kwargs = {**self.config, **kwargs}
-        kwargs["model"] = self.model_type  # type: ignore[assignment]
-        kwargs["messages"] = messages  # type: ignore[assignment]
+        kwargs["model"] = self.model_type
+        kwargs["messages"] = messages
         if "tools" in kwargs and not kwargs["tools"]:
             del kwargs["tools"]
         await CALL_ASYNC_CALLBACK(

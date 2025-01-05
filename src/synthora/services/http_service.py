@@ -17,7 +17,7 @@
 
 import inspect
 from asyncio import Task
-from typing import TYPE_CHECKING, Any, Dict, Literal, Optional, Self, Union
+from typing import TYPE_CHECKING, Any, Literal, Optional, Self, Union
 
 from synthora.agents.base import BaseAgent
 from synthora.models.base import BaseModelBackend
@@ -52,12 +52,12 @@ def _add_agent_to_app(
     bound_method = target_method.__get__(agent)
     if use_async:
 
-        async def endpoint(**kwargs: Dict[str, Any]) -> Any:
+        async def endpoint(**kwargs: Any) -> Any:
             return await bound_method(**kwargs)
 
     else:
 
-        def endpoint(**kwargs: Dict[str, Any]) -> Any:
+        def endpoint(**kwargs: Any) -> Any:
             return bound_method(**kwargs)
 
     endpoint.__signature__ = sig  # type: ignore[attr-defined]
@@ -67,7 +67,7 @@ def _add_agent_to_app(
 
 
 class HttpService(BaseService):
-    def __init__(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__()
         try:
             import uvicorn  # noqa
@@ -109,7 +109,7 @@ class HttpService(BaseService):
             self.server.should_exit = True
             await self.server_task
 
-    def run(self, host: str = "127.0.0.1", port: int = 8000) -> Self:  # type: ignore[override]
+    def run(self, host: str = "127.0.0.1", port: int = 8000) -> Self:
         import uvicorn
 
         uvicorn.run(self.app, host=host, port=port)

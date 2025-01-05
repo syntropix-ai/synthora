@@ -17,7 +17,7 @@
 
 from concurrent.futures import Future, ProcessPoolExecutor, as_completed
 from multiprocessing.managers import SyncManager
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, List, Optional, Union
 
 from synthora.types.enums import TaskState
 from synthora.workflows.base_task import BaseTask
@@ -43,7 +43,7 @@ class ProcessPoolScheduler(BaseScheduler):
         pre: Optional[List[Union["BaseScheduler", BaseTask]]],
         current: Union["BaseScheduler", BaseTask],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Future[Any]:
         prev_args = self._get_result(pre)
         args = tuple(prev_args) + args
@@ -59,11 +59,11 @@ class ProcessPoolScheduler(BaseScheduler):
         pre: Optional[List[Union["BaseScheduler", BaseTask]]],
         current: Union["BaseScheduler", BaseTask],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         raise NotImplementedError("ProcessPoolScheduler does not support async tasks")
 
-    def step(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
+    def step(self, *args: Any, **kwargs: Any) -> None:
         if self.cursor >= len(self.tasks):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
@@ -92,7 +92,7 @@ class ProcessPoolScheduler(BaseScheduler):
 
         self.cursor = self.get_context().get_cursor() + 1
 
-    def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+    def run(self, *args: Any, **kwargs: Any) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
         if self.context is None:
@@ -124,8 +124,8 @@ class ProcessPoolScheduler(BaseScheduler):
             self.state = TaskState.COMPLETED
         return self._result
 
-    async def async_step(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
+    async def async_step(self, *args: Any, **kwargs: Any) -> None:
         raise NotImplementedError("ProcessPoolScheduler does not support async tasks")
 
-    async def async_run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+    async def async_run(self, *args: Any, **kwargs: Any) -> Any:
         raise NotImplementedError("ProcessPoolScheduler does not support async tasks")

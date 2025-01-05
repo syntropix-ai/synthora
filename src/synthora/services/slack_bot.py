@@ -18,7 +18,7 @@
 import os
 import re
 from copy import deepcopy
-from typing import Any, Dict, Optional, Self, Union
+from typing import Any, Callable, Dict, Optional, Self, Union
 
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
@@ -42,7 +42,7 @@ class SlackBotService(BaseService):
         if not self.app_token:
             raise ValueError("SLACK_APP_TOKEN is required to run the SlackBotService.")
         self.app = App(token=self.bot_token)
-        self.agent_map = {}
+        self.agent_map: Dict[str, BaseAgent] = {}
         super().__init__()
 
     def add(
@@ -57,9 +57,14 @@ class SlackBotService(BaseService):
                 "SlackBotService can only have one target. You can add multiple services manually."
             )
         if isinstance(target, BaseAgent):
-            target.model.client = None
+            name = name or target.name
+            if isinstance(target.model, BaseModelBackend):
+                target.model.client = None
+            else:
+                for model in target.model:
+                    model.client = None
 
-            def _target(event, say):
+            def _target(event: Dict[str, Any], say: Callable[..., Any]) -> None:
                 user = event["user"]
                 text = event["text"]
                 channel = event["channel"]
@@ -91,11 +96,11 @@ class SlackBotService(BaseService):
                 else:
                     say(f"An error occurred: {resp.unwrap_err_val()}")
 
-            self.service_map[name] = target
+            self.service_map[str(name)] = target
             self.app.event("app_mention")(_target)
         return self
 
-    def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Self:
+    def run(self, *args: Any, **kwargs: Any) -> Self:
         if "app_token" not in kwargs:
             kwargs["app_token"] = self.app_token
         SocketModeHandler(self.app, *args, **kwargs).start()

@@ -80,12 +80,12 @@ class BaseScheduler(ABC):
         self.immutable = immutable
         return self
 
-    def s(self, *args: Any, **kwargs: Dict[str, Any]) -> Self:
+    def s(self, *args: Any, **kwargs: Any) -> Self:
         self._args += list(args)
         self._kwargs.update(kwargs)
         return self
 
-    def si(self, *args: Any, **kwargs: Dict[str, Any]) -> Self:
+    def si(self, *args: Any, **kwargs: Any) -> Self:
         self._args += list(args)
         self._kwargs.update(kwargs)
         self.immutable = True
@@ -105,7 +105,7 @@ class BaseScheduler(ABC):
         *tasks: Union[
             List[Union["BaseScheduler", BaseTask]], Union["BaseScheduler", BaseTask]
         ],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Self:
         return cls(**kwargs).add_tasks(*tasks)  # type: ignore[arg-type]
 
@@ -115,7 +115,7 @@ class BaseScheduler(ABC):
         *tasks: Union[
             List[Union["BaseScheduler", BaseTask]], Union["BaseScheduler", BaseTask]
         ],
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Self:
         return cls(**kwargs).add_task_group(tasks)  # type: ignore[arg-type]
 
@@ -210,7 +210,7 @@ class BaseScheduler(ABC):
         pre: Optional[List[Union["BaseScheduler", BaseTask]]],
         current: Union["BaseScheduler", BaseTask],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         prev_args = self._get_result(pre)
         _args = prev_args + list(args)
@@ -227,7 +227,7 @@ class BaseScheduler(ABC):
         pre: Optional[List[Union["BaseScheduler", BaseTask]]],
         current: Union["BaseScheduler", BaseTask],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         prev_args = self._get_result(pre)
         args = tuple(prev_args) + args
@@ -244,7 +244,7 @@ class BaseScheduler(ABC):
         elif isinstance(current, BaseScheduler):
             await current.async_run(*args, **kwargs)
 
-    def step(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
+    def step(self, *args: Any, **kwargs: Any) -> None:
         if self.cursor >= len(self.tasks):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
@@ -262,7 +262,7 @@ class BaseScheduler(ABC):
 
         self.cursor = self.get_context().get_cursor() + 1
 
-    def run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+    def run(self, *args: Any, **kwargs: Any) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
         if self.context is None:
@@ -288,7 +288,7 @@ class BaseScheduler(ABC):
 
         return self._result
 
-    async def async_step(self, *args: Any, **kwargs: Dict[str, Any]) -> None:
+    async def async_step(self, *args: Any, **kwargs: Any) -> None:
         if self.cursor >= len(self.tasks):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
@@ -305,7 +305,7 @@ class BaseScheduler(ABC):
                     task.meta_data["error"] = str(e)
         self.cursor = self.get_context().get_cursor() + 1
 
-    async def async_run(self, *args: Any, **kwargs: Dict[str, Any]) -> Any:
+    async def async_run(self, *args: Any, **kwargs: Any) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
         if self.immutable:

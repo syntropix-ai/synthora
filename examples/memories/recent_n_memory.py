@@ -15,7 +15,6 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-import json
 
 from synthora.agents import VanillaAgent
 from synthora.configs import AgentConfig

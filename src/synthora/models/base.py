@@ -80,13 +80,14 @@ class BaseModelBackend(ABC):
         self.backend_type = backend_type
         self.config = config or {}
         self.callback_manager = get_callback_manager(handlers)
+        self.client: Optional[Any] = None
 
     @abstractmethod
     def run(
         self,
         messages: Union[List[BaseMessage], BaseMessage],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Any:
         """Run the model synchronously.
 
@@ -105,7 +106,7 @@ class BaseModelBackend(ABC):
         self,
         messages: Union[List[BaseMessage], BaseMessage],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> Any:
         """Run the model asynchronously.
 

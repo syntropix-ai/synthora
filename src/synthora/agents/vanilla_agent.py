@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from typing import Any, Dict, List, Optional, Union, cast
+from typing import Any, List, Optional, Union, cast
 
 from synthora.agents import BaseAgent
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
@@ -87,7 +87,7 @@ class VanillaAgent(BaseAgent):
             Node(name=name, type=NodeType.AGENT),
             model,
             config.prompt,  # type: ignore[arg-type]
-            tools,  # type: ignore[arg-type]
+            tools,
         )
         if handlers:
             for handler in handlers:
@@ -116,7 +116,7 @@ class VanillaAgent(BaseAgent):
         )
 
     def step(
-        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
         """Execute a single step of message processing.
 
@@ -145,7 +145,7 @@ class VanillaAgent(BaseAgent):
         return Ok(response)
 
     def run(
-        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
         """Execute the complete message processing loop.
 
@@ -198,7 +198,7 @@ class VanillaAgent(BaseAgent):
                 )
 
     async def async_step(
-        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
         """Execute a single step of message processing asynchronously.
 
@@ -226,7 +226,7 @@ class VanillaAgent(BaseAgent):
         return Ok(response)
 
     async def async_run(
-        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Dict[str, Any]
+        self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
         """Execute the message processing loop asynchronously.
 

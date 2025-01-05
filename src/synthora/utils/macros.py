@@ -52,7 +52,7 @@ def macro(func: Callable[..., Any]) -> Callable[..., Any]:
 @macro
 def FORMAT_PROMPT(
     prompt: Optional[Union[BasePrompt, Dict[str, BasePrompt]]] = None,
-    **kwargs: Dict[str, Any],
+    **kwargs: Any,
 ) -> Union[BasePrompt, Dict[str, BasePrompt]]:
     r"""Format the prompt.
 
@@ -81,7 +81,7 @@ def UPDATE_SYSTEM(
     history: Optional[List[BaseMessage]] = None,
     prompt: Optional[BasePrompt] = None,
     source: Optional[Node] = None,
-    **kwargs: Dict[str, Any],
+    **kwargs: Any,
 ) -> None:
     r"""Update the system message.
 
@@ -114,7 +114,7 @@ def UPDATE_SYSTEM(
 @macro
 def STR_TO_USERMESSAGE(
     message: Optional[Union[str, BaseMessage]] = None,
-    **kwargs: Dict[str, Any],
+    **kwargs: Any,
 ) -> BaseMessage:
     r"""Convert a string to a user message.
     if the input is a string, it will be converted to a user message.
@@ -137,13 +137,13 @@ def STR_TO_USERMESSAGE(
             role=MessageRole.USER,
             content=message,
         )
-    return message  # type: ignore[return-value]
+    return message
 
 
 @macro
 def GET_FINAL_MESSAGE(
     response: Optional[Union[BaseMessage, List[BaseMessage]]] = None,
-    **kwargs: Dict[str, Any],
+    **kwargs: Any,
 ) -> BaseMessage:
     r"""Get the final message from llm response.
     If the response is a generator, it will return the last message.
@@ -163,7 +163,7 @@ def GET_FINAL_MESSAGE(
         response = kwargs.get("__macro_locals__", {}).get("response")
     if not isinstance(response, BaseMessage):
         tmp = None
-        for res in response:  # type: ignore[union-attr]
+        for res in response:
             tmp = res
         response = tmp
     return response  # type: ignore[return-value]
@@ -172,7 +172,7 @@ def GET_FINAL_MESSAGE(
 @macro
 async def ASYNC_GET_FINAL_MESSAGE(
     response: Optional[Union[BaseMessage, List[BaseMessage]]] = None,
-    **kwargs: Dict[str, Any],
+    **kwargs: Any,
 ) -> BaseMessage:
     r"""Get the final message from llm response.
     If the response is a generator, it will return the last message.
@@ -202,7 +202,7 @@ async def ASYNC_GET_FINAL_MESSAGE(
 async def CALL_ASYNC_CALLBACK(
     *args: Any,
     manager: Optional[Union[BaseCallBackManager, AsyncCallBackManager]] = None,
-    **kwargs: Dict[str, Any],
+    **kwargs: Any,
 ) -> None:
     """Asynchronously call a callback manager's methods, handling both sync and async managers.
 
@@ -233,7 +233,7 @@ async def CALL_ASYNC_CALLBACK(
     # Handle different types of callback managers
     if isinstance(manager, BaseCallBackManager):
         # For synchronous manager, call directly
-        manager.call(*args, **kwargs)  # type: ignore[arg-type]
+        manager.call(*args, **kwargs)
     else:
         # For async manager, await the call
         await manager.call(*args, **kwargs)
