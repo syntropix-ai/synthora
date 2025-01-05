@@ -16,7 +16,7 @@
 #
 
 from abc import ABC
-from typing import Any, Dict, List
+from typing import Any, List
 
 from synthora.messages.base import BaseMessage
 from synthora.types.enums import Result
@@ -40,7 +40,7 @@ class BaseCallBackHandler(ABC):
         messages: List[BaseMessage],
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when LLM starts processing.
 
@@ -62,7 +62,7 @@ class BaseCallBackHandler(ABC):
         message: BaseMessage,
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when LLM completes processing.
 
@@ -84,7 +84,7 @@ class BaseCallBackHandler(ABC):
         e: Exception,
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when LLM encounters an error.
 
@@ -105,7 +105,7 @@ class BaseCallBackHandler(ABC):
         source: Node,
         message: BaseMessage,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when LLM produces a chunk during streaming.
 
@@ -124,7 +124,7 @@ class BaseCallBackHandler(ABC):
         self,
         source: Node,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when a tool starts execution.
 
@@ -175,7 +175,7 @@ class BaseCallBackHandler(ABC):
         source: Node,
         message: BaseMessage,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when an agent starts processing.
 
@@ -195,7 +195,7 @@ class BaseCallBackHandler(ABC):
         source: Node,
         message: BaseMessage,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when an agent completes processing.
 
@@ -215,7 +215,7 @@ class BaseCallBackHandler(ABC):
         source: Node,
         result: Result[Any, Exception],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when an agent encounters an error.
 
@@ -247,7 +247,7 @@ class AsyncCallBackHandler(BaseCallBackHandler):
         messages: List[BaseMessage],
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Async version of on_llm_start.
 
@@ -269,7 +269,7 @@ class AsyncCallBackHandler(BaseCallBackHandler):
         message: BaseMessage,
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Async version of on_llm_end.
 
@@ -291,7 +291,7 @@ class AsyncCallBackHandler(BaseCallBackHandler):
         e: Exception,
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Async version of on_llm_error.
 
@@ -312,7 +312,7 @@ class AsyncCallBackHandler(BaseCallBackHandler):
         source: Node,
         message: BaseMessage,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Async version of on_llm_chunk.
 
@@ -331,7 +331,7 @@ class AsyncCallBackHandler(BaseCallBackHandler):
         self,
         source: Node,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Async version of on_tool_start.
 
@@ -378,7 +378,7 @@ class AsyncCallBackHandler(BaseCallBackHandler):
         source: Node,
         message: List[BaseMessage],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Async version of on_agent_start.
 
@@ -398,7 +398,7 @@ class AsyncCallBackHandler(BaseCallBackHandler):
         source: Node,
         message: BaseMessage,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Async version of on_agent_end.
 
@@ -418,7 +418,7 @@ class AsyncCallBackHandler(BaseCallBackHandler):
         source: Node,
         result: Result[Any, Exception],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Async version of on_agent_error.
 

@@ -176,9 +176,7 @@ class RichOutputHandler(BaseCallBackHandler):
             self.live = None
         self.cache = ""
 
-    def on_tool_start(
-        self, source: Optional[Node], *args: Any, **kwargs: Dict[str, Any]
-    ) -> None:
+    def on_tool_start(self, source: Optional[Node], *args: Any, **kwargs: Any) -> None:
         self.update_status(f"Calling Tool: {source.name if source else 'Unknown'}")
 
     def on_tool_end(
@@ -201,12 +199,12 @@ class RichOutputHandler(BaseCallBackHandler):
         messages: List[BaseMessage],
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         self.thinking(source.name if source else "Unknown")
 
     def on_llm_chunk(
-        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Dict[str, Any]
+        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Any
     ) -> None:
         if message.chunk:
             if self.status is not None:
@@ -223,7 +221,7 @@ class RichOutputHandler(BaseCallBackHandler):
         message: BaseMessage,
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         self.done()
         if not stream and message.content:
@@ -240,7 +238,7 @@ class RichOutputHandler(BaseCallBackHandler):
         e: Exception,
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         self.done()
         self.panel_print(str(e), title=source.name if source.name else "Unknow")
@@ -249,13 +247,13 @@ class RichOutputHandler(BaseCallBackHandler):
             self.status.start()
 
     def on_agent_start(
-        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Dict[str, Any]
+        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Any
     ) -> None:
         title = f"[bold blue]{source.name if source else 'Unknown'}' Task: "
         self.panel_print(message.content, title=title, style="blue")
 
     def on_agent_end(
-        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Dict[str, Any]
+        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Any
     ) -> None:
         title = f"[bold blue]{source.name if source else 'Unknown'}' Response: "
         self.panel_print(message.content, title=title, style="green")
@@ -267,7 +265,7 @@ class RichOutputHandler(BaseCallBackHandler):
         source: Node,
         result: Result[Any, Exception],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         title = f"[bold blue]{source.name if source else 'Unknown'}' Error: "
         self.panel_print(str(result.unwrap_err_val()), title=title, style="red")

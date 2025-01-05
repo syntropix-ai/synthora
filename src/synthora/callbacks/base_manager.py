@@ -16,7 +16,7 @@
 #
 
 from abc import ABC
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, List, Optional, Union
 
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.types.enums import CallBackEvent
@@ -116,7 +116,7 @@ class BaseCallBackManager(ABC):
         """
         self.remove(handler)
 
-    def call(self, event: CallBackEvent, *args: Any, **kwargs: Dict[str, Any]) -> None:
+    def call(self, event: CallBackEvent, *args: Any, **kwargs: Any) -> None:
         """Execute the specified callback event on all handlers.
 
         Args:
@@ -177,7 +177,7 @@ class AsyncCallBackManager(BaseCallBackManager):
         return BaseCallBackManager(handlers=self.handlers)
 
     async def call(  # type: ignore[override]
-        self, event: CallBackEvent, *args: Any, **kwargs: Dict[str, Any]
+        self, event: CallBackEvent, *args: Any, **kwargs: Any
     ) -> None:
         """Asynchronously execute the specified callback event on all handlers.
 

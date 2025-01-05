@@ -137,9 +137,7 @@ class BaseAgent(ABC):
         return self.schema["function"]["parameters"]["properties"]  # type: ignore[no-any-return]
 
     @abstractmethod
-    def run(
-        self, message: str, *args: Any, **kwargs: Dict[str, Any]
-    ) -> Result[Any, Exception]:
+    def run(self, message: str, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
         """Execute the agent's main synchronous processing logic.
 
         Args:
@@ -156,7 +154,7 @@ class BaseAgent(ABC):
 
     @abstractmethod
     async def async_run(
-        self, message: str, *args: Any, **kwargs: Dict[str, Any]
+        self, message: str, *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
         """Execute the agent's main asynchronous processing logic.
 
@@ -173,9 +171,7 @@ class BaseAgent(ABC):
         ...
 
     @abstractmethod
-    def step(
-        self, message: str, *args: Any, **kwargs: Dict[str, Any]
-    ) -> Result[Any, Exception]:
+    def step(self, message: str, *args: Any, **kwargs: Any) -> Result[Any, Exception]:
         """Execute a single synchronous step of the agent's processing logic.
 
         This method represents one iteration of the agent's decision-making process.
@@ -194,7 +190,7 @@ class BaseAgent(ABC):
 
     @abstractmethod
     async def async_step(
-        self, message: str, *args: Any, **kwargs: Dict[str, Any]
+        self, message: str, *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
         """Execute a single asynchronous step of the agent's processing logic.
 
@@ -378,7 +374,7 @@ class BaseAgent(ABC):
         self,
         message: Union[List[BaseMessage], BaseMessage],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Handle agent start event.
 
@@ -405,7 +401,7 @@ class BaseAgent(ABC):
         self,
         message: Union[List[BaseMessage], BaseMessage],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Handle agent start event.
 
@@ -432,7 +428,7 @@ class BaseAgent(ABC):
         self,
         message: BaseMessage,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Handle agent completion event.
 
@@ -463,7 +459,7 @@ class BaseAgent(ABC):
         self,
         message: BaseMessage,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Handle agent completion event.
 
@@ -494,7 +490,7 @@ class BaseAgent(ABC):
         self,
         result: Result[Any, Exception],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Handle agent error event.
 
@@ -521,7 +517,7 @@ class BaseAgent(ABC):
         self,
         result: Result[Any, Exception],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Handle agent error event.
 

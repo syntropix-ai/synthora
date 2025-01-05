@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from typing import Any, Dict, List, cast
+from typing import Any, List, cast
 
 from synthora.messages.base import BaseMessage
 from synthora.models.base import BaseModelBackend
@@ -33,7 +33,7 @@ class SimpleTracer(BaseTracer):
     """
 
     def on_agent_start(
-        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Dict[str, Any]
+        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Any
     ) -> None:
         """Called when an agent starts processing.
 
@@ -60,7 +60,7 @@ class SimpleTracer(BaseTracer):
         )
 
     def on_agent_end(
-        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Dict[str, Any]
+        self, source: Node, message: BaseMessage, *args: Any, **kwargs: Any
     ) -> None:
         """Called when an agent completes processing.
 
@@ -91,7 +91,7 @@ class SimpleTracer(BaseTracer):
         source: Node,
         result: Result[Any, Exception],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when an agent encounters an error during processing.
 
@@ -123,7 +123,7 @@ class SimpleTracer(BaseTracer):
         messages: List[BaseMessage],
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when an LLM interaction begins.
 
@@ -165,7 +165,7 @@ class SimpleTracer(BaseTracer):
         message: BaseMessage,
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when an LLM interaction completes.
 
@@ -208,7 +208,7 @@ class SimpleTracer(BaseTracer):
         e: Exception,
         stream: bool = False,
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when an LLM interaction encounters an error.
 
@@ -244,7 +244,7 @@ class SimpleTracer(BaseTracer):
             )
         )
 
-    def on_tool_start(self, source: Node, *args: Any, **kwargs: Dict[str, Any]) -> None:
+    def on_tool_start(self, source: Node, *args: Any, **kwargs: Any) -> None:
         """Called when a tool execution begins.
 
         Args:
@@ -273,7 +273,7 @@ class SimpleTracer(BaseTracer):
         source: Node,
         result: Result[Any, Exception],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when a tool execution completes successfully.
 
@@ -304,7 +304,7 @@ class SimpleTracer(BaseTracer):
         source: Node,
         result: Result[Any, Exception],
         *args: Any,
-        **kwargs: Dict[str, Any],
+        **kwargs: Any,
     ) -> None:
         """Called when a tool execution encounters an error.
 
