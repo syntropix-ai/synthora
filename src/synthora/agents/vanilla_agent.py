@@ -79,7 +79,6 @@ class VanillaAgent(BaseAgent):
             type=AgentType.VANILLA,
             model=ModelConfig(model_type=model_type, name=model_type),
             prompt=BasePrompt(prompt),
-            tools=tools,
         )
         node = Node(name=name, type=NodeType.AGENT)
         model = create_model_from_config(config.model, node)  # type: ignore[arg-type]
@@ -88,7 +87,7 @@ class VanillaAgent(BaseAgent):
             Node(name=name, type=NodeType.AGENT),
             model,
             config.prompt,  # type: ignore[arg-type]
-            config.tools,  # type: ignore[arg-type]
+            tools,  # type: ignore[arg-type]
         )
         if handlers:
             for handler in handlers:
