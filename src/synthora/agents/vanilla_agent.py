@@ -217,12 +217,12 @@ class VanillaAgent(BaseAgent):
         UPDATE_SYSTEM(prompt=FORMAT_PROMPT())
         message = cast(BaseMessage, STR_TO_USERMESSAGE())
         if message.content:
-            self.history.append(message)
+            await self.history.async_append(message)
 
         response = await self.model.async_run(self.history, *args, **kwargs)
         response = await ASYNC_GET_FINAL_MESSAGE()
 
-        self.history.append(response)
+        await self.history.async_append(response)
         return Ok(response)
 
     async def async_run(
@@ -266,7 +266,7 @@ class VanillaAgent(BaseAgent):
                     resp_value = f"Error: {str(e)}"
                     await self.async_on_error(resp, *args, **kwargs)
 
-                self.history.append(
+                await self.history.async_append(
                     BaseMessage.create_message(
                         id=tool_call.id,
                         role=MessageRole.TOOL_RESPONSE,
