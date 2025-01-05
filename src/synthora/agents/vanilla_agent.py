@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from typing import Any, Dict, List, Union, cast
+from typing import Any, Dict, List, Optional, Union, cast
 
 from synthora.agents import BaseAgent
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
@@ -56,8 +56,10 @@ class VanillaAgent(BaseAgent):
         prompt: str,
         name: str = "Vanilla",
         model_type: str = "gpt-4o",
-        tools: List[Union["BaseAgent", BaseFunction]] = [],
-        handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
+        tools: Optional[List[Union["BaseAgent", BaseFunction]]] = None,
+        handlers: Optional[
+            List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
+        ] = None,
     ) -> "VanillaAgent":
         r"""Create a default VanillaAgent instance.
 
@@ -71,6 +73,7 @@ class VanillaAgent(BaseAgent):
         Returns:
             VanillaAgent: A new VanillaAgent instance
         """
+        tools, handlers = tools or [], handlers or []
         config = AgentConfig(
             name=name,
             type=AgentType.VANILLA,
@@ -99,8 +102,9 @@ class VanillaAgent(BaseAgent):
         source: Node,
         model: BaseModelBackend,
         prompt: BasePrompt,
-        tools: List[Union["BaseAgent", BaseFunction]] = [],
+        tools: Optional[List[Union["BaseAgent", BaseFunction]]] = None,
     ) -> None:
+        tools = tools or []
         super().__init__(config, source, model, prompt, tools)
         self.model: BaseModelBackend = (
             self.model[0] if isinstance(self.model, list) else self.model

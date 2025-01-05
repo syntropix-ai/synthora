@@ -16,12 +16,12 @@
 #
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Dict
 
 from synthora.types.enums import TaskState
 
 
-class BaseContext(ABC):
+class BaseContext(Dict[Any, Any], ABC):
     @property
     @abstractmethod
     def lock(self) -> Any: ...
@@ -68,9 +68,6 @@ class BaseContext(ABC):
 
     def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> None:
         self.release()
-
-    @abstractmethod
-    def __contains__(self, key: str) -> Any: ...
 
     @abstractmethod
     def get_cursor(self) -> int: ...

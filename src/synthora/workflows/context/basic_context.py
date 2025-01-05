@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from synthora.workflows.scheduler.base import BaseScheduler
 
 
-class BasicContext(dict, BaseContext):  # type: ignore[type-arg]
+class BasicContext(BaseContext):
     def __init__(self, workflow: "BaseScheduler") -> None:
         super().__init__()
         self._workflow = workflow
@@ -83,3 +83,12 @@ class BasicContext(dict, BaseContext):  # type: ignore[type-arg]
 
     def set_cursor(self, cursor: int) -> None:
         self._cursor = cursor
+
+    def __contains__(self, key: Any) -> bool:
+        return super().__contains__(key)
+
+    def __getitem__(self, key: Any) -> Any:
+        return super().__getitem__(key)
+
+    def __setitem__(self, key: Any, value: Any) -> None:
+        return super().__setitem__(key, value)

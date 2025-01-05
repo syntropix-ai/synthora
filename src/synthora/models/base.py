@@ -37,6 +37,20 @@ class BaseModelBackend(ABC):
         callback_manager: Manager for handling callbacks
     """
 
+    @staticmethod
+    @abstractmethod
+    def default(
+        model_type: Optional[str] = None,
+        source: Optional[Node] = None,
+        config: Optional[Dict[str, Any]] = None,
+        name: Optional[str] = None,
+        handlers: Optional[
+            List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
+        ] = None,
+    ) -> "BaseModelBackend":
+        """Return the default model backend."""
+        ...
+
     def __init__(
         self,
         model_type: str,
@@ -44,7 +58,9 @@ class BaseModelBackend(ABC):
         backend_type: ModelBackendType,
         config: Optional[Dict[str, Any]],
         name: Optional[str] = None,
-        handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
+        handlers: Optional[
+            List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
+        ] = None,
     ) -> None:
         """Initialize the model backend.
 
@@ -57,6 +73,7 @@ class BaseModelBackend(ABC):
             handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]]):
                 List of callback handlers
         """
+        handlers = handlers or []
         self.name = name
         self.source = Node(name=name, type=NodeType.MODEL, ancestor=source)
         self.model_type = model_type

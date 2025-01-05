@@ -18,19 +18,23 @@
 import textwrap
 
 from synthora.memories.base import BaseMemory
+from synthora.memories.full_context_memory import FullContextMemory
 from synthora.messages import system, user
 from synthora.messages.base import BaseMessage
 from synthora.models import BaseModelBackend
+from synthora.models.openai_chat import OpenAIChatBackend
 from synthora.types.enums import MessageRole
 
 
 class SummaryMemory(BaseMemory):
     def __init__(
-        self, n: int, cache_size: int, prompt: str, summary_model: BaseModelBackend
+        self,
+        n: int = 15,
+        cache_size: int = 6,
+        summary_model: BaseModelBackend = OpenAIChatBackend.default(),
     ) -> None:
         super().__init__()
         self.n = n
-        self.prompt = prompt
         self.cache_size = cache_size
         self.summary_model = summary_model
 
@@ -44,15 +48,17 @@ class SummaryMemory(BaseMemory):
         if len(self) > self.n:
             await self._async_summarize()
 
-    def _get_history(self, messages: list[BaseMessage]) -> list[BaseMemory]:
-        return [
-            system("You are a helpful assistant who can summarize conversations."),
-            user("Below are the messages you need to summarize."),
-            *messages,
-            user(
-                "Now make an objective summary of the conversation in third person. Only return the summary, no other text."
-            ),
-        ]
+    def _get_history(self, messages: list[BaseMessage]) -> FullContextMemory:
+        return FullContextMemory(
+            [
+                system("You are a helpful assistant who can summarize conversations."),
+                user("Below are the messages you need to summarize."),
+                *messages,
+                user(
+                    "Now make an objective summary of the conversation in third person. Only return the summary, no other text."
+                ),
+            ]
+        )
 
     def _update(self, summary: str, messages_to_summarize: list[BaseMessage]) -> None:
         index = self.index(messages_to_summarize[-1])
@@ -70,10 +76,16 @@ class SummaryMemory(BaseMemory):
     def _summarize(self) -> None:
         messages_to_summarize = list(
             filter(lambda message: message.role != MessageRole.SYSTEM, self)
-        )[: self.cache_size]
+        )
         if len(messages_to_summarize) <= 1:
             return
-
+        cursor = min(len(messages_to_summarize), self.cache_size) - 1
+        while (
+            cursor < len(messages_to_summarize)
+            and messages_to_summarize[cursor].role != MessageRole.USER
+        ):
+            cursor += 1
+        messages_to_summarize = messages_to_summarize[: cursor + 1]
         history = self._get_history(messages_to_summarize)
 
         summary = self.summary_model.run(history).content
@@ -82,11 +94,17 @@ class SummaryMemory(BaseMemory):
     async def _async_summarize(self) -> None:
         messages_to_summarize = list(
             filter(lambda message: message.role != MessageRole.SYSTEM, self)
-        )[: self.cache_size]
+        )
         if len(messages_to_summarize) <= 1:
             return
-
+        cursor = min(len(messages_to_summarize), self.cache_size) - 1
+        while (
+            cursor < len(messages_to_summarize)
+            and messages_to_summarize[cursor].role != MessageRole.USER
+        ):
+            cursor += 1
+        messages_to_summarize = messages_to_summarize[: cursor + 1]
         history = self._get_history(messages_to_summarize)
 
-        summary = await self.summary_model.async_run(history).content
+        summary = await self.summary_model.async_run(history).content  # type: ignore
         self._update(summary, messages_to_summarize)
