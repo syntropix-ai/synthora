@@ -37,7 +37,6 @@ class SummaryMemory(BaseMemory):
         self.n = n
         self.cache_size = cache_size
         self.summary_model = summary_model
-        self.summary_model.client = None
 
     def append(self, message: BaseMessage) -> None:
         super().append(message)

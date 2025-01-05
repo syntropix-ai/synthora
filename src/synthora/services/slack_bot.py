@@ -24,6 +24,7 @@ from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 
 from synthora.agents.base import BaseAgent
+from synthora.memories.summary_memory import SummaryMemory
 from synthora.models.base import BaseModelBackend
 from synthora.services.base import BaseService
 from synthora.toolkits.base import BaseFunction
@@ -63,6 +64,8 @@ class SlackBotService(BaseService):
             else:
                 for model in target.model:
                     model.client = None
+            if isinstance(target.history, SummaryMemory):
+                target.history.summary_model.client = None
 
             def _target(event: Dict[str, Any], say: Callable[..., Any]) -> None:
                 user = event["user"]
