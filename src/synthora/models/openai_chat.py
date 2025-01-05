@@ -42,17 +42,47 @@ class OpenAIChatBackend(BaseModelBackend):
         kwargs (Dict[str, Any]): Additional keyword arguments for OpenAI client
     """
 
+    @staticmethod
+    def default(  # type: ignore[override]
+        model_type: Optional[str] = None,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        source: Optional[Node] = None,
+        config: Optional[Dict[str, Any]] = None,
+        name: Optional[str] = None,
+        handlers: Optional[
+            List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
+        ] = None,
+        **kwargs: Dict[str, Any],
+    ) -> "OpenAIChatBackend":
+        r"""Return the default OpenAI Chat model backend."""
+        return OpenAIChatBackend(
+            model_type=model_type or "gpt-4o",
+            api_key=api_key,
+            base_url=base_url,
+            source=source,
+            config=config,
+            name=name,
+            handlers=handlers,
+            **kwargs,
+        )
+
     def __init__(
         self,
         model_type: str,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        source: Node = Node(name="assistant", type=NodeType.AGENT),
+        source: Optional[Node] = None,
         config: Optional[Dict[str, Any]] = None,
         name: Optional[str] = None,
-        handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
+        handlers: Optional[
+            List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
+        ] = None,
         **kwargs: Dict[str, Any],
     ) -> None:
+        source = source or Node(name=model_type or "assistant", type=NodeType.AGENT)
+        handlers = handlers or []
+        name = name or source.name
         super().__init__(
             model_type=model_type,
             source=source,

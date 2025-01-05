@@ -24,6 +24,8 @@ from typing import Any, Dict, List, Optional, Self, Type, Union
 from synthora.callbacks import get_callback_manager
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.configs.agent_config import AgentConfig
+from synthora.memories.base import BaseMemory
+from synthora.memories.full_context_memory import FullContextMemory
 from synthora.messages.base import BaseMessage
 from synthora.models import create_model_from_config
 from synthora.models.base import BaseModelBackend
@@ -64,8 +66,10 @@ class BaseAgent(ABC):
         prompt: str,
         name: str = "Base",
         model_type: str = "gpt-4o",
-        tools: List[Union["BaseAgent", BaseFunction]] = [],
-        handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
+        tools: Optional[List[Union["BaseAgent", BaseFunction]]] = None,
+        handlers: Optional[
+            List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
+        ] = None,
     ) -> "BaseAgent": ...
 
     def __init__(
@@ -74,8 +78,10 @@ class BaseAgent(ABC):
         source: Node,
         model: Union[BaseModelBackend, List[BaseModelBackend]],
         prompt: Union[BasePrompt, Dict[str, BasePrompt]],
-        tools: List[Union["BaseAgent", BaseFunction]] = [],
-        handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
+        tools: Optional[List[Union["BaseAgent", BaseFunction]]] = None,
+        handlers: Optional[
+            List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
+        ] = None,
     ) -> None:
         """Initialize a new agent instance.
 
@@ -85,7 +91,7 @@ class BaseAgent(ABC):
             model (Union[BaseModelBackend, List[BaseModelBackend]]): The model backend(s)
             prompt (Union[BasePrompt, Dict[str, BasePrompt]]): The prompt template(s)
             tools (List[Union[BaseAgent, BaseFunction]]): Available tools and sub-agents
-            handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]]): Callback handlers for monitoring agent events
+            handlers: Callback handlers for monitoring agent events
         """
         self.config = config
         self.source = source
@@ -94,9 +100,9 @@ class BaseAgent(ABC):
         self.description = self.config.description
         self.model = model
         self.prompt = prompt
-        self.tools = tools
-        self.history: List[BaseMessage] = []
-        self.callback_manager = get_callback_manager(handlers)
+        self.tools = tools or []
+        self.history: BaseMemory = FullContextMemory()
+        self.callback_manager = get_callback_manager(handlers or [])
 
     @property
     def schema(self) -> Dict[str, Any]:
