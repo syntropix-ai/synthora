@@ -1,5 +1,5 @@
 from synthora.agents.vanilla_agent import VanillaAgent
-from synthora.services.slcak_bot import SlackBotService
+from synthora.services.slack_bot import SlackBotService
 from synthora.toolkits.search_toolkits.webpage import webpage
 from synthora.toolkits.search_toolkits.google_search import google_search
 from dotenv import load_dotenv
