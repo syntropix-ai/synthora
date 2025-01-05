@@ -15,23 +15,25 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from synthora.workflows import BaseTask
-from synthora.workflows.context.base import BaseContext
+import json
+
+from synthora.agents import VanillaAgent
+from synthora.configs import AgentConfig
+from synthora.memories import SummaryMemory
 
 
-def add(ctx: BaseContext) -> int:
-    with ctx:
-        a = ctx.get("a", 1)
-        b = ctx.get("b", 1)
-        ctx["ans"] = a + b
-        ctx["a"] = a + 1
-        ctx["b"] = b + 1
-        if a + b < 5:
-            ctx.set_cursor(-1)
-    return int(a + b)
+config = AgentConfig.from_file("examples/agents/configs/vanilla_agent.yaml")
+# print(config)
 
+agent = VanillaAgent.from_config(config)
+agent.history = SummaryMemory(3, 2)
 
-flow = BaseTask(add) >> BaseTask(add).si()
+while True:
+    user_input = input("Enter a query: ")
+    if user_input == "exit":
+        break
+    print(agent.run(user_input).unwrap().content)
 
-
-print(flow.run(), flow.get_context()["ans"])
+    print("History:")
+    for message in agent.history:
+        print(f"{message.role}: {message.content}")

@@ -115,7 +115,7 @@ class BaseMessage(BaseModel):
         images: Optional[List[str]] = None,
         tool_calls: Optional[List[Dict[str, Any]]] = None,
         tool_response: Optional[Result[Dict[str, Any], Exception]] = None,
-        source: Node = Node(name="user", type=NodeType.USER),
+        source: Optional[Node] = None,
         metadata: Dict[str, Any] = {},
     ) -> Self:
         """Create a new message instance.
@@ -138,7 +138,7 @@ class BaseMessage(BaseModel):
         """
         if images:
             images = [parse_image(image) for image in images]
-
+        source = source or Node(name="user", type=NodeType.USER)
         match role:
             case MessageRole.USER:
                 return cls(
@@ -235,7 +235,7 @@ class BaseMessage(BaseModel):
     def from_openai_chat_response(
         cls: Type[Self],
         response: ChatCompletion,
-        source: Node = Node(name="assistant", type=NodeType.AGENT),
+        source: Optional[Node] = None,
     ) -> Self:
         """Create message from OpenAI completion response.
 
@@ -247,6 +247,7 @@ class BaseMessage(BaseModel):
             Self: New message instance
         """
         choice = response.choices[0]
+        source = source or Node(name="assistant", type=NodeType.AGENT)
         metadata = {
             "created": response.created,
             "model": response.model,
@@ -277,7 +278,7 @@ class BaseMessage(BaseModel):
     def from_openai_chat_stream_response(
         cls: Type[Self],
         response: ChatCompletionChunk,
-        source: Node = Node(name="assistant", type=NodeType.AGENT),
+        source: Optional[Node] = None,
         previous: Optional[Self] = None,
     ) -> Self:
         """Create message from OpenAI streaming completion response.
@@ -291,6 +292,7 @@ class BaseMessage(BaseModel):
             Self: New or updated message instance with accumulated content
         """
         choice = response.choices[0]
+        source = source or Node(name="assistant", type=NodeType.AGENT)
         metadata = {
             "created": response.created,
             "model": response.model,

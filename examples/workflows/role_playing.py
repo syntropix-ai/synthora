@@ -35,7 +35,7 @@ agent2 = VanillaAgent.from_config(config)
 
 
 def convert(resp: Result[BaseMessage, Exception]) -> str:
-    return resp.unwrap().content
+    return str(resp.unwrap().content)
 
 
 prompt1 = "Please debate: What came first, the chicken or the egg? Your argument is that the egg came first."

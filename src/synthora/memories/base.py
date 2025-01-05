@@ -14,24 +14,11 @@
 # limitations under the License.
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
+from abc import ABC, abstractmethod
 
-from synthora.workflows import BaseTask
-from synthora.workflows.context.base import BaseContext
-
-
-def add(ctx: BaseContext) -> int:
-    with ctx:
-        a = ctx.get("a", 1)
-        b = ctx.get("b", 1)
-        ctx["ans"] = a + b
-        ctx["a"] = a + 1
-        ctx["b"] = b + 1
-        if a + b < 5:
-            ctx.set_cursor(-1)
-    return int(a + b)
+from synthora.messages import BaseMessage
 
 
-flow = BaseTask(add) >> BaseTask(add).si()
-
-
-print(flow.run(), flow.get_context()["ans"])
+class BaseMemory(ABC, list[BaseMessage]):
+    @abstractmethod
+    async def async_append(self, message: BaseMessage) -> None: ...
