@@ -17,7 +17,6 @@
 
 from synthora.workflows import BaseTask
 from synthora.workflows.context.base import BaseContext
-from synthora.workflows.scheduler.base import BaseScheduler
 
 
 def add(ctx: BaseContext) -> int:
@@ -32,7 +31,7 @@ def add(ctx: BaseContext) -> int:
     return int(a + b)
 
 
-flow = BaseScheduler() >> BaseTask(add) >> BaseTask(add).si()
+flow = BaseTask(add) >> BaseTask(add).si()
 
 
 print(flow.run(), flow.get_context()["ans"])
