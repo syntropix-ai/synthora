@@ -16,6 +16,7 @@
 #
 
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from typing import Any, Dict, List, Optional, Union
 
 from synthora.callbacks import get_callback_manager
@@ -81,6 +82,7 @@ class BaseModelBackend(ABC):
         self.config = config or {}
         self.callback_manager = get_callback_manager(handlers)
         self.client: Optional[Any] = None
+        self.__IGNORE_ON_COPY = ['client']
 
     @abstractmethod
     def run(
@@ -133,3 +135,19 @@ class BaseModelBackend(ABC):
             recursive (bool): Whether to add handler recursively
         """
         self.callback_manager.add(handler)
+
+    def __deepcopy__(self, memo):
+        if id(self) in memo:
+            return memo[id(self)]
+
+        new_obj = self.__class__.__new__(self.__class__)
+
+        memo[id(self)] = new_obj
+
+        for attr, value in self.__dict__.items():
+            if attr not in self.__IGNORE_ON_COPY:
+                setattr(new_obj, attr, deepcopy(value, memo))
+            else:
+                setattr(new_obj, attr, None)
+
+        return new_obj

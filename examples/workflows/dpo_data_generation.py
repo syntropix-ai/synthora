@@ -75,7 +75,7 @@ if __name__ == "__main__":
     with open("examples/workflows/data/questions.jsonl", "r") as f:
         prompts = [json.loads(line)["turns"][0] for line in f.readlines()]
 
-    prompts = prompts[:1]
+    # prompts = prompts[:1]
     system1 = [system_message for _ in range(len(prompts))]
     system2 = deepcopy(system1)
 
@@ -83,7 +83,7 @@ if __name__ == "__main__":
         BaseTask(generate_data), zip(system1, system2, prompts)
     )
     results = flow.run()
-    print(results)
+
     with open("examples/workflows/data/results.jsonl", "w") as f:
         for result in results:
             f.write(json.dumps(result) + "\n")
