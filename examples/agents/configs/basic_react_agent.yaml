@@ -19,4 +19,4 @@ name: WebSearcher
 description: "This agent is a simple AI assistant that can help you search the web."
 type: react
 model: !include basic_model.yaml
-prompt: !prompt ZeroShotReactPrompt
+prompt: !prompt FewShotReactPrompt

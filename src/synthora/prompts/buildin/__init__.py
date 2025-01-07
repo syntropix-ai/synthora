@@ -15,7 +15,7 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-from .react import ZeroShotReactPrompt
+from .react import FewShotReactPrompt, ZeroShotReactPrompt
 
 
-__all__ = ["ZeroShotReactPrompt"]
+__all__ = ["ZeroShotReactPrompt", "FewShotReactPrompt"]

@@ -18,7 +18,7 @@
 from synthora.agents.tot_agent import ToTAgent
 
 
-agent = ToTAgent.default()
+agent = ToTAgent.default(model_type="gpt-4o", max_turns=10)
 
 print(agent.run("Can the given numbers reach 24? 4 9 10 13"))
 # **Think**: Begin by considering different combinations and operations (addition, subtraction, multiplication, and division) with the numbers 4, 9, 10, and 13 to see if it's possible to achieve the total of 24.
