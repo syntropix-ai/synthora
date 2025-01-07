@@ -1,18 +1,18 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 from typing import Any, Dict, List, Optional
@@ -54,20 +54,17 @@ class RichOutputHandler(BaseCallBackHandler):
         super().__init__()
 
     def stop(self) -> None:
-        """
-        Stops the Live status.
-        """
+        """Stops the Live status."""
         if self.status is not None:
             self.status.stop()
 
     def update_status(self, output: str, style: str = "[bold green]") -> None:
-        """
-        Updates the status, push it into a stack.
+        """Updates the status, push it into a stack.
 
-        :param output: The output to update the status with.
-        :type output: str
-        :param style: The style to use for the output. Defaults to "[bold green]".
-        :type style: str
+        output:
+            The output to update the status with.
+        style:
+            The style to use for the output. Defaults to "[bold green]".
         """
         self.status_stack.append(output)
         if self.status is not None:
@@ -77,25 +74,26 @@ class RichOutputHandler(BaseCallBackHandler):
         self.status.start()
 
     def thinking(self, name: str) -> None:
-        """
-        Shows that a name is thinking.
+        """Shows that a name is thinking.
 
-        :param name: The name of the entity that is thinking.
-        :type name: str
+        name:
+            The name of the entity that is thinking.
         """
         self.status_stack.append(name)
         if self.status is not None:
             self.status.update(f"[bold green]{name} is thinking...")
         else:
-            self.status = self.console.status(f"[bold green]{name} is thinking...")
+            self.status = self.console.status(
+                f"[bold green]{name} is thinking..."
+            )
         self.status.start()
 
     def done(self, _all: bool = False) -> None:
-        """
-        Marks the status as done.
+        """Marks the status as done.
 
-        :param _all: If True, marks all status as done. If False, marks only the last status as done. Defaults to False.
-        :type _all: bool
+        _all:
+            If True, marks all status as done. If False, marks only the last
+            status as done.
         """
         if _all:
             self.status_stack = []
@@ -113,20 +111,18 @@ class RichOutputHandler(BaseCallBackHandler):
                     self.status.stop()
 
     def stream_print(self, item: str) -> None:
-        """
-        Prints an item to the output as a stream.
+        """Prints an item to the output as a stream.
 
-        :param item: The item to print.
-        :type item: str
+        item:
+            The item to print.
         """
         self.console.print(item, end="")
 
     def json_print(self, item: Dict[str, Any]) -> None:
-        """
-        Prints an item to the output as a JSON object.
+        """Prints an item to the output as a JSON object.
 
-        :param item: The item to print.
-        :type item: Dict[str, Any]
+        item:
+            The item to print.
         """
         self.console.print_json(data=item)
 
@@ -140,12 +136,15 @@ class RichOutputHandler(BaseCallBackHandler):
         """
         Prints an item to the output as a panel.
 
-        :param item: The item to print.
-        :type item: Any
-        :param title: The title of the panel. Defaults to "Output".
-        :type title: str
-        :param stream: If True, prints the item as a stream. If False, prints the item as a panel. Defaults to False.
-        :type stream: bool
+        item:
+            The item to print.
+        title:
+            The title of the panel.
+        stream:
+            If True, prints the item as a stream. If False, prints the item as
+            a panel.
+        style:
+            The style to use for the panel.
         """
         item = item if isinstance(item, str) else str(item)
         if not stream:
@@ -156,7 +155,9 @@ class RichOutputHandler(BaseCallBackHandler):
         if self.live is None:
             self.cache = item
             self.live = Live(
-                Panel(Markdown(self.cache), title=title, style=style, box=HEAVY),
+                Panel(
+                    Markdown(self.cache), title=title, style=style, box=HEAVY
+                ),
                 console=self.console,
                 refresh_per_second=12,
             )
@@ -168,16 +169,18 @@ class RichOutputHandler(BaseCallBackHandler):
         )
 
     def clear(self) -> None:
-        """
-        Clears the Live status and print cache.
-        """
+        """Clears the Live status and print cache."""
         if self.live is not None:
             self.live.stop()
             self.live = None
         self.cache = ""
 
-    def on_tool_start(self, source: Optional[Node], *args: Any, **kwargs: Any) -> None:
-        self.update_status(f"Calling Tool: {source.name if source else 'Unknown'}")
+    def on_tool_start(
+        self, source: Optional[Node], *args: Any, **kwargs: Any
+    ) -> None:
+        self.update_status(
+            f"Calling Tool: {source.name if source else 'Unknown'}"
+        )
 
     def on_tool_end(
         self, source: Optional[Node], result: Result[Any, Exception]
@@ -241,7 +244,9 @@ class RichOutputHandler(BaseCallBackHandler):
         **kwargs: Any,
     ) -> None:
         self.done()
-        self.panel_print(str(e), title=source.name if source.name else "Unknow")
+        self.panel_print(
+            str(e), title=source.name if source.name else "Unknow"
+        )
         self.clear()
         if self.status is not None:
             self.status.start()
@@ -255,7 +260,9 @@ class RichOutputHandler(BaseCallBackHandler):
     def on_agent_end(
         self, source: Node, message: BaseMessage, *args: Any, **kwargs: Any
     ) -> None:
-        title = f"[bold blue]{source.name if source else 'Unknown'}' Response: "
+        title = (
+            f"[bold blue]{source.name if source else 'Unknown'}' Response: "
+        )
         self.panel_print(message.content, title=title, style="green")
         self.clear()
         self.done(True)
@@ -268,6 +275,8 @@ class RichOutputHandler(BaseCallBackHandler):
         **kwargs: Any,
     ) -> None:
         title = f"[bold blue]{source.name if source else 'Unknown'}' Error: "
-        self.panel_print(str(result.unwrap_err_val()), title=title, style="red")
+        self.panel_print(
+            str(result.unwrap_err_val()), title=title, style="red"
+        )
         self.clear()
         self.done(True)

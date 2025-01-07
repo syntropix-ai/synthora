@@ -1,18 +1,18 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 from typing import List, Optional
@@ -27,9 +27,12 @@ class BaseTracer(BaseCallBackHandler):
     """Base class for tracing agent execution and collecting trace events.
 
     Attributes:
-        events (List[TraceEvent]): List of trace events collected during execution
-        stack (List[Node]): Stack of nodes representing execution context
-        agent (Optional[BaseAgent]): Reference to the agent being traced
+        events:
+            List of trace events collected during execution.
+        stack:
+            Stack of nodes representing execution context.
+        agent:
+            Reference to the agent being traced.
     """
 
     def __init__(self) -> None:
@@ -42,7 +45,8 @@ class BaseTracer(BaseCallBackHandler):
         """Start tracing an agent's execution.
 
         Args:
-            agent (BaseAgent): The agent to trace
+            agent:
+                The agent to trace.
         """
         self.agent = agent
         self.agent.add_handler(self)
@@ -60,12 +64,15 @@ class AsyncTracer(BaseTracer):
         """Start tracing an agent's execution asynchronously.
 
         Args:
-            agent (BaseAgent): The agent to trace
+            agent:
+                The agent to trace.
         """
         self.agent = agent
         self.agent.add_handler(self)
 
     async def reset(self) -> None:  # type: ignore[override]
-        """Reset the tracer state asynchronously by clearing all events and stack."""
+        """Reset the tracer state asynchronously by clearing all events and
+        stack.
+        """
         self.events.clear()
         self.stack.clear()
