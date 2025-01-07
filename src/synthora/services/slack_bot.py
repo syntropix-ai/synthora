@@ -1,18 +1,18 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 import os
@@ -38,10 +38,14 @@ class SlackBotService(BaseService):
     ) -> None:
         self.bot_token = bot_token or os.environ.get("SLACK_BOT_TOKEN", None)
         if not self.bot_token:
-            raise ValueError("SLACK_BOT_TOKEN is required to run the SlackBotService.")
+            raise ValueError(
+                "SLACK_BOT_TOKEN is required to run the SlackBotService."
+            )
         self.app_token = app_token or os.environ.get("SLACK_APP_TOKEN", None)
         if not self.app_token:
-            raise ValueError("SLACK_APP_TOKEN is required to run the SlackBotService.")
+            raise ValueError(
+                "SLACK_APP_TOKEN is required to run the SlackBotService."
+            )
         self.app = App(token=self.bot_token)
         self.agent_map: Dict[str, BaseAgent] = {}
         super().__init__()
@@ -55,7 +59,8 @@ class SlackBotService(BaseService):
     ) -> Self:
         if len(self.service_map) > 0:
             raise ValueError(
-                "SlackBotService can only have one target. You can add multiple services manually."
+                "SlackBotService can only have one target. You can add "
+                "multiple services manually."
             )
         if isinstance(target, BaseAgent):
             name = name or target.name
@@ -67,7 +72,9 @@ class SlackBotService(BaseService):
             if isinstance(target.history, SummaryMemory):
                 target.history.summary_model.client = None
 
-            def _target(event: Dict[str, Any], say: Callable[..., Any]) -> None:
+            def _target(
+                event: Dict[str, Any], say: Callable[..., Any]
+            ) -> None:
                 user = event["user"]
                 text = event["text"]
                 channel = event["channel"]
