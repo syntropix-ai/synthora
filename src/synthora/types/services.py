@@ -15,12 +15,11 @@
 # limitations under the License.
 #
 
-from copy import deepcopy
+from typing import Any, Dict, List, Optional
+from pydantic import BaseModel
 
-from synthora.models.openai_chat import OpenAIChatBackend
 
-
-model = OpenAIChatBackend.default()
-
-# lazy init client to enable deepcopy
-print(deepcopy(model).client)
+class HttpAgentRequest(BaseModel):  # type: ignore[no-redef]
+    message: str
+    args: Optional[List[Any]] = None
+    kwargs: Optional[Dict[str, Any]] = None
