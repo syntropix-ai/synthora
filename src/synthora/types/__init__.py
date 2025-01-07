@@ -37,6 +37,7 @@ from .openai import (  # type: ignore[attr-defined]
     CompletionUsage,
     ParsedChatCompletion,
 )
+from .services import HttpAgentRequest
 
 
 __all__ = [
@@ -66,4 +67,5 @@ __all__ = [
     "ChatCompletionMessageToolCall",
     "CallBackEvent",
     "TraceEvent",
+    "HttpAgentRequest",
 ]

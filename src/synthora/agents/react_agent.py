@@ -101,7 +101,7 @@ class ReactAgent(BaseAgent):
             tools=tools,
         )
         node = Node(name=name, type=NodeType.AGENT)
-        model = create_model_from_config(config.model, node)  # type: ignore[arg-type]
+        model = create_model_from_config(config.model, node)
         agent = ReactAgent(
             config,
             Node(name=name, type=NodeType.AGENT),

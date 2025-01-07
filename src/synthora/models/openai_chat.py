@@ -103,7 +103,7 @@ class OpenAIChatBackend(BaseModelBackend):
             self.client = AsyncOpenAI(**self.kwargs)
         else:
             self.client = OpenAI(**self.kwargs)
-        
+
         # Lazy initialization of the OpenAI client
         # This is done to avoid copy errors when pickling the model backend
         self.client = None

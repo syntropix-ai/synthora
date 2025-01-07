@@ -284,7 +284,11 @@ class BaseAgent(ABC):
             if t.source:
                 t.source.ancestor = source
         return cls(
-            config=config, model=model, prompt=prompt, tools=tools, source=source
+            config=config,
+            model=model,
+            prompt=prompt,
+            tools=tools,
+            source=source,
         )
 
     def get_tool(self, name: str) -> Union[BaseFunction, "BaseAgent"]:

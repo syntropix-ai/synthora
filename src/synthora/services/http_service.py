@@ -15,7 +15,6 @@
 # =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
-import inspect
 from asyncio import Task
 from typing import TYPE_CHECKING, Any, Literal, Optional, Self, Union
 
@@ -23,6 +22,7 @@ from synthora.agents.base import BaseAgent
 from synthora.models.base import BaseModelBackend
 from synthora.services.base import BaseService
 from synthora.toolkits.base import BaseFunction
+from synthora.types import HttpAgentRequest
 from synthora.workflows.base_task import BaseTask
 from synthora.workflows.scheduler.base import BaseScheduler
 
@@ -40,28 +40,19 @@ def _add_agent_to_app(
     use_async: bool = True,
 ) -> None:
     decorator = app.get if method == "get" else app.post
-
-    target_method = agent.async_run if use_async else agent.run
-    sig = inspect.signature(target_method)
-    params = list(sig.parameters.values())
-    if params and params[0].name == "self":
-        params = params[1:]
-    params = [p for p in params if p.kind != p.VAR_POSITIONAL]
-
-    sig = sig.replace(parameters=params)
-    bound_method = target_method.__get__(agent)
     if use_async:
 
-        async def endpoint(**kwargs: Any) -> Any:
-            return await bound_method(**kwargs)
+        async def endpoint(request: HttpAgentRequest) -> Any:
+            return await agent.async_run(
+                request.message, *(request.args or []), **(request.kwargs or {})
+            )
 
     else:
 
-        def endpoint(**kwargs: Any) -> Any:
-            return bound_method(**kwargs)
-
-    endpoint.__signature__ = sig  # type: ignore[attr-defined]
-    endpoint.__annotations__ = target_method.__annotations__
+        def endpoint(request: HttpAgentRequest) -> Any:
+            return agent.run(
+                request.message, *(request.args or []), **(request.kwargs or {})
+            )
 
     decorator(f"/{name}", response_model=None)(endpoint)
 
