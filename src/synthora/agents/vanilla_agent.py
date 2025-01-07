@@ -1,24 +1,27 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 from typing import Any, List, Optional, Union, cast
 
 from synthora.agents import BaseAgent
-from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
+from synthora.callbacks.base_handler import (
+    AsyncCallBackHandler,
+    BaseCallBackHandler,
+)
 from synthora.configs.agent_config import AgentConfig
 from synthora.configs.model_config import ModelConfig
 from synthora.messages.base import BaseMessage
@@ -40,15 +43,20 @@ from synthora.utils.macros import (
 class VanillaAgent(BaseAgent):
     """A basic agent implementation with straightforward message processing.
 
-    This agent provides a simple implementation that processes messages sequentially,
-    can use tools, and maintains a conversation history.
+    This agent provides a simple implementation that processes messages
+    sequentially, can use tools, and maintains a conversation history.
 
     Args:
-        config (AgentConfig): Configuration for the agent
-        source (Node): Source node for the agent
-        model (BaseModelBackend): The underlying model for processing
-        prompt (BasePrompt): The prompt template for the agent
-        tools (List[Union[BaseAgent, BaseFunction]], optional): List of available tools. Defaults to [].
+        config:
+            Configuration for the agent.
+        source:
+            Source node for the agent.
+        model:
+            The underlying model for processing.
+        prompt:
+            The prompt template for the agent.
+        tools:
+            List of available tools. Defaults to [].
     """
 
     @staticmethod
@@ -64,11 +72,16 @@ class VanillaAgent(BaseAgent):
         r"""Create a default VanillaAgent instance.
 
         Args:
-            prompt (str): The prompt template for the agent
-            name (str, optional): The agent name. Defaults to "Vanilla".
-            model_type (str, optional): The model type. Defaults to "gpt-4o".
-            tools (List[Union[BaseAgent, BaseFunction]], optional): List of available tools. Defaults to [].
-            handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]], optional): List of callback handlers. Defaults to [].
+            prompt:
+                The prompt template for the agent.
+            name:
+                The agent name.
+            model_type:
+                The model type.
+            tools:
+                List of available tools.
+            handlers:
+                List of callback handlers.
 
         Returns:
             VanillaAgent: A new VanillaAgent instance
@@ -120,16 +133,19 @@ class VanillaAgent(BaseAgent):
     ) -> Result[Any, Exception]:
         """Execute a single step of message processing.
 
-        Updates the system prompt, processes the input message, and generates a response
-        using the model.
+        Updates the system prompt, processes the input message, and generates a
+        response using the model.
 
         Args:
-            message (Union[str, BaseMessage]): Input message to process
-            *args (Any): Additional positional arguments
-            **kwargs (Dict[str, Any]): Additional keyword arguments
+            message:
+                Input message to process.
+            *args:
+                Additional positional arguments.
+            **kwargs:
+                Additional keyword arguments.
 
         Returns:
-            Result[Any, Exception]: A Result containing either:
+            A Result containing either:
                 - The model's response
                 - An Exception if the step failed
         """
@@ -149,18 +165,22 @@ class VanillaAgent(BaseAgent):
     ) -> Result[Any, Exception]:
         """Execute the complete message processing loop.
 
-        Processes the input message and handles any tool calls that are generated.
+        Processes the input message and handles any tool calls that are
+        generated.
         Continues until either:
         - A final response without tool calls is reached
         - An error occurs
 
         Args:
-            message (Union[str, BaseMessage]): Input message to process
-            *args (Any): Additional positional arguments
-            **kwargs (Dict[str, Any]): Additional keyword arguments
+            message:
+                Input message to process.
+            *args:
+                Additional positional arguments.
+            **kwargs:
+                Additional keyword arguments.
 
         Returns:
-            Result[Any, Exception]: A Result containing either:
+            A Result containing either:
                 - The final response content
                 - An Exception if the execution failed
         """
@@ -205,12 +225,15 @@ class VanillaAgent(BaseAgent):
         Note: This is a placeholder for future async implementation.
 
         Args:
-            message (Union[str, BaseMessage]): Input message to process
-            *args (Any): Additional positional arguments
-            **kwargs (Dict[str, Any]): Additional keyword arguments
+            message:
+                Input message to process.
+            *args:
+                Additional positional arguments.
+            **kwargs:
+                Additional keyword arguments.
 
         Returns:
-            Result[Any, Exception]: A Result containing either:
+            A Result containing either:
                 - The step execution result
                 - An Exception if the step failed
         """
@@ -233,12 +256,15 @@ class VanillaAgent(BaseAgent):
         Note: This is a placeholder for future async implementation.
 
         Args:
-            message (Union[str, BaseMessage]): Input message to process
-            *args (Any): Additional positional arguments
-            **kwargs (Dict[str, Any]): Additional keyword arguments
+            message:
+                Input message to process.
+            *args:
+                Additional positional arguments.
+            **kwargs:
+                Additional keyword arguments.
 
         Returns:
-            Result[Any, Exception]: A Result containing either:
+            A Result containing either:
                 - The final response
                 - An Exception if the execution failed
         """
@@ -260,7 +286,9 @@ class VanillaAgent(BaseAgent):
                 func = tool_call.function
                 try:
                     tool = self.get_tool(func.name)
-                    resp = await self.async_call_tool(func.name, func.arguments)
+                    resp = await self.async_call_tool(
+                        func.name, func.arguments
+                    )
                     resp_value = resp.unwrap()
                 except Exception as e:
                     resp_value = f"Error: {str(e)}"

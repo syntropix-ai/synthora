@@ -1,24 +1,27 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 from typing import Any, List, Optional, Union, cast
 
 from synthora.agents import BaseAgent
-from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
+from synthora.callbacks.base_handler import (
+    AsyncCallBackHandler,
+    BaseCallBackHandler,
+)
 from synthora.configs.agent_config import AgentConfig
 from synthora.configs.model_config import ModelConfig
 from synthora.messages.base import BaseMessage
@@ -47,10 +50,11 @@ def finish(response: str) -> str:
     - The problem cannot be solved
 
     Args:
-        response (str): The final response to return
+        response:
+            The final response to return
 
     Returns:
-        str: The unchanged response string
+        The unchanged response string
     """
     return response
 
@@ -58,15 +62,21 @@ def finish(response: str) -> str:
 class ReactAgent(BaseAgent):
     """A ReAct (Reasoning and Acting) agent implementation.
 
-    This agent follows the ReAct pattern of reasoning about actions and executing them.
+    This agent follows the ReAct pattern of reasoning about actions and
+    executing them.
     It can use tools to accomplish tasks and maintains a conversation history.
 
     Args:
-        config (AgentConfig): Configuration for the agent
-        source (Node): Source node for the agent
-        model (BaseModelBackend): The underlying model for reasoning
-        prompt (BasePrompt): The prompt template for the agent
-        tools (List[Union[BaseAgent, BaseFunction]], optional): List of available tools. Defaults to [].
+        config:
+            Configuration for the agent.
+        source:
+            Source node for the agent.
+        model:
+            The underlying model for reasoning.
+        prompt:
+            The prompt template for the agent.
+        tools:
+            List of available tools. Defaults to [].
     """
 
     @staticmethod
@@ -82,14 +92,19 @@ class ReactAgent(BaseAgent):
         r"""Create a default ReAct agent with the specified prompt and tools.
 
         Args:
-            prompt (str): The initial prompt for the agent
-            name (str, optional): The name of the agent. Defaults to "React".
-            model_type (str, optional): The model type to use. Defaults to "gpt-4o".
-            tools (List[Union["BaseAgent", BaseFunction]], optional): List of available tools. Defaults to [].
-            handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]], optional): List of callback handlers. Defaults to [].
+            prompt:
+                The initial prompt for the agent.
+            name:
+                The name of the agent. Defaults to "React".
+            model_type:
+                The model type to use. Defaults to "gpt-4o".
+            tools:
+                List of available tools. Defaults to [].
+            handlers:
+                List of callback handlers. Defaults to [].
 
         Returns:
-            ReactAgent: The created ReAct agent
+            The created ReAct agent
         """
         tools = tools or []
         handlers = handlers or []
@@ -128,7 +143,9 @@ class ReactAgent(BaseAgent):
             self.model[0] if isinstance(self.model, list) else self.model
         )
         self.tools.append(finish)
-        self.model.config["tools"] = [tool.schema for tool in tools] + [finish.schema]
+        self.model.config["tools"] = [tool.schema for tool in tools] + [
+            finish.schema
+        ]
         self.prompt = (
             list(self.prompt.values())[0]
             if isinstance(self.prompt, dict)
@@ -140,16 +157,19 @@ class ReactAgent(BaseAgent):
     ) -> Result[Any, Exception]:
         """Execute a single step of the ReAct agent's reasoning process.
 
-        Updates the system prompt, processes the message, and generates a response
-        using the model. Will attempt up to 2 iterations if needed.
+        Updates the system prompt, processes the message, and generates a
+        response using the model. Will attempt up to 2 iterations if needed.
 
         Args:
-            message (Union[str, BaseMessage]): Input message to process
-            *args (Any): Additional positional arguments
-            **kwargs (Dict[str, Any]): Additional keyword arguments
+            message:
+                Input message to process.
+            *args:
+                Additional positional arguments.
+            **kwargs:
+                Additional keyword arguments.
 
         Returns:
-            Result[Any, Exception]: A Result containing either:
+            A Result containing either:
                 - The model's response with potential tool calls
                 - An Exception if the step failed
         """
@@ -177,12 +197,15 @@ class ReactAgent(BaseAgent):
         - An error occurs
 
         Args:
-            message (Union[str, BaseMessage]): Input message to process
-            *args (Any): Additional positional arguments
-            **kwargs (Dict[str, Any]): Additional keyword arguments
+            message:
+                Input message to process.
+            *args:
+                Additional positional arguments.
+            **kwargs:
+                Additional keyword arguments.
 
         Returns:
-            Result[Any, Exception]: A Result containing either:
+            A Result containing either:
                 - The final response string
                 - An Exception if the execution failed
         """
@@ -231,12 +254,15 @@ class ReactAgent(BaseAgent):
         Note: This is a placeholder for future async implementation.
 
         Args:
-            message (Union[str, BaseMessage]): Input message to process
-            *args (Any): Additional positional arguments
-            **kwargs (Dict[str, Any]): Additional keyword arguments
+            message:
+                Input message to process.
+            *args:
+                Additional positional arguments.
+            **kwargs:
+                Additional keyword arguments.
 
         Returns:
-            Result[Any, Exception]: A Result containing either:
+            A Result containing either:
                 - The step execution result
                 - An Exception if the step failed
         """
@@ -246,7 +272,9 @@ class ReactAgent(BaseAgent):
             await self.history.async_append(message)
 
         for _ in range(2):
-            response = await self.model.async_run(self.history, *args, **kwargs)
+            response = await self.model.async_run(
+                self.history, *args, **kwargs
+            )
             response = await ASYNC_GET_FINAL_MESSAGE()
             await self.history.async_append(response)
             if response.tool_calls:
@@ -261,12 +289,15 @@ class ReactAgent(BaseAgent):
         Note: This is a placeholder for future async implementation.
 
         Args:
-            message (Union[str, BaseMessage]): Input message to process
-            *args (Any): Additional positional arguments
-            **kwargs (Dict[str, Any]): Additional keyword arguments
+            message:
+                Input message to process.
+            *args:
+                Additional positional arguments.
+            **kwargs:
+                Additional keyword arguments.
 
         Returns:
-            Result[Any, Exception]: A Result containing either:
+            A Result containing either:
                 - The final response
                 - An Exception if the execution failed
         """
@@ -288,7 +319,9 @@ class ReactAgent(BaseAgent):
                 func = tool_call.function
                 try:
                     tool = self.get_tool(func.name)
-                    resp = await self.async_call_tool(func.name, func.arguments)
+                    resp = await self.async_call_tool(
+                        func.name, func.arguments
+                    )
                     resp_value = resp.unwrap()
                 except Exception as e:
                     resp_value = f"Error: {str(e)}"

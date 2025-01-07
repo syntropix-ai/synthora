@@ -1,18 +1,18 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 from concurrent.futures import Future, ProcessPoolExecutor, as_completed
@@ -61,7 +61,9 @@ class ProcessPoolScheduler(BaseScheduler):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        raise NotImplementedError("ProcessPoolScheduler does not support async tasks")
+        raise NotImplementedError(
+            "ProcessPoolScheduler does not support async tasks"
+        )
 
     def step(self, *args: Any, **kwargs: Any) -> None:
         if self.cursor >= len(self.tasks):
@@ -72,7 +74,10 @@ class ProcessPoolScheduler(BaseScheduler):
         with ProcessPoolExecutor(self.max_worker) as pool:
             futures = []
             for task in current:
-                if self.get_context().get_state(task.name) != TaskState.SKIPPED:
+                if (
+                    self.get_context().get_state(task.name)
+                    != TaskState.SKIPPED
+                ):
                     self.get_context().set_state(task.name, TaskState.RUNNING)
                     task.state = TaskState.RUNNING
                     futures.append(self._run(pool, pre, task, *args, **kwargs))
@@ -83,7 +88,9 @@ class ProcessPoolScheduler(BaseScheduler):
                     task._result = future.result()
                     task.state = TaskState.COMPLETED
                     self.get_context().set_result(task.name, task._result)
-                    self.get_context().set_state(task.name, TaskState.COMPLETED)
+                    self.get_context().set_state(
+                        task.name, TaskState.COMPLETED
+                    )
                 except Exception:
                     self.get_context().set_state(task.name, TaskState.FAILURE)
                     task.meta_data["error"] = future.exception()
@@ -125,7 +132,11 @@ class ProcessPoolScheduler(BaseScheduler):
         return self._result
 
     async def async_step(self, *args: Any, **kwargs: Any) -> None:
-        raise NotImplementedError("ProcessPoolScheduler does not support async tasks")
+        raise NotImplementedError(
+            "ProcessPoolScheduler does not support async tasks"
+        )
 
     async def async_run(self, *args: Any, **kwargs: Any) -> Any:
-        raise NotImplementedError("ProcessPoolScheduler does not support async tasks")
+        raise NotImplementedError(
+            "ProcessPoolScheduler does not support async tasks"
+        )

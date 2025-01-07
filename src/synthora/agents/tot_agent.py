@@ -1,18 +1,18 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 from copy import deepcopy
@@ -21,7 +21,10 @@ from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
 from pydantic import BaseModel, Field
 
 from synthora.agents import BaseAgent
-from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
+from synthora.callbacks.base_handler import (
+    AsyncCallBackHandler,
+    BaseCallBackHandler,
+)
 from synthora.configs.agent_config import AgentConfig
 from synthora.configs.model_config import ModelConfig
 from synthora.memories.base import BaseMemory
@@ -47,9 +50,12 @@ from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
 
 class EvalFormat(BaseModel):
     score: float = Field(
-        ..., description="The score of the evaluation. Should be between 0 and 1."
+        ...,
+        description="The score of the evaluation. Should be between 0 and 1.",
     )
-    reason: str = Field(..., description="The brief reason for the evaluation.")
+    reason: str = Field(
+        ..., description="The brief reason for the evaluation."
+    )
     finished: bool = Field(
         ...,
         description="Should be True if the agent can't get the result or should give up, or the agent has finished the task.",
@@ -110,14 +116,21 @@ class ToTAgent(BaseAgent):
         r"""Create a default ToT agent with the specified prompt and tools.
 
         Args:
-            prompt (str): The initial prompt for the agent
-            name (str, optional): The name of the agent. Defaults to "React".
-            model_type (str, optional): The model type to use. Defaults to "gpt-4o".
-            tools (List[Union["BaseAgent", BaseFunction]], optional): List of available tools. Defaults to [].
-            handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]], optional): List of callback handlers. Defaults to [].
+            propose_prompt:
+                The initial prompt for the agent
+            value_prompt:
+                The initial prompt for the agent
+            name:
+                The name of the agent. Defaults to "React".
+            model_type:
+                The model type to use. Defaults to "gpt-4o".
+            tools:
+                List of available tools. Defaults to [].
+            handlers:
+                List of callback handlers. Defaults to [].
 
         Returns:
-            ToTAgent: The created ToT agent
+            The created ToT agent.
         """
         tools = tools or []
         handlers = handlers or []
@@ -170,10 +183,13 @@ class ToTAgent(BaseAgent):
         super().__init__(config, source, model, prompt, tools)
         if len(self.model) != 2:  # type: ignore[arg-type]
             raise ValueError(
-                "ToTAgent agent requires two models, first for proposing and second for value."
+                "ToTAgent agent requires two models, first for proposing and"
+                " second for value."
             )
         if not isinstance(prompt, dict):
-            raise ValueError("ToTAgent agent requires a dictionary of prompts.")
+            raise ValueError(
+                "ToTAgent agent requires a dictionary of prompts."
+            )
 
         self.propose_model = model[0]
         self.value_model = model[1]
@@ -209,7 +225,9 @@ class ToTAgent(BaseAgent):
 
         scheduler = ThreadPoolScheduler()
         tasks: List[Union[BaseTask, BaseScheduler]] = [
-            BaseTask(deepcopy(self.propose_model).run).si(self.history, *args, **kwargs)
+            BaseTask(deepcopy(self.propose_model).run).si(
+                self.history, *args, **kwargs
+            )
             for _ in range(self.level_size)
         ]
         scheduler.add_task_group(tasks)
@@ -218,19 +236,24 @@ class ToTAgent(BaseAgent):
         return Ok(resps)
 
     def _get_eval_workflow(
-        self, scheduler: Type[BaseScheduler], user_message: Union[BaseMessage, str]
+        self,
+        scheduler: Type[BaseScheduler],
+        user_message: Union[BaseMessage, str],
     ) -> BaseScheduler:
         tasks: List[Union[BaseTask, BaseScheduler]] = []
         for state in self.states[self.cursor][-self.level_size :]:
+            query_str = (
+                user_message.content
+                if isinstance(user_message, BaseMessage)
+                else user_message
+            )
             tasks.append(
                 BaseTask(self.value_model.run).si(
                     FullContextMemory(
                         [
                             system(self.value_prompt),
                             *state,
-                            user(
-                                f"The query is:{user_message.content if isinstance(user_message, BaseMessage) else user_message}"
-                            ),
+                            user(f"The query is: {query_str}"),
                         ]
                     )
                 )
@@ -316,7 +339,9 @@ class ToTAgent(BaseAgent):
                 except Exception:
                     self.scores[-1].append(0.0)
             self._set_next_state()
-        self.on_end(assistant("The agent has reached the maximum number of turns."))
+        self.on_end(
+            assistant("The agent has reached the maximum number of turns.")
+        )
         return Ok("The agent has reached the maximum number of turns.")
 
     def _set_next_state(self) -> None:
@@ -325,7 +350,8 @@ class ToTAgent(BaseAgent):
                 for idx, state in enumerate(self.states[self.cursor]):
                     if (
                         not self.visited[self.cursor][idx]
-                        and self.scores[self.cursor][idx] >= self.giveup_threshold
+                        and self.scores[self.cursor][idx]
+                        >= self.giveup_threshold
                     ):
                         self.visited[self.cursor][idx] = True
                         self.history = state
@@ -367,9 +393,13 @@ class ToTAgent(BaseAgent):
                 - The step execution result
                 - An Exception if the step failed
         """
-        raise NotImplementedError("Async step execution is not yet implemented.")
+        raise NotImplementedError(
+            "Async step execution is not yet implemented."
+        )
 
     async def async_run(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
-        raise NotImplementedError("Async run execution is not yet implemented.")
+        raise NotImplementedError(
+            "Async run execution is not yet implemented."
+        )

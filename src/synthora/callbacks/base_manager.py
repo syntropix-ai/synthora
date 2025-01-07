@@ -1,24 +1,27 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 from abc import ABC
 from typing import Any, List, Optional, Union
 
-from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
+from synthora.callbacks.base_handler import (
+    AsyncCallBackHandler,
+    BaseCallBackHandler,
+)
 from synthora.types.enums import CallBackEvent
 from synthora.types.node import Node
 
@@ -26,23 +29,26 @@ from synthora.types.node import Node
 class BaseCallBackManager(ABC):
     """Base manager for handling callbacks in the system.
 
-    A base class that manages the registration and execution of callback handlers.
-    Provides functionality to add, remove, and execute callbacks for various events.
+    A base class that manages the registration and execution of callback
+    handlers.
+    Provides functionality to add, remove, and execute callbacks for various
+    events.
 
     Attributes:
-        handlers (List[BaseCallBackHandler]): List of registered callback handlers
-        source (Optional[Node]): Source node associated with the callbacks
+        handlers:
+            List of registered callback handlers.
+        source:
+            Source node associated with the callbacks.
     """
 
-    def __init__(self, handlers: Optional[List[BaseCallBackHandler]] = None) -> None:
+    def __init__(
+        self, handlers: Optional[List[BaseCallBackHandler]] = None
+    ) -> None:
         """Initialize the callback manager.
 
         Args:
-            handlers (Optional[List[BaseCallBackHandler]], optional): Initial list of handlers.
-                Defaults to None.
-
-        Returns:
-            None
+            handlers:
+                Initial list of handlers.
         """
         self.handlers = handlers or []
         self.source: Optional[Node] = None
@@ -68,13 +74,12 @@ class BaseCallBackManager(ABC):
         """Add a new callback handler.
 
         Args:
-            handler (BaseCallBackHandler): The handler to be added
+            handler:
+                The handler to be added.
 
         Raises:
-            TypeError: If handler is not of type BaseCallBackHandler
+            TypeError: If handler is not of type BaseCallBackHandler.
 
-        Returns:
-            None
         """
         if not isinstance(handler, BaseCallBackHandler):
             raise TypeError("Handler must be of type BaseCallBackHandler")
@@ -84,10 +89,8 @@ class BaseCallBackManager(ABC):
         """Implement the += operator for adding handlers.
 
         Args:
-            handler (BaseCallBackHandler): The handler to be added
-
-        Returns:
-            None
+            handler:
+                The handler to be added.
         """
         self.add(handler)
 
@@ -95,10 +98,11 @@ class BaseCallBackManager(ABC):
         """Remove a callback handler.
 
         Args:
-            handler (BaseCallBackHandler): The handler to be removed
+            handler:
+                The handler to be removed.
 
         Returns:
-            bool: True if handler was found and removed, False otherwise
+            True if handler was found and removed, False otherwise.
         """
         if handler in self.handlers:
             self.handlers.remove(handler)
@@ -109,10 +113,8 @@ class BaseCallBackManager(ABC):
         """Implement the -= operator for removing handlers.
 
         Args:
-            handler (BaseCallBackHandler): The handler to be removed
-
-        Returns:
-            None
+            handler:
+                The handler to be removed.
         """
         self.remove(handler)
 
@@ -120,12 +122,12 @@ class BaseCallBackManager(ABC):
         """Execute the specified callback event on all handlers.
 
         Args:
-            event (CallBackEvent): The event to be triggered
-            *args (Any): Additional positional arguments
-            **kwargs (Dict[str, Any]): Additional keyword arguments
-
-        Returns:
-            None
+            event:
+                The event to be triggered.
+            *args:
+                Additional positional arguments.
+            **kwargs:
+                Additional keyword arguments.
         """
         for handler in self.handlers:
             if self.source is not None:
@@ -136,22 +138,25 @@ class BaseCallBackManager(ABC):
 class AsyncCallBackManager(BaseCallBackManager):
     """Asynchronous version of the callback manager.
 
-    Extends BaseCallBackManager to support both synchronous and asynchronous handlers.
-    Provides asynchronous execution of callbacks while maintaining compatibility with
-    synchronous handlers.
+    Extends BaseCallBackManager to support both synchronous and asynchronous
+    handlers. Provides asynchronous execution of callbacks while maintaining
+    compatibility with synchronous handlers.
 
     Attributes:
-        handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]]): List of registered handlers
-        source (Optional[Node]): Source node associated with the callbacks
+        handlers:
+            List of registered handlers.
+        source:
+            Source node associated with the callbacks.
     """
 
     def __init__(
-        self, handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = []
+        self,
+        handlers: List[Union[BaseCallBackHandler, AsyncCallBackHandler]] = [],
     ) -> None:
         """Initialize the async callback manager.
 
         Args:
-            handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]], optional):
+            handlers:
                 Initial list of handlers. Defaults to empty list.
 
         Returns:
@@ -164,7 +169,7 @@ class AsyncCallBackManager(BaseCallBackManager):
         """Convert the callback manager to an asynchronous version.
 
         Returns:
-            AsyncCallBackManager: Asynchronous version of the callback manager
+            Asynchronous version of the callback manager.
         """
         return self
 
@@ -172,7 +177,7 @@ class AsyncCallBackManager(BaseCallBackManager):
         """Convert the callback manager to a synchronous version.
 
         Returns:
-            BaseCallBackManager: Synchronous version of the callback manager
+            Synchronous version of the callback manager.
         """
         return BaseCallBackManager(handlers=self.handlers)
 
@@ -182,12 +187,12 @@ class AsyncCallBackManager(BaseCallBackManager):
         """Asynchronously execute the specified callback event on all handlers.
 
         Args:
-            event (CallBackEvent): The event to be triggered
-            *args (Any): Additional positional arguments
-            **kwargs (Dict[str, Any]): Additional keyword arguments
-
-        Returns:
-            None
+            event:
+                The event to be triggered.
+            *args:
+                Additional positional arguments.
+            **kwargs:
+                Additional keyword arguments.
         """
         for handler in self.handlers:
             if self.source is not None:
@@ -197,14 +202,14 @@ class AsyncCallBackManager(BaseCallBackManager):
             else:
                 getattr(handler, event.value)(*args, **kwargs)
 
-    def add(self, handler: Union[BaseCallBackHandler, AsyncCallBackHandler]) -> None:
+    def add(
+        self, handler: Union[BaseCallBackHandler, AsyncCallBackHandler]
+    ) -> None:
         """Add a new callback handler.
 
         Args:
-            handler (Union[BaseCallBackHandler, AsyncCallBackHandler]): The handler to be added
-
-        Returns:
-            None
+            handler:
+                The handler to be added.
         """
         self.handlers.append(handler)
 
@@ -214,21 +219,22 @@ class AsyncCallBackManager(BaseCallBackManager):
         """Implement the += operator for adding handlers.
 
         Args:
-            handler (Union[BaseCallBackHandler, AsyncCallBackHandler]): The handler to be added
-
-        Returns:
-            None
+            handler:
+                The handler to be added.
         """
         self.add(handler)
 
-    def remove(self, handler: Union[BaseCallBackHandler, AsyncCallBackHandler]) -> bool:
+    def remove(
+        self, handler: Union[BaseCallBackHandler, AsyncCallBackHandler]
+    ) -> bool:
         """Remove a callback handler.
 
         Args:
-            handler (Union[BaseCallBackHandler, AsyncCallBackHandler]): The handler to be removed
+            handler:
+                The handler to be removed.
 
         Returns:
-            bool: True if handler was found and removed, False otherwise
+            True if handler was found and removed, False otherwise.
         """
         if handler in self.handlers:
             self.handlers.remove(handler)
@@ -241,9 +247,7 @@ class AsyncCallBackManager(BaseCallBackManager):
         """Implement the -= operator for removing handlers.
 
         Args:
-            handler (Union[BaseCallBackHandler, AsyncCallBackHandler]): The handler to be removed
-
-        Returns:
-            None
+            handler:
+                The handler to be removed.
         """
         self.remove(handler)
