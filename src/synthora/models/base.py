@@ -82,7 +82,7 @@ class BaseModelBackend(ABC):
         self.config = config or {}
         self.callback_manager = get_callback_manager(handlers)
         self.client: Optional[Any] = None
-        self.__IGNORE_ON_COPY = ['client']
+        self.__IGNORE_ON_COPY = ["client"]
 
     @abstractmethod
     def run(
@@ -136,9 +136,9 @@ class BaseModelBackend(ABC):
         """
         self.callback_manager.add(handler)
 
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo: Dict[int, Any]) -> "BaseModelBackend":
         if id(self) in memo:
-            return memo[id(self)]
+            return memo[id(self)]  # type: ignore[no-any-return]
 
         new_obj = self.__class__.__new__(self.__class__)
 

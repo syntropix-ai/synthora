@@ -16,7 +16,9 @@
 #
 
 from copy import deepcopy
-from typing import Any, Dict, List, Optional, Type, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
+
+from pydantic import BaseModel, Field
 
 from synthora.agents import BaseAgent
 from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
@@ -24,17 +26,15 @@ from synthora.configs.agent_config import AgentConfig
 from synthora.configs.model_config import ModelConfig
 from synthora.memories.base import BaseMemory
 from synthora.memories.full_context_memory import FullContextMemory
-from synthora.messages import system, user
+from synthora.messages import assistant, system, user
 from synthora.messages.base import BaseMessage
 from synthora.models import create_model_from_config
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import BaseFunction
-from synthora.toolkits.decorators import tool
 from synthora.types.enums import AgentType, MessageRole, NodeType, Ok, Result
 from synthora.types.node import Node
 from synthora.utils.macros import (
-    ASYNC_GET_FINAL_MESSAGE,
     FORMAT_PROMPT,
     GET_FINAL_MESSAGE,
     STR_TO_USERMESSAGE,
@@ -43,19 +43,24 @@ from synthora.utils.macros import (
 from synthora.workflows.base_task import BaseTask
 from synthora.workflows.scheduler.base import BaseScheduler
 from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
-from pydantic import BaseModel, Field
 
 
 class EvalFormat(BaseModel):
-    score: float = Field(..., description="The score of the evaluation. Should be between 0 and 1.")
+    score: float = Field(
+        ..., description="The score of the evaluation. Should be between 0 and 1."
+    )
     reason: str = Field(..., description="The brief reason for the evaluation.")
-    finished: bool = Field(..., description="Should be True if the agent can't get the result or should give up, or the agent has finished the task.")
+    finished: bool = Field(
+        ...,
+        description="Should be True if the agent can't get the result or should give up, or the agent has finished the task.",
+    )
+
 
 PROPOSE_PROMPT = """
 You are an expert problem-solving agent capable of solving problems step by step using the **Think-Observe-Test (TOT)** methodology. Your task is to solve the problem incrementally, executing only **one step at a time** and responding with only one action per step. Each step consists of the following:
 
 1. **Think**: Identify the next logical step in solving the problem.
-2. **Observe or Output**: 
+2. **Observe or Output**:
    - If a tool needs to be called, **Observe** by executing the action and provide the result.
    - If no tool is required, **Output** the result of the current step directly.
 3. **Iterate**: Update the problem (if needed) based on the result and prepare for the next step.
@@ -86,10 +91,10 @@ You are an evaluation model designed to objectively assess the quality of step-b
 
 """
 
-class ToTAgent(BaseAgent):
 
+class ToTAgent(BaseAgent):
     @staticmethod
-    def default(
+    def default(  # type: ignore[override]
         propose_prompt: str = PROPOSE_PROMPT,
         value_prompt: str = VALUE_PROMPT,
         finish_threshold: float = 0.9,
@@ -119,7 +124,10 @@ class ToTAgent(BaseAgent):
         config = AgentConfig(
             name=name,
             type=AgentType.TOT,
-            model=[ModelConfig(model_type=model_type, name=model_type), ModelConfig(model_type=model_type, name=model_type)],
+            model=[
+                ModelConfig(model_type=model_type, name=model_type),
+                ModelConfig(model_type=model_type, name=model_type),
+            ],
             prompt={
                 "propose": BasePrompt(propose_prompt),
                 "value": BasePrompt(value_prompt),
@@ -127,7 +135,9 @@ class ToTAgent(BaseAgent):
             tools=tools,
         )
         node = Node(name=name, type=NodeType.AGENT)
-        model = create_model_from_config(config.model, node)  # type: ignore[arg-type]
+        model = create_model_from_config(config.model, node)
+        if not isinstance(model, list):
+            model = [model, model]
         agent = ToTAgent(
             config,
             Node(name=name, type=NodeType.AGENT),
@@ -158,15 +168,15 @@ class ToTAgent(BaseAgent):
     ) -> None:
         tools = tools or []
         super().__init__(config, source, model, prompt, tools)
-        if len(self.model) != 2:
+        if len(self.model) != 2:  # type: ignore[arg-type]
             raise ValueError(
                 "ToTAgent agent requires two models, first for proposing and second for value."
             )
         if not isinstance(prompt, dict):
             raise ValueError("ToTAgent agent requires a dictionary of prompts.")
 
-        self.propose_model = self.model[0]
-        self.value_model = self.model[1]
+        self.propose_model = model[0]
+        self.value_model = model[1]
 
         self.value_model.config["response_format"] = EvalFormat
         if "stream" in self.value_model.config:
@@ -182,9 +192,9 @@ class ToTAgent(BaseAgent):
         self.finish_threshold = finish_threshold
         self.giveup_threshold = giveup_threshold
 
-        self.states = []
-        self.scores = []
-        self.visited = []
+        self.states: List[List[BaseMemory]] = []
+        self.scores: List[List[float]] = []
+        self.visited: List[List[bool]] = []
         self.search_method = search_method
         self.history = FullContextMemory()
         self.cursor = 0
@@ -192,28 +202,25 @@ class ToTAgent(BaseAgent):
     def step(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[List[BaseMessage], Exception]:
-
         UPDATE_SYSTEM(prompt=FORMAT_PROMPT(prompt=self.propose_prompt))
         message = cast(BaseMessage, STR_TO_USERMESSAGE())
         if message.content:
             self.history.append(message)
 
         scheduler = ThreadPoolScheduler()
-        tasks = [
-            BaseTask(
-                deepcopy(self.propose_model).run
-            ).si(self.history, *args, **kwargs)
+        tasks: List[Union[BaseTask, BaseScheduler]] = [
+            BaseTask(deepcopy(self.propose_model).run).si(self.history, *args, **kwargs)
             for _ in range(self.level_size)
         ]
         scheduler.add_task_group(tasks)
-        resps = list(map(lambda x: GET_FINAL_MESSAGE(x), scheduler.run()))
+        resps = [GET_FINAL_MESSAGE(x) for x in scheduler.run()]
 
         return Ok(resps)
 
     def _get_eval_workflow(
         self, scheduler: Type[BaseScheduler], user_message: Union[BaseMessage, str]
     ) -> BaseScheduler:
-        tasks = []
+        tasks: List[Union[BaseTask, BaseScheduler]] = []
         for state in self.states[self.cursor][-self.level_size :]:
             tasks.append(
                 BaseTask(self.value_model.run).si(
@@ -291,25 +298,35 @@ class ToTAgent(BaseAgent):
                         )
                     )
             workflow = self._get_eval_workflow(ThreadPoolScheduler, message)
-            resps = list(map(lambda x: GET_FINAL_MESSAGE(x), workflow.run()))
+            resps = [GET_FINAL_MESSAGE(x) for x in workflow.run()]
             for idx, resp in enumerate(resps):
                 try:
-                    self.scores[self.cursor].append(resp.parsed.score)
-                    if self.scores[self.cursor][-1] >= self.finish_threshold and resp.parsed.finished:
-                        result = self.states[self.cursor][len(resps) - self.level_size + idx][-1]
+                    self.scores[self.cursor].append(resp.parsed.score)  # type: ignore
+                    if (
+                        self.scores[self.cursor][-1] >= self.finish_threshold
+                        and resp.parsed.finished  # type: ignore
+                    ):
+                        result = self.states[self.cursor][
+                            len(resps) - self.level_size + idx
+                        ][-1]
                         if result.role == MessageRole.ASSISTANT:
                             result = result.content
                             self.on_end(result)
                             return Ok(result)
-                except Exception as e:
+                except Exception:
                     self.scores[-1].append(0.0)
             self._set_next_state()
+        self.on_end(assistant("The agent has reached the maximum number of turns."))
+        return Ok("The agent has reached the maximum number of turns.")
 
-    def _set_next_state(self):
+    def _set_next_state(self) -> None:
         if self.search_method == "dfs":
             while self.cursor >= 0:
                 for idx, state in enumerate(self.states[self.cursor]):
-                    if not self.visited[self.cursor][idx] and self.scores[self.cursor][idx] >= self.giveup_threshold:
+                    if (
+                        not self.visited[self.cursor][idx]
+                        and self.scores[self.cursor][idx] >= self.giveup_threshold
+                    ):
                         self.visited[self.cursor][idx] = True
                         self.history = state
                         self.cursor += 1
@@ -318,10 +335,13 @@ class ToTAgent(BaseAgent):
             raise Exception("No valid state found.")
         elif self.search_method == "bfs":
             if not (queue := getattr(self, "_queue", None)):
-                self._queue = []
+                self._queue: List[Tuple[List[BaseMemory], int]] = []
                 queue = self._queue
             for idx, state in enumerate(self.states[self.cursor]):
-                if not self.visited[self.cursor][idx] and self.scores[self.cursor][idx] >= self.giveup_threshold:
+                if (
+                    not self.visited[self.cursor][idx]
+                    and self.scores[self.cursor][idx] >= self.giveup_threshold
+                ):
                     self.visited[self.cursor][idx] = True
                     queue.append((state, self.cursor))
             if queue:
@@ -329,7 +349,6 @@ class ToTAgent(BaseAgent):
                 self.cursor += 1
                 return
             raise Exception("No valid state found.")
-
 
     async def async_step(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any

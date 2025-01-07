@@ -16,6 +16,7 @@
 #
 
 from typing import List, Union
+
 from synthora.configs.model_config import ModelConfig
 from synthora.types.enums import ModelBackendType
 from synthora.types.node import Node
@@ -29,7 +30,9 @@ BACKEND_MAP = {
 }
 
 
-def create_model_from_config(config: Union[ModelConfig, List[ModelConfig]], source: Node) -> Union[BaseModelBackend, List[BaseModelBackend]]:
+def create_model_from_config(
+    config: Union[ModelConfig, List[ModelConfig]], source: Node
+) -> Union[BaseModelBackend, List[BaseModelBackend]]:
     """Create a model instance from configuration.
 
     Args:
