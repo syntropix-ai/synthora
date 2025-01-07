@@ -94,7 +94,7 @@ class VanillaAgent(BaseAgent):
             prompt=BasePrompt(prompt),
         )
         node = Node(name=name, type=NodeType.AGENT)
-        model = create_model_from_config(config.model, node)  # type: ignore[arg-type]
+        model = create_model_from_config(config.model, node)
         agent = VanillaAgent(
             config,
             Node(name=name, type=NodeType.AGENT),

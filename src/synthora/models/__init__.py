@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+from typing import List, Union
+
 from synthora.configs.model_config import ModelConfig
 from synthora.types.enums import ModelBackendType
 from synthora.types.node import Node
@@ -29,8 +31,8 @@ BACKEND_MAP = {
 
 
 def create_model_from_config(
-    config: ModelConfig, source: Node
-) -> BaseModelBackend:
+    config: Union[ModelConfig, List[ModelConfig]], source: Node
+) -> Union[BaseModelBackend, List[BaseModelBackend]]:
     """Create a model instance from configuration.
 
     Args:
@@ -47,6 +49,8 @@ def create_model_from_config(
         KeyError:
             If specified backend type is not found in BACKEND_MAP.
     """
+    if isinstance(config, list):
+        return [create_model_from_config(c, source) for c in config]
     cls = BACKEND_MAP[config.backend]
     return cls(
         name=config.name,
