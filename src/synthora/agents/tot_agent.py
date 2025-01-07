@@ -60,8 +60,8 @@ PROPOSE_PROMPT = """
 You are an expert problem-solving agent capable of solving problems step by step using the **Think-Observe-Test (TOT)** methodology. Your task is to solve the problem incrementally, executing only **one step at a time** and responding with only one action per step. Each step consists of the following:
 
 1. **Think**: Identify the next logical step in solving the problem.
-2. **Observe or Output**:
-   - If a tool needs to be called, **Observe** by executing the action and provide the result.
+2. **Output**:
+   - If a tool needs to be called, use the toolcall to execute the step.
    - If no tool is required, **Output** the result of the current step directly.
 3. **Iterate**: Update the problem (if needed) based on the result and prepare for the next step.
 
@@ -97,6 +97,8 @@ class ToTAgent(BaseAgent):
     def default(  # type: ignore[override]
         propose_prompt: str = PROPOSE_PROMPT,
         value_prompt: str = VALUE_PROMPT,
+        level_size: int = 3,
+        max_turns: int = 5,
         finish_threshold: float = 0.9,
         giveup_threshold: float = 0.2,
         search_method: str = "dfs",
@@ -147,6 +149,8 @@ class ToTAgent(BaseAgent):
             finish_threshold=finish_threshold,
             giveup_threshold=giveup_threshold,
             search_method=search_method,
+            level_size=level_size,
+            max_turns=max_turns,
         )
         if handlers:
             for handler in handlers:
@@ -206,6 +210,7 @@ class ToTAgent(BaseAgent):
         message = cast(BaseMessage, STR_TO_USERMESSAGE())
         if message.content:
             self.history.append(message)
+        print(self.history[-1].content)
 
         scheduler = ThreadPoolScheduler()
         tasks: List[Union[BaseTask, BaseScheduler]] = [
@@ -314,8 +319,10 @@ class ToTAgent(BaseAgent):
                             self.on_end(result)
                             return Ok(result)
                 except Exception:
-                    self.scores[-1].append(0.0)
+                    self.scores[self.cursor].append(0.0)
+            print(self.scores[self.cursor])
             self._set_next_state()
+
         self.on_end(assistant("The agent has reached the maximum number of turns."))
         return Ok("The agent has reached the maximum number of turns.")
 
