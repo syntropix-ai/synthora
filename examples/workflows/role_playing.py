@@ -1,18 +1,18 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 
@@ -38,8 +38,14 @@ def convert(resp: Result[BaseMessage, Exception]) -> str:
     return str(resp.unwrap().content)
 
 
-prompt1 = "Please debate: What came first, the chicken or the egg? Your argument is that the egg came first."
-prompt2 = "Please debate: What came first, the chicken or the egg? Your argument is that the chicken came first."
+prompt1 = (
+    "Please debate: What came first, the chicken or the egg? "
+    "Your argument is that the egg came first."
+)
+prompt2 = (
+    "Please debate: What came first, the chicken or the egg? "
+    "Your argument is that the chicken came first."
+)
 
 for round in range(2):
     flow1 = (BaseTask(agent1.run) >> BaseTask(convert)).s(prompt1)
