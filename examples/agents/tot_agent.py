@@ -18,9 +18,15 @@
 from synthora.agents.tot_agent import ToTAgent
 
 
-agent = ToTAgent.default(model_type="gpt-4o", max_turns=10)
+agent = ToTAgent.default(model_type="gpt-4o", max_turns=15, level_size=3, giveup_threshold=0.2)
 
-print(agent.run("Can the given numbers reach 24? 4 9 10 13"))
+print(
+    agent.run(
+        "每天早上，Aya都会散步 9 公里，然后在咖啡店结束。一天，她以每小3时 s 公里的速度行走，这次散步需要 4 小时，包括在咖啡店停留 t 分钟。另一天，她以每小时 s+2 公里的速度行走，这次散步需要 2 小时和 24 分钟，包括在咖啡店停留 t 分钟。如果今天早上她以每小时 s+(1/2）公里的速度行走，那么这次散步将花费多少分钟，包括在咖啡店停留 t 分钟？"
+    )
+)
+for i in agent.history:
+    print(i.content)
 # **Think**: Begin by considering different combinations and operations (addition, subtraction, multiplication, and division) with the numbers 4, 9, 10, and 13 to see if it's possible to achieve the total of 24.
 
 # **Observe**: Start with testing simpler combinations. For instance, check if two numbers could combine with a basic operation to create an intermediary sum or product that is closer to 24.
