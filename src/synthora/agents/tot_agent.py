@@ -89,6 +89,8 @@ You are an evaluation model designed to objectively assess the quality of step-b
 2. Do not penalize responses for not solving the full problem; instead, focus on how well they progress the solution at this step.
 3. Take into account the logical flow of the step and whether it aligns with the user's input and previous steps in the history.
 
+Only set finished to True if the agent can't get the result or should give up, or the agent has finished the task.
+
 """
 
 
@@ -218,8 +220,10 @@ class ToTAgent(BaseAgent):
             for _ in range(self.level_size)
         ]
         scheduler.add_task_group(tasks)
-        resps = [GET_FINAL_MESSAGE(x) for x in scheduler.run()]
-
+        results = scheduler.run()
+        if not isinstance(results, list):
+            results = [results]
+        resps = [GET_FINAL_MESSAGE(x) for x in results]
         return Ok(resps)
 
     def _get_eval_workflow(
@@ -278,7 +282,7 @@ class ToTAgent(BaseAgent):
                 return response
 
             datas = response.unwrap()
-
+            
             for data in datas:
                 self.states[self.cursor].append(self.history + [data])
                 self.visited[self.cursor].append(False)
@@ -302,8 +306,12 @@ class ToTAgent(BaseAgent):
                             source=tool.source,
                         )
                     )
+            
             workflow = self._get_eval_workflow(ThreadPoolScheduler, message)
-            resps = [GET_FINAL_MESSAGE(x) for x in workflow.run()]
+            _results = workflow.run()
+            if not isinstance(_results, list):
+                _results = [_results]
+            resps = [GET_FINAL_MESSAGE(x) for x in _results]
             for idx, resp in enumerate(resps):
                 try:
                     self.scores[self.cursor].append(resp.parsed.score)  # type: ignore

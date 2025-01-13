@@ -34,4 +34,4 @@ agent = ReactAgent.from_config(config)
 handler = RichOutputHandler()
 agent.add_handler(handler)
 
-agent.run("Search Openai on Wikipedia.")
+agent.run("How many letters 'r' in the word 'strawberry'? You need to splict it into subtasks, and think step by step.")
