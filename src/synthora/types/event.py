@@ -1,18 +1,18 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 import uuid
@@ -33,14 +33,23 @@ class TraceEvent(BaseModel):
     agent execution, including timing, context, and associated data.
 
     Attributes:
-        id (UUID): Unique identifier for the trace event
-        timestamp (float): Unix timestamp when the event occurred
-        event_type (CallBackEvent): Type of the callback event (e.g., agent_start, llm_end)
-        event_name (Optional[str]): Name of the event, defaults to None
-        data (Any): The primary data associated with the event (e.g., messages, results)
-        stack (List[Node]): The execution stack at the time of the event
-        current (Node): The currently active node when the event occurred
-        metadata (Dict[str, Any]): Additional contextual information about the event
+        id:
+            Unique identifier for the trace event.
+        timestamp:
+            Unix timestamp when the event occurred.
+        event_type:
+            Type of the callback event (e.g., agent_start, llm_end).
+        event_name:
+            Name of the event, defaults to None.
+        data:
+            The primary data associated with the event
+            (e.g., messages, results).
+        stack:
+            The execution stack at the time of the event.
+        current:
+            The currently active node when the event occurred.
+        metadata:
+            Additional contextual information about the event.
     """
 
     id: UUID
@@ -58,7 +67,7 @@ class TraceEvent(BaseModel):
         Convert the TraceEvent to a dictionary.
 
         Returns:
-            Dict[str, Any]: The TraceEvent as a dictionary.
+            The TraceEvent as a dictionary.
         """
         data = self.model_dump()
         data["id"] = str(data["id"])
@@ -76,13 +85,17 @@ class TraceEvent(BaseModel):
         Create a new TraceEvent instance.
 
         Args:
-            type (CallBackEvent): The type of the callback event.
-            data (Any): The data associated with the event.
-            stack (List[Node]): The stack of nodes related to the event.
-            metadata (Dict[str, Any]): Additional data for the event.
+            type:
+                The type of the callback event.
+            data:
+                The data associated with the event.
+            stack:
+                The stack of nodes related to the event.
+            metadata:
+                Additional data for the event.
 
         Returns:
-            TraceEvent: A new instance of TraceEvent.
+            A new instance of TraceEvent.
         """
         return TraceEvent(
             id=uuid.uuid4(),

@@ -1,18 +1,18 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 from copy import deepcopy
@@ -41,18 +41,28 @@ class BaseMessage(BaseModel):
     """Base message class for handling different types of chat messages.
 
     Attributes:
-        id (Optional[str]): Message identifier
-        source (Node): Source node of the message
-        role (MessageRole): Role of the message sender
-        chunk (Optional[str]): Chunk of streamed message content
-        parsed (Optional[Any]): Parsed message content
-        content (Optional[str]): Main message content
-        tool_calls (Optional[List[ChatCompletionMessageToolCall]]): Tool calls made in message
-        tool_response (Optional[Dict[str, Any]]): Response from tool execution
-        images (Optional[List[str]]): List of image URLs
-        origional_response (Optional[Union[ChatCompletion, ChatCompletionChunk]]):
-            Original response from OpenAI
-        metadata (Dict[str, Any]): Additional message metadata
+        id:
+            Message identifier.
+        source:
+            Source node of the message.
+        role:
+            Role of the message sender.
+        chunk:
+            Chunk of streamed message content.
+        parsed:
+            Parsed message content.
+        content:
+            Main message content.
+        tool_calls:
+            Tool calls made in message.
+        tool_response:
+            Response from tool execution.
+        images:
+            List of image URLs.
+        origional_response:
+            Original response from OpenAI.
+        metadata:
+            Additional message metadata
     """
 
     id: Optional[str] = None
@@ -65,7 +75,9 @@ class BaseMessage(BaseModel):
     tool_calls: Optional[List[ChatCompletionMessageToolCall]] = None
     tool_response: Optional[Dict[str, Any]] = None
     images: Optional[List[str]] = None
-    origional_response: Optional[Union[ChatCompletion, ChatCompletionChunk]] = None
+    origional_response: Optional[
+        Union[ChatCompletion, ChatCompletionChunk]
+    ] = None
 
     metadata: Dict[str, Any] = {}
 
@@ -74,17 +86,20 @@ class BaseMessage(BaseModel):
         """Validate that message has at least one content field.
 
         Returns:
-            Self: The validated message instance
+            The validated message instance.
 
         Raises:
-            ValueError: If message has no content, images, tool_calls, or tool_response
+            ValueError:
+                If message has no content, images, tool_calls, or
+                tool_response.
         """
         if not any(
             getattr(self, field) is not None
             for field in ["content", "tool_calls", "tool_response", "images"]
         ):
             raise ValueError(
-                "Message should have at least one of content, images, tool_calls, tool_response"
+                "Message should have at least one of content, images, "
+                "tool_calls, tool_response"
             )
         return self
 
@@ -93,7 +108,7 @@ class BaseMessage(BaseModel):
         """Check if message is complete.
 
         Returns:
-            bool: True if message has a finish reason in metadata
+            True if message has a finish reason in metadata.
         """
         return bool(self.metadata.get("finish_reason", ""))
 
@@ -102,7 +117,7 @@ class BaseMessage(BaseModel):
         """Check if message contains tool calls.
 
         Returns:
-            bool: True if message has tool_calls, False otherwise
+            True if message has tool_calls, False otherwise.
         """
         return bool(self.tool_calls)
 
@@ -121,20 +136,29 @@ class BaseMessage(BaseModel):
         """Create a new message instance.
 
         Args:
-            role (MessageRole): Role of message sender
-            id (Optional[str]): Message identifier
-            content (Optional[AnyStr]): Message content
-            images (Optional[List[str]]): List of image URLs
-            tool_calls (Optional[List[Dict[str, Any]]]): Tool calls to make
-            tool_response (Optional[Result]): Response from tool execution
-            source (Node): Source node, defaults to user
-            metadata (Dict[str, Any]): Additional metadata
+            role:
+                Role of message sender.
+            id:
+                Message identifier.
+            content:
+                Message content.
+            images:
+                List of image URLs.
+            tool_calls:
+                Tool calls to make.
+            tool_response:
+                Response from tool execution.
+            source:
+                Source node, defaults to user.
+            metadata:
+                Additional metadata.
 
         Returns:
-            Self: New message instance
+            New message instance
 
         Raises:
-            ValueError: If system message contains images or tool response missing ID
+            ValueError:
+                If system message contains images or tool response missing ID.
         """
         if images:
             images = [parse_image(image) for image in images]
@@ -159,7 +183,8 @@ class BaseMessage(BaseModel):
                 )
             case MessageRole.ASSISTANT:
                 return cls(
-                    source=source or Node(name="assistant", type=NodeType.AGENT),
+                    source=source
+                    or Node(name="assistant", type=NodeType.AGENT),
                     role=MessageRole.ASSISTANT,
                     content=content,
                     tool_calls=tool_calls,
@@ -168,7 +193,9 @@ class BaseMessage(BaseModel):
                 )
             case MessageRole.TOOL_RESPONSE:
                 if id is None:
-                    raise ValueError("Function response message should have an id")
+                    raise ValueError(
+                        "Function response message should have an id"
+                    )
                 return cls(
                     id=id,
                     source=source or Node(name="function", type=NodeType.TOOL),
@@ -183,10 +210,11 @@ class BaseMessage(BaseModel):
         """Convert to OpenAI message format.
 
         Returns:
-            ChatCompletionMessageParam: Message in OpenAI format
+            Message in OpenAI format.
 
         Raises:
-            ValueError: If system message contains images
+            ValueError:
+                If system message contains images.
         """
         if self.role == MessageRole.TOOL_RESPONSE:
             return ChatCompletionToolMessageParam(
@@ -198,12 +226,15 @@ class BaseMessage(BaseModel):
             content = self.content
             if self.images:
                 content = [  # type: ignore
-                    ChatCompletionContentPartTextParam(text=content, type="text")
+                    ChatCompletionContentPartTextParam(
+                        text=content, type="text"
+                    )
                 ]
                 for image in self.images:
                     content.append(  # type: ignore[union-attr]
                         ChatCompletionContentPartImageParam(
-                            image_url={"url": image, "detail": "auto"}, type="image_url"
+                            image_url={"url": image, "detail": "auto"},
+                            type="image_url",
                         )
                     )
             if self.role == MessageRole.USER:
@@ -240,11 +271,13 @@ class BaseMessage(BaseModel):
         """Create message from OpenAI completion response.
 
         Args:
-            response (ChatCompletion): OpenAI completion response
-            source (Node): Source node, defaults to assistant
+            response:
+                OpenAI completion response.
+            source:
+                Source node, defaults to assistant.
 
         Returns:
-            Self: New message instance
+            New message instance.
         """
         choice = response.choices[0]
         source = source or Node(name="assistant", type=NodeType.AGENT)
@@ -284,12 +317,15 @@ class BaseMessage(BaseModel):
         """Create message from OpenAI streaming completion response.
 
         Args:
-            response (ChatCompletionChunk): OpenAI streaming completion chunk
-            source (Node): Source node, defaults to assistant
-            previous (Optional[Self]): Previous message instance for content accumulation
+            response:
+                OpenAI streaming completion chunk.
+            source:
+                Source node, defaults to assistant.
+            previous:
+                Previous message instance for content accumulation.
 
         Returns:
-            Self: New or updated message instance with accumulated content
+            New or updated message instance with accumulated content.
         """
         choice = response.choices[0]
         source = source or Node(name="assistant", type=NodeType.AGENT)
@@ -332,7 +368,9 @@ class BaseMessage(BaseModel):
                         previous_tool_calls[-1].function.name += function.name  # type: ignore[index]
                     if function.arguments:
                         chunk = function.arguments
-                        previous_tool_calls[-1].function.arguments += function.arguments  # type: ignore[index]
+                        previous_tool_calls[
+                            -1
+                        ].function.arguments += function.arguments  # type: ignore[index]
         content = previous.content + chunk if previous else chunk
         return cls(
             id=response.id,
