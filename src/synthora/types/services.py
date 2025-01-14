@@ -15,27 +15,11 @@
 # limitations under the License.
 #
 
-from synthora.workflows import BaseTask
-from synthora.workflows.context.base import BaseContext
-from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
+from typing import Any, Dict, List, Optional
+from pydantic import BaseModel
 
 
-def add(ctx: BaseContext, x: int, y: int) -> int:
-    with ctx:
-        print(ctx.get_state(f"{x + y}"))
-        if "ans" not in ctx:
-            ctx["ans"] = [x + y]
-        else:
-            ctx["ans"] = ctx["ans"] + [x + y]
-    return x + y
-
-
-flow = ThreadPoolScheduler()
-(
-    flow
-    | BaseTask(add, "2").s(1)
-    | BaseTask(add, "3").s(2)
-    | BaseTask(add, "4").s(3)
-)
-
-print(flow.run(1))
+class HttpAgentRequest(BaseModel):  # type: ignore[no-redef]
+    message: str
+    args: Optional[List[Any]] = None
+    kwargs: Optional[Dict[str, Any]] = None

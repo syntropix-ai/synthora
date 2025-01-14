@@ -1,18 +1,18 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 from typing import Any, List, cast
@@ -26,10 +26,11 @@ from synthora.types.node import Node
 
 
 class SimpleTracer(BaseTracer):
-    """A simple implementation of the BaseTracer that tracks agent execution events.
+    """A simple implementation of the BaseTracer that tracks agent execution
+    events.
 
-    Implements callback methods for various agent events including agent lifecycle,
-    LLM interactions, and tool usage.
+    Implements callback methods for various agent events including agent
+    lifecycle, LLM interactions, and tool usage.
     """
 
     def on_agent_start(
@@ -38,10 +39,14 @@ class SimpleTracer(BaseTracer):
         """Called when an agent starts processing.
 
         Args:
-            source (Node): The node representing the current execution point
-            message (BaseMessage): The input message being processed
-            *args: Variable length argument list
-            **kwargs: Arbitrary keyword arguments
+            source:
+                The node representing the current execution point.
+            message:
+                The input message being processed.
+            *args:
+                Variable length argument list.
+            **kwargs:
+                Arbitrary keyword arguments.
 
         Raises:
             ValueError: If agent reference is not set
@@ -65,10 +70,14 @@ class SimpleTracer(BaseTracer):
         """Called when an agent completes processing.
 
         Args:
-            source (Node): The node representing the current execution point
-            message (BaseMessage): The output message produced
-            *args: Variable length argument list
-            **kwargs: Arbitrary keyword arguments
+            source:
+                The node representing the current execution point.
+            message:
+                The output message produced.
+            *args:
+                Variable length argument list.
+            **kwargs:
+                Arbitrary keyword arguments.
 
         Raises:
             ValueError: If agent reference is not set
@@ -96,10 +105,14 @@ class SimpleTracer(BaseTracer):
         """Called when an agent encounters an error during processing.
 
         Args:
-            source (Node): The node representing the current execution point
-            result (Result[Any, Exception]): The error result containing the exception
-            *args: Variable length argument list
-            **kwargs: Arbitrary keyword arguments
+            source:
+                The node representing the current execution point.
+            result:
+                The error result containing the exception.
+            *args:
+                Variable length argument list.
+            **kwargs:
+                Arbitrary keyword arguments.
 
         Raises:
             ValueError: If agent reference is not set
@@ -128,11 +141,16 @@ class SimpleTracer(BaseTracer):
         """Called when an LLM interaction begins.
 
         Args:
-            source (Node): The node representing the LLM component
-            messages (List[BaseMessage]): The input messages for the LLM
-            stream (bool, optional): Whether streaming is enabled. Defaults to False
-            *args: Variable length argument list
-            **kwargs: Arbitrary keyword arguments
+            source:
+                The node representing the LLM component.
+            messages:
+                The input messages for the LLM.
+            stream:
+                Whether streaming is enabled. Defaults to False.
+            *args:
+                Variable length argument list.
+            **kwargs:
+                Arbitrary keyword arguments.
 
         Raises:
             ValueError: If agent reference is not set
@@ -170,11 +188,16 @@ class SimpleTracer(BaseTracer):
         """Called when an LLM interaction completes.
 
         Args:
-            source (Node): The node representing the LLM component
-            message (BaseMessage): The response message from the LLM
-            stream (bool, optional): Whether streaming was used. Defaults to False
-            *args: Variable length argument list
-            **kwargs: Arbitrary keyword arguments
+            source:
+                The node representing the LLM component.
+            message:
+                The response message from the LLM.
+            stream:
+                Whether streaming was used. Defaults to False.
+            *args:
+                Variable length argument list.
+            **kwargs:
+                Arbitrary keyword arguments.
 
         Raises:
             ValueError: If agent reference is not set
@@ -213,11 +236,16 @@ class SimpleTracer(BaseTracer):
         """Called when an LLM interaction encounters an error.
 
         Args:
-            source (Node): The node representing the LLM component
-            e (Exception): The exception that occurred during LLM processing
-            stream (bool, optional): Whether streaming was being used. Defaults to False
-            *args: Variable length argument list
-            **kwargs: Arbitrary keyword arguments
+            source:
+                The node representing the LLM component.
+            e:
+                The exception that occurred during LLM processing.
+            stream:
+                Whether streaming was being used.
+            *args:
+                Variable length argument list.
+            **kwargs:
+                Arbitrary keyword arguments.
 
         Raises:
             ValueError: If agent reference is not set
@@ -248,9 +276,12 @@ class SimpleTracer(BaseTracer):
         """Called when a tool execution begins.
 
         Args:
-            source (Node): The node representing the tool
-            *args: Tool input arguments
-            **kwargs: Tool keyword arguments
+            source:
+                The node representing the tool.
+            *args:
+                Tool input arguments.
+            **kwargs:
+                Tool keyword arguments.
 
         Raises:
             ValueError: If agent reference is not set
@@ -278,10 +309,14 @@ class SimpleTracer(BaseTracer):
         """Called when a tool execution completes successfully.
 
         Args:
-            source (Node): The node representing the tool
-            result (Result[Any, Exception]): The result of the tool execution
-            *args: Variable length argument list
-            **kwargs: Arbitrary keyword arguments
+            source:
+                The node representing the tool.
+            result:
+                The result of the tool execution.
+            *args:
+                Variable length argument list.
+            **kwargs:
+                Arbitrary keyword arguments.
 
         Raises:
             ValueError: If agent reference is not set
@@ -309,10 +344,14 @@ class SimpleTracer(BaseTracer):
         """Called when a tool execution encounters an error.
 
         Args:
-            source (Node): The node representing the tool
-            result (Result[Any, Exception]): The error result containing the exception
-            *args: Variable length argument list
-            **kwargs: Arbitrary keyword arguments
+            source:
+                The node representing the tool.
+            result:
+                The error result containing the exception.
+            *args:
+                Variable length argument list.
+            **kwargs:
+                Arbitrary keyword arguments.
 
         Raises:
             ValueError: If agent reference is not set

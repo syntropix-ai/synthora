@@ -1,24 +1,27 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
-# Licensed under the Apache License, Version 2.0 (the “License”);
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an “AS IS” BASIS,
+# distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 import inspect
 from typing import Any, Callable, Dict, List, Optional, Union
 
-from synthora.callbacks.base_manager import AsyncCallBackManager, BaseCallBackManager
+from synthora.callbacks.base_manager import (
+    AsyncCallBackManager,
+    BaseCallBackManager,
+)
 from synthora.messages.base import BaseMessage
 from synthora.prompts.base import BasePrompt
 from synthora.types.enums import MessageRole, NodeType
@@ -27,6 +30,7 @@ from synthora.types.node import Node
 
 def macro(func: Callable[..., Any]) -> Callable[..., Any]:
     r"""A decorator to create a macro function.
+
     Macro functions can access the local variables of the caller function.
     """
     if inspect.iscoroutinefunction(func):
@@ -57,13 +61,13 @@ def FORMAT_PROMPT(
     r"""Format the prompt.
 
     Args:
-
-    - prompt: Optional[Union[BasePrompt, Dict[str, BasePrompt]]]: The prompt to format.
-    - kwargs: Dict[str, Any]: The local variables of the caller function.
+        prompt:
+            The prompt to format.
+        kwargs:
+            Dict[str, Any]: The local variables of the caller function.
 
     Returns:
-
-    - Union[BasePrompt, Dict[str, BasePrompt]]: The formatted prompt.
+        The formatted prompt.
 
     """
     if prompt is None:
@@ -86,11 +90,14 @@ def UPDATE_SYSTEM(
     r"""Update the system message.
 
     Args:
-
-    - history: Optional[List[BaseMessage]]: The history of the agent.
-    - prompt: Optional[BasePrompt]: The prompt of the agent.
-    - source: Optional[Node]: The source node of the agent.
-    - kwargs: Dict[str, Any]: The local variables of the caller function.
+        history:
+            The history of the agent.
+        prompt:
+            The prompt of the agent.
+        source:
+            The source node of the agent.
+        kwargs:
+            Dict[str, Any]: The local variables of the caller function.
     """
     if not history:
         history = kwargs.get("__macro_locals__").get("self").history  # type: ignore[union-attr]
@@ -98,7 +105,10 @@ def UPDATE_SYSTEM(
         prompt = kwargs.get("__macro_locals__").get("self").prompt  # type: ignore[union-attr]
     if not source:
         source = kwargs.get("__macro_locals__").get("self").source  # type: ignore[union-attr]
-    name = kwargs.get("name", None) or kwargs.get("__macro_locals__").get("self").name  # type: ignore[union-attr]
+    name = (
+        kwargs.get("name", None)
+        or kwargs.get("__macro_locals__", {}).get("self").name
+    )
     if not history:
         history.append(  # type: ignore[union-attr]
             BaseMessage.create_message(
@@ -121,13 +131,13 @@ def STR_TO_USERMESSAGE(
     otherwise, it will be returned as is.
 
     Args:
-
-    - message: Optional[Union[str, BaseMessage]]: The message to convert.
-    - kwargs: Dict[str, Any]: The local variables of the caller function.
+        message:
+            The message to convert.
+        kwargs:
+            Dict[str, Any]: The local variables of the caller function.
 
     Returns:
-
-    - BaseMessage: The user message.
+        The user message.
 
     """
     if message is None:
@@ -150,13 +160,13 @@ def GET_FINAL_MESSAGE(
     Otherwise, it will return the response.
 
     Args:
-
-    - response: Optional[Union[BaseMessage, List[BaseMessage]]]: The response to get the final message from.
-    - kwargs: Dict[str, Any]: The local variables of the caller function.
+        response:
+            The response to get the final message from.
+        kwargs:
+            Dict[str, Any]: The local variables of the caller function.
 
     Returns:
-
-    - BaseMessage: The final message.
+        The final message.
 
     """
     if response is None:
@@ -179,13 +189,13 @@ async def ASYNC_GET_FINAL_MESSAGE(
     Otherwise, it will return the response.
 
     Args:
-
-    - response: Optional[Union[BaseMessage, List[BaseMessage]]]: The response to get the final message from.
-    - kwargs: Dict[str, Any]: The local variables of the caller function.
+        response:
+            The response to get the final message from.
+        kwargs:
+            Dict[str, Any]: The local variables of the caller function.
 
     Returns:
-
-    - BaseMessage: The final message.
+        The final message.
 
     """
     if response is None:
@@ -204,21 +214,27 @@ async def CALL_ASYNC_CALLBACK(
     manager: Optional[Union[BaseCallBackManager, AsyncCallBackManager]] = None,
     **kwargs: Any,
 ) -> None:
-    """Asynchronously call a callback manager's methods, handling both sync and async managers.
+    """Asynchronously call a callback manager's methods, handling both sync and
+    async managers.
 
-    This macro function automatically handles the callback manager's call method,
-    adapting to both synchronous and asynchronous callback managers.
+    This macro function automatically handles the callback manager's call
+    method, adapting to both synchronous and asynchronous callback managers.
 
     Args:
-        *args: Variable positional arguments to pass to the callback
-        manager (Optional[Union[BaseCallBackManager, AsyncCallBackManager]]):
-            The callback manager to use. If None, retrieves from the caller's context
-        **kwargs: Additional keyword arguments to pass to the callback
+        *args:
+            Variable positional arguments to pass to the callback.
+        manager:
+            The callback manager to use. If None, retrieves from the caller's
+            context.
+        **kwargs:
+            Additional keyword arguments to pass to the callback.
 
     Note:
-        - If manager is None, it attempts to get the callback_manager from the caller's context
-        - Automatically determines whether to use sync or async call based on manager type
-        - Removes internal macro locals from kwargs before calling
+        - If manager is None, it attempts to get the callback_manager from the
+          caller's context.
+        - Automatically determines whether to use sync or async call based on
+          manager type.
+        - Removes internal macro locals from kwargs before calling.
 
     Example:
         >>> await CALL_ASYNC_CALLBACK("event_name", data=event_data)
