@@ -154,3 +154,24 @@ class BaseModelBackend(ABC):
                 setattr(new_obj, attr, None)
 
         return new_obj
+
+    @property
+    def stream(self) -> bool:
+        """Return whether the model backend is using streaming output.
+
+        Returns:
+            bool: Whether the model backend is using streaming output
+        """
+        if self.config and "stream" in self.config:
+            return bool(self.config["stream"])
+        return False
+
+    def set_stream(self, stream: bool) -> None:
+        """Set whether the model backend is using streaming output.
+
+        Args:
+            stream (bool): Whether the model backend is using streaming output
+        """
+        if self.config is None:
+            self.config = {}
+        self.config["stream"] = stream

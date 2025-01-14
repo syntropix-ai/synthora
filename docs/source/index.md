@@ -94,7 +94,7 @@ cookbook/chat_with_agent.ipynb
 
 ```{toctree}
 :caption: Contents
-:maxdepth: 1
+:maxdepth: 2
 :hidden:
 
 synthora
