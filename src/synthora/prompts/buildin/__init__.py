@@ -16,6 +16,12 @@
 #
 
 from .react import FewShotReactPrompt, ZeroShotReactPrompt
+from .tot import ZeroShotTOTEvalPrompt, ZeroShotTOTProposePrompt
 
 
-__all__ = ["ZeroShotReactPrompt", "FewShotReactPrompt"]
+__all__ = [
+    "ZeroShotReactPrompt",
+    "FewShotReactPrompt",
+    "ZeroShotTOTProposePrompt",
+    "ZeroShotTOTEvalPrompt",
+]

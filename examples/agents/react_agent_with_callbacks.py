@@ -34,4 +34,6 @@ agent = ReactAgent.from_config(config)
 handler = RichOutputHandler()
 agent.add_handler(handler)
 
-agent.run("How many letters 'r' in the word 'strawberry'? You need to splict it into subtasks, and think step by step.")
+agent.run(
+    "How many letters 'r' in the word 'strawberry'? You need to splict it into subtasks, and think step by step."
+)
