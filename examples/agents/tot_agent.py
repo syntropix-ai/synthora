@@ -26,11 +26,7 @@ agent = ToTAgent.default(
     model_type="gpt-4o", max_turns=15, level_size=2, giveup_threshold=0.2
 )
 
-print(
-    agent.run(
-        "What is the coefficient of $x^2y^6$ in the expansion of $\\left(\\frac{3}{5}x-\\frac{y}{2}\\right)^8$?  Express your answer as a common fraction"
-    )
-)
+print(agent.run("How many r's are there in strawberry?"))
 
 for i in agent.history[1:]:
     print(i.content)
