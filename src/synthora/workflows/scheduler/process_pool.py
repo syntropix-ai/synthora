@@ -109,6 +109,7 @@ class ProcessPoolScheduler(BaseScheduler):
             lock = manager.Lock()
             context = MultiProcessContext(data, lock, self)
             self.set_context(context)
+        cursor = self.get_context().get_cursor()
         self.state = TaskState.RUNNING
         self.get_context().set_state(self.name, TaskState.RUNNING)
         if self.immutable:
@@ -129,6 +130,7 @@ class ProcessPoolScheduler(BaseScheduler):
         if self.cursor == len(self.tasks):
             self.get_context().set_state(self.name, TaskState.COMPLETED)
             self.state = TaskState.COMPLETED
+        self.get_context().set_cursor(cursor)
         return self._result
 
     async def async_step(self, *args: Any, **kwargs: Any) -> None:

@@ -47,6 +47,7 @@ Isn't it beautiful if one shares his effort in specialized intelligence, allowin
 - 🧪 Aligning with state-of-the-art AI research.
 - 🤝 Enabling multi-agent interactions.
 - 🦁 Unique platform of agent zoo and eval benchmark.
+- 
 
 ## Installation
 

@@ -39,10 +39,12 @@ class BaseContext(Dict[Any, Any], ABC):
     def skip(self, name: str) -> None: ...
 
     @abstractmethod
-    def __getitem__(self, key: str) -> Any: ...
+    def __getitem__(self, key: str) -> Any: 
+        return super().__getitem__(key)
 
     @abstractmethod
-    def __setitem__(self, key: str, value: Any) -> None: ...
+    def __setitem__(self, key: str, value: Any) -> None:
+        super().__setitem__(key, value)
 
     @abstractmethod
     def get_state(self, name: str) -> TaskState: ...
