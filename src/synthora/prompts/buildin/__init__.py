@@ -15,7 +15,13 @@
 # limitations under the License.
 #
 
-from .react import ZeroShotReactPrompt
+from .react import FewShotReactPrompt, ZeroShotReactPrompt
+from .tot import ZeroShotTOTEvalPrompt, ZeroShotTOTProposePrompt
 
 
-__all__ = ["ZeroShotReactPrompt"]
+__all__ = [
+    "ZeroShotReactPrompt",
+    "FewShotReactPrompt",
+    "ZeroShotTOTProposePrompt",
+    "ZeroShotTOTEvalPrompt",
+]

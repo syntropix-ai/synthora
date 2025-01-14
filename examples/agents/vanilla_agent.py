@@ -35,4 +35,4 @@ while True:
 
 print("History:")
 for message in agent.history:
-    print(f"{message.role}: {message.content}")
+    print(f"{message.role}: {message.content} {message.images}")

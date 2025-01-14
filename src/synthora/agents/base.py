@@ -332,7 +332,7 @@ class BaseAgent(ABC):
                 t.source.ancestor = source
         return cls(
             config=config,
-            model=model,
+            model=model,  # type: ignore[arg-type]
             prompt=prompt,
             tools=tools,
             source=source,
