@@ -120,7 +120,7 @@ class ReactAgent(BaseAgent):
         agent = ReactAgent(
             config,
             Node(name=name, type=NodeType.AGENT),
-            model,
+            model,  # type: ignore[arg-type]
             config.prompt,  # type: ignore[arg-type]
             config.tools,  # type: ignore[arg-type]
         )
@@ -219,9 +219,6 @@ class ReactAgent(BaseAgent):
                 return response
 
             data = response.unwrap()
-            if not data.tool_calls:
-                self.on_end(data)
-                return Ok(data)
 
             for tool_call in data.tool_calls:
                 func = tool_call.function

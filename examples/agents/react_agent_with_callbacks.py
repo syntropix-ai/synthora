@@ -29,16 +29,11 @@ warnings.filterwarnings("ignore")
 config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
 
 print(json.dumps(config.model_dump(), indent=2))
-# exit(0)
+
 agent = ReactAgent.from_config(config)
 handler = RichOutputHandler()
 agent.add_handler(handler)
 
-
-# print(agent.callback_manager.handlers)
-# print(agent.tools[-1].callback_manager.handlers)
-
-# agent.run("What's your name?")
-# agent.run("119 * 117 = ?")
-agent.run("Search Openai on Wikipedia.")
-# print(agent.history[0])
+agent.run(
+    "How many letters 'r' in the word 'strawberry'? You need to splict it into subtasks, and think step by step."
+)

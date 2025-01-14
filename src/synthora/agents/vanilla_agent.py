@@ -98,7 +98,7 @@ class VanillaAgent(BaseAgent):
         agent = VanillaAgent(
             config,
             Node(name=name, type=NodeType.AGENT),
-            model,
+            model,  # type: ignore[arg-type]
             config.prompt,  # type: ignore[arg-type]
             tools,
         )

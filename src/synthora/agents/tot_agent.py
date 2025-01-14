@@ -1,18 +1,18 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# Copyright 2024-2025 Syntropix-AI.org
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
+# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
+# Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
+# distributed under the License is distributed on an “AS IS” BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# =========== Copyright 2024 @ SYNTROPIX-AI.org. All Rights Reserved. ===========
 #
 
 from copy import deepcopy
@@ -21,21 +21,19 @@ from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
 from pydantic import BaseModel, Field
 
 from synthora.agents import BaseAgent
-from synthora.callbacks.base_handler import (
-    AsyncCallBackHandler,
-    BaseCallBackHandler,
-)
+from synthora.callbacks.base_handler import AsyncCallBackHandler, BaseCallBackHandler
 from synthora.configs.agent_config import AgentConfig
 from synthora.configs.model_config import ModelConfig
 from synthora.memories.base import BaseMemory
 from synthora.memories.full_context_memory import FullContextMemory
-from synthora.messages import assistant, system, user
+from synthora.messages import system, user
 from synthora.messages.base import BaseMessage
 from synthora.models import create_model_from_config
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
+from synthora.prompts.buildin import ZeroShotTOTEvalPrompt, ZeroShotTOTProposePrompt
 from synthora.toolkits.base import BaseFunction
-from synthora.types.enums import AgentType, MessageRole, NodeType, Ok, Result
+from synthora.types.enums import AgentType, Err, MessageRole, NodeType, Ok, Result
 from synthora.types.node import Node
 from synthora.utils.macros import (
     FORMAT_PROMPT,
@@ -50,59 +48,24 @@ from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
 
 class EvalFormat(BaseModel):
     score: float = Field(
-        ...,
-        description="The score of the evaluation. Should be between 0 and 1.",
+        ..., description="The score of the evaluation. Should be between 0 and 1."
     )
-    reason: str = Field(
-        ..., description="The brief reason for the evaluation."
-    )
+    reason: str = Field(..., description="The brief reason for the evaluation.")
     finished: bool = Field(
         ...,
         description="Should be True if the agent can't get the result or should give up, or the agent has finished the task.",
     )
 
 
-PROPOSE_PROMPT = """
-You are an expert problem-solving agent capable of solving problems step by step using the **Think-Observe-Test (TOT)** methodology. Your task is to solve the problem incrementally, executing only **one step at a time** and responding with only one action per step. Each step consists of the following:
-
-1. **Think**: Identify the next logical step in solving the problem.
-2. **Observe or Output**:
-   - If a tool needs to be called, **Observe** by executing the action and provide the result.
-   - If no tool is required, **Output** the result of the current step directly.
-3. **Iterate**: Update the problem (if needed) based on the result and prepare for the next step.
-
----
-
-### Key Rules:
-- Each interaction performs only **one step** at a time.
-- Respond with **only the result or observation** for the current step.
-- Do not attempt to solve the entire problem in one response.
-- Stop once the problem is fully resolved.
-
-"""
-
-VALUE_PROMPT = """
-You are an evaluation model designed to objectively assess the quality of step-by-step responses provided based on the user's input and the history of the conversation. Your task is to analyze the user's question, compare it with the corresponding response in the history, and provide a score from 0 to 1. The score should reflect how well the response addresses the current step of the user's question in terms of **relevance, completeness for that step**, and clarity.
-
-### Scoring Guidelines:
-- **0.0-0.2**: The response is irrelevant to the step, unclear, or introduces significant errors in reasoning.
-- **0.3-0.5**: The response partially addresses the current step but lacks clarity or skips minor details necessary for this step.
-- **0.6-0.8**: The response is mostly relevant and complete for the current step, with minor issues in clarity or execution.
-- **0.9-1.0**: The response fully addresses the current step, is relevant, complete, and clearly advances the problem-solving process.
-
-### Evaluation Adjustments for Step-by-Step Responses:
-1. Each response should be evaluated **only for the current step**, not for the overall problem.
-2. Do not penalize responses for not solving the full problem; instead, focus on how well they progress the solution at this step.
-3. Take into account the logical flow of the step and whether it aligns with the user's input and previous steps in the history.
-
-"""
-
-
 class ToTAgent(BaseAgent):
+    r"""A ToT (Tree of Thoughts) agent that can solve problems incrementally."""
+
     @staticmethod
     def default(  # type: ignore[override]
-        propose_prompt: str = PROPOSE_PROMPT,
-        value_prompt: str = VALUE_PROMPT,
+        propose_prompt: str = ZeroShotTOTProposePrompt,
+        value_prompt: str = ZeroShotTOTEvalPrompt,
+        level_size: int = 3,
+        max_turns: int = 5,
         finish_threshold: float = 0.9,
         giveup_threshold: float = 0.2,
         search_method: str = "dfs",
@@ -116,21 +79,14 @@ class ToTAgent(BaseAgent):
         r"""Create a default ToT agent with the specified prompt and tools.
 
         Args:
-            propose_prompt:
-                The initial prompt for the agent
-            value_prompt:
-                The initial prompt for the agent
-            name:
-                The name of the agent. Defaults to "React".
-            model_type:
-                The model type to use. Defaults to "gpt-4o".
-            tools:
-                List of available tools. Defaults to [].
-            handlers:
-                List of callback handlers. Defaults to [].
+            prompt (str): The initial prompt for the agent
+            name (str, optional): The name of the agent. Defaults to "React".
+            model_type (str, optional): The model type to use. Defaults to "gpt-4o".
+            tools (List[Union["BaseAgent", BaseFunction]], optional): List of available tools. Defaults to [].
+            handlers (List[Union[BaseCallBackHandler, AsyncCallBackHandler]], optional): List of callback handlers. Defaults to [].
 
         Returns:
-            The created ToT agent.
+            ToTAgent: The created ToT agent
         """
         tools = tools or []
         handlers = handlers or []
@@ -160,6 +116,8 @@ class ToTAgent(BaseAgent):
             finish_threshold=finish_threshold,
             giveup_threshold=giveup_threshold,
             search_method=search_method,
+            level_size=level_size,
+            max_turns=max_turns,
         )
         if handlers:
             for handler in handlers:
@@ -179,17 +137,29 @@ class ToTAgent(BaseAgent):
         giveup_threshold: float = 0.2,
         search_method: str = "dfs",
     ) -> None:
+        r"""Initialize a ToT agent with the specified configuration.
+
+        Args:
+            config: The agent configuration.
+            source: The source node of the agent.
+            model: The models to use, should be a list of two models, first for proposing and second for value.
+                When only one model is provided, it will be used for both proposing and value.
+            prompt: The prompts to use, should be a dictionary with keys "propose" and "value".
+            tools: The tools to use, should be a list of tools or agents.
+            level_size: The size of each level in the search tree.
+            max_turns: The maximum number of turns to run the agent.
+            finish_threshold: The threshold for finishing the task. Should be between 0 and 1.
+            giveup_threshold: The threshold for giving up on a task. Should be between 0 and 1.
+            search_method: The search method to use, should be either "dfs" or "bfs".
+        """
         tools = tools or []
         super().__init__(config, source, model, prompt, tools)
         if len(self.model) != 2:  # type: ignore[arg-type]
             raise ValueError(
-                "ToTAgent agent requires two models, first for proposing and"
-                " second for value."
+                "ToTAgent agent requires two models, first for proposing and second for value."
             )
         if not isinstance(prompt, dict):
-            raise ValueError(
-                "ToTAgent agent requires a dictionary of prompts."
-            )
+            raise ValueError("ToTAgent agent requires a dictionary of prompts.")
 
         self.propose_model = model[0]
         self.value_model = model[1]
@@ -200,8 +170,8 @@ class ToTAgent(BaseAgent):
 
         self.propose_model.config["tools"] = [tool.schema for tool in tools]
 
-        self.propose_prompt = prompt.get("propose", PROPOSE_PROMPT)
-        self.value_prompt = prompt.get("value", VALUE_PROMPT)
+        self.propose_prompt = prompt.get("propose", ZeroShotTOTProposePrompt)
+        self.value_prompt = prompt.get("value", ZeroShotTOTEvalPrompt)
 
         self.level_size = level_size
         self.max_turns = max_turns
@@ -218,6 +188,20 @@ class ToTAgent(BaseAgent):
     def step(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[List[BaseMessage], Exception]:
+        r"""Execute a single step of the ToT agent reasoning and action loop.
+
+        Args:
+            message: The input message to process.
+            *args: Additional positional arguments to pass to the model.
+            **kwargs: Additional keyword arguments to pass to the model.
+
+        Returns:
+
+            Result: A Result containing either:
+                - The final response string
+                - An Exception if the execution failed
+
+        """
         UPDATE_SYSTEM(prompt=FORMAT_PROMPT(prompt=self.propose_prompt))
         message = cast(BaseMessage, STR_TO_USERMESSAGE())
         if message.content:
@@ -225,35 +209,39 @@ class ToTAgent(BaseAgent):
 
         scheduler = ThreadPoolScheduler()
         tasks: List[Union[BaseTask, BaseScheduler]] = [
-            BaseTask(deepcopy(self.propose_model).run).si(
-                self.history, *args, **kwargs
-            )
+            BaseTask(deepcopy(self.propose_model).run).si(self.history, *args, **kwargs)
             for _ in range(self.level_size)
         ]
         scheduler.add_task_group(tasks)
-        resps = [GET_FINAL_MESSAGE(x) for x in scheduler.run()]
-
+        results = scheduler.run()
+        if not isinstance(results, list):
+            results = [results]
+        resps = [GET_FINAL_MESSAGE(x) for x in results]
         return Ok(resps)
 
     def _get_eval_workflow(
-        self,
-        scheduler: Type[BaseScheduler],
-        user_message: Union[BaseMessage, str],
+        self, scheduler: Type[BaseScheduler], user_message: Union[BaseMessage, str]
     ) -> BaseScheduler:
+        r"""Get the evaluation workflow for the ToT agent.
+
+        Args:
+            scheduler: The scheduler to use for the evaluation.
+            user_message: The user message to evaluate.
+
+        Returns:
+            BaseScheduler: The evaluation workflow.
+        """
         tasks: List[Union[BaseTask, BaseScheduler]] = []
         for state in self.states[self.cursor][-self.level_size :]:
-            query_str = (
-                user_message.content
-                if isinstance(user_message, BaseMessage)
-                else user_message
-            )
             tasks.append(
                 BaseTask(self.value_model.run).si(
                     FullContextMemory(
                         [
                             system(self.value_prompt),
                             *state,
-                            user(f"The query is: {query_str}"),
+                            user(
+                                f"The query is:{user_message.content if isinstance(user_message, BaseMessage) else user_message}"
+                            ),
                         ]
                     )
                 )
@@ -283,6 +271,7 @@ class ToTAgent(BaseAgent):
                 - An Exception if the execution failed
         """
         message = cast(BaseMessage, STR_TO_USERMESSAGE())
+        _ori_message = deepcopy(message)
         self.on_start(message)
         for _turn in range(self.max_turns):
             if len(self.states) <= self.cursor:
@@ -298,7 +287,9 @@ class ToTAgent(BaseAgent):
             datas = response.unwrap()
 
             for data in datas:
-                self.states[self.cursor].append(self.history + [data])
+                self.states[self.cursor].append(
+                    FullContextMemory(self.history + [data])
+                )
                 self.visited[self.cursor].append(False)
                 if not data.tool_calls:
                     continue
@@ -320,8 +311,12 @@ class ToTAgent(BaseAgent):
                             source=tool.source,
                         )
                     )
-            workflow = self._get_eval_workflow(ThreadPoolScheduler, message)
-            resps = [GET_FINAL_MESSAGE(x) for x in workflow.run()]
+
+            workflow = self._get_eval_workflow(ThreadPoolScheduler, _ori_message)
+            _results = workflow.run()
+            if not isinstance(_results, list):
+                _results = [_results]
+            resps = [GET_FINAL_MESSAGE(x) for x in _results]
             for idx, resp in enumerate(resps):
                 try:
                     self.scores[self.cursor].append(resp.parsed.score)  # type: ignore
@@ -332,26 +327,35 @@ class ToTAgent(BaseAgent):
                         result = self.states[self.cursor][
                             len(resps) - self.level_size + idx
                         ][-1]
+                        self.history.append(result)
                         if result.role == MessageRole.ASSISTANT:
-                            result = result.content
                             self.on_end(result)
-                            return Ok(result)
+                            return Ok(result.content)
                 except Exception:
-                    self.scores[-1].append(0.0)
-            self._set_next_state()
-        self.on_end(
-            assistant("The agent has reached the maximum number of turns.")
-        )
-        return Ok("The agent has reached the maximum number of turns.")
+                    self.scores[self.cursor].append(0.0)
+            try:
+                self._set_next_state()
+            except Exception as e:
+                _result = Err(e, str(e))
+                self.on_error(_result)
+                return _result
+        e = Exception("The agent has reached the maximum number of turns.")
+        _result = Err(e, "The agent has reached the maximum number of turns.")
+        self.on_error(_result)
+        return _result
 
     def _set_next_state(self) -> None:
+        r"""Set the next state for the ToT agent based on the search method.
+
+        Raises:
+            Exception: If no valid state is found.
+        """
         if self.search_method == "dfs":
             while self.cursor >= 0:
                 for idx, state in enumerate(self.states[self.cursor]):
                     if (
                         not self.visited[self.cursor][idx]
-                        and self.scores[self.cursor][idx]
-                        >= self.giveup_threshold
+                        and self.scores[self.cursor][idx] >= self.giveup_threshold
                     ):
                         self.visited[self.cursor][idx] = True
                         self.history = state
@@ -361,7 +365,7 @@ class ToTAgent(BaseAgent):
             raise Exception("No valid state found.")
         elif self.search_method == "bfs":
             if not (queue := getattr(self, "_queue", None)):
-                self._queue: List[Tuple[List[BaseMemory], int]] = []
+                self._queue: List[Tuple[BaseMemory, int]] = []
                 queue = self._queue
             for idx, state in enumerate(self.states[self.cursor]):
                 if (
@@ -393,13 +397,9 @@ class ToTAgent(BaseAgent):
                 - The step execution result
                 - An Exception if the step failed
         """
-        raise NotImplementedError(
-            "Async step execution is not yet implemented."
-        )
+        raise NotImplementedError("Async step execution is not yet implemented.")
 
     async def async_run(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
     ) -> Result[Any, Exception]:
-        raise NotImplementedError(
-            "Async run execution is not yet implemented."
-        )
+        raise NotImplementedError("Async run execution is not yet implemented.")
