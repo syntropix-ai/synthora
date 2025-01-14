@@ -16,7 +16,6 @@
 #
 
 
-import json
 import warnings
 
 from synthora.agents import VanillaAgent
