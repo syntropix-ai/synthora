@@ -17,6 +17,8 @@
 
 from .react import FewShotReactPrompt, ZeroShotReactPrompt
 from .tot import ZeroShotTOTEvalPrompt, ZeroShotTOTProposePrompt
+from .vanilla import VanillaPrompt
+from .cot import ZeroShotCoTPrompt
 
 
 __all__ = [
@@ -24,4 +26,6 @@ __all__ = [
     "FewShotReactPrompt",
     "ZeroShotTOTProposePrompt",
     "ZeroShotTOTEvalPrompt",
+    "VanillaPrompt",
+    "ZeroShotCoTPrompt",
 ]

@@ -38,6 +38,7 @@ from synthora.utils.macros import (
     STR_TO_USERMESSAGE,
     UPDATE_SYSTEM,
 )
+from synthora.prompts.buildin import VanillaPrompt
 
 
 class VanillaAgent(BaseAgent):
@@ -61,7 +62,7 @@ class VanillaAgent(BaseAgent):
 
     @staticmethod
     def default(
-        prompt: str,
+        prompt: str = VanillaPrompt,
         name: str = "Vanilla",
         model_type: str = "gpt-4o",
         tools: Optional[List[Union["BaseAgent", BaseFunction]]] = None,

@@ -18,6 +18,7 @@
 from .base import BaseAgent
 from .react_agent import ReactAgent
 from .vanilla_agent import VanillaAgent
+from .tot_agent import ToTAgent
 
 
-__all__ = ["BaseAgent", "VanillaAgent", "ReactAgent"]
+__all__ = ["BaseAgent", "VanillaAgent", "ReactAgent", "ToTAgent"]

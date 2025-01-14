@@ -12,6 +12,22 @@ synthora.agents.base module
    :undoc-members:
    :show-inheritance:
 
+synthora.agents.react\_agent module
+-----------------------------------
+
+.. automodule:: synthora.agents.react_agent
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+synthora.agents.tot\_agent module
+---------------------------------
+
+.. automodule:: synthora.agents.tot_agent
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 synthora.agents.vanilla\_agent module
 -------------------------------------
 

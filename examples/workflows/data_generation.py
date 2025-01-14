@@ -20,8 +20,6 @@ import warnings
 from typing import Dict, List
 
 from synthora.agents import VanillaAgent
-from synthora.agents.base import BaseAgent
-from synthora.configs import AgentConfig
 from synthora.messages.base import BaseMessage
 from synthora.workflows import task
 from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
@@ -31,36 +29,30 @@ warnings.filterwarnings("ignore")
 
 
 @task
-def generate_data(agent: BaseAgent, prompt: str) -> List[BaseMessage]:
+def generate_data(prompt: str) -> List[BaseMessage]:
+    agent = VanillaAgent.default()
     _ = agent.run(prompt)
     return agent.history
 
 
 @task
 def convert(*resps: List[BaseMessage]) -> List[Dict[str, str]]:
-    data = []
-    for resp in resps:
-        data.append(
-            {
-                "prompt": str(resp[0].content),
-                "instruct": str(resp[1].content),
-                "response": str(resp[2].content),
-            }
-        )
-    return data
+    return [
+        {
+            "prompt": str(resp[0].content),
+            "instruct": str(resp[1].content),
+            "response": str(resp[2].content),
+        }
+        for resp in resps
+    ]
 
-
-config = AgentConfig.from_file("examples/workflows/configs/vanilla_agent.yaml")
 
 prompts = [
     "What is the capital of France?",
     "What is the capital of Germany?",
 ]
-agents = [VanillaAgent.from_config(config) for _ in range(len(prompts))]
 
-flow = (
-    ThreadPoolScheduler.starmap(generate_data, zip(agents, prompts)) >> convert
-)
+flow = ThreadPoolScheduler.map(generate_data, prompts) >> convert
 
 data = flow.run()
 
