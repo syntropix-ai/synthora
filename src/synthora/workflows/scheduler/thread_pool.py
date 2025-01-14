@@ -93,7 +93,7 @@ class ThreadPoolScheduler(BaseScheduler):
             raise RuntimeError("No tasks to run")
         if self.context is None:
             self.set_context(BasicContext(self))
-
+        cursor = self.get_context().get_cursor()
         self.state = TaskState.RUNNING
         if self.immutable:
             self.step(*self._args, **self._kwargs)
@@ -109,6 +109,8 @@ class ThreadPoolScheduler(BaseScheduler):
         if len(self._result) == 1:
             self._result = self._result[0]
         self.state = TaskState.COMPLETED
+        self.get_context().set_result(self.name, self._result)
+        self.get_context().set_cursor(cursor)
         return self._result
 
     async def async_step(self, *args: Any, **kwargs: Any) -> None:
