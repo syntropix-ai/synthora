@@ -15,19 +15,19 @@
 # limitations under the License.
 #
 
+import asyncio
+import os
+from copy import deepcopy
 from typing import Dict, Optional, Self, Union
 
-import asyncio
-from copy import deepcopy
-import os
+import discord
+
 from synthora.agents.base import BaseAgent
 from synthora.models.base import BaseModelBackend
 from synthora.services.base import BaseService
 from synthora.toolkits.base import BaseFunction
 from synthora.workflows.base_task import BaseTask
 from synthora.workflows.scheduler.base import BaseScheduler
-
-import discord
 
 
 class DiscordBotService(BaseService):
