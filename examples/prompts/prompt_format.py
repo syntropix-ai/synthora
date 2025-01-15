@@ -15,17 +15,14 @@
 # limitations under the License.
 #
 
-from .cot import ZeroShotCoTPrompt
-from .react import FewShotReactPrompt, ZeroShotReactPrompt
-from .tot import ZeroShotTOTEvalPrompt, ZeroShotTOTProposePrompt
-from .vanilla import VanillaPrompt
+from synthora.agents.vanilla_agent import VanillaAgent
+from synthora.prompts import BasePrompt
 
 
-__all__ = [
-    "ZeroShotReactPrompt",
-    "FewShotReactPrompt",
-    "ZeroShotTOTProposePrompt",
-    "ZeroShotTOTEvalPrompt",
-    "VanillaPrompt",
-    "ZeroShotCoTPrompt",
-]
+prompt = BasePrompt("Your name is {username}")
+
+# print(prompt.format(username="John Doe"))
+
+agent = VanillaAgent.default(prompt)
+
+print(agent.run("what is your name?", username="John Doe"))
