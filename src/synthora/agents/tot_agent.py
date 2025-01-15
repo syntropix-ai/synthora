@@ -201,7 +201,9 @@ class ToTAgent(BaseAgent):
         self.propose_prompt = BasePrompt(
             prompt.get("propose", ZeroShotTOTProposePrompt)
         )
-        self.value_prompt = BasePrompt(prompt.get("value", ZeroShotTOTEvalPrompt))
+        self.value_prompt = BasePrompt(
+            prompt.get("value", ZeroShotTOTEvalPrompt)
+        )
 
         self.level_size = level_size
         self.max_turns = max_turns

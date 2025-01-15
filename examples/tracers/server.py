@@ -25,6 +25,7 @@ import fastapi
 from fastapi import BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+
 from synthora.agents import ReactAgent
 from synthora.callbacks import RichOutputHandler
 from synthora.configs import AgentConfig

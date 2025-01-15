@@ -355,7 +355,7 @@ class ReactAgent(BaseAgent):
         self.tools.append(tool)
         self.model.config["tools"].append(tool.schema)
         return self
-    
+
     def remove_tool(self, tool: Union["BaseAgent", BaseFunction]) -> Self:
         """Remove a tool from the agent's toolset.
 
@@ -369,7 +369,7 @@ class ReactAgent(BaseAgent):
         self.tools.remove(tool)
         self.model.config["tools"].remove(tool.schema)
         return self
-    
+
     def reset(self) -> Self:
         """Reset the agent's state.
 
