@@ -16,7 +16,7 @@
 #
 
 from copy import deepcopy
-from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
+from typing import Any, Dict, List, Optional, Self, Tuple, Type, Union, cast
 
 from pydantic import BaseModel, Field
 
@@ -449,3 +449,44 @@ class ToTAgent(BaseAgent):
         raise NotImplementedError(
             "Async run execution is not yet implemented."
         )
+
+    def add_tool(self, tool: Union["BaseAgent", BaseFunction]) -> Self:
+        """Add a tool to the agent's toolset.
+
+        Args:
+            tool:
+                The tool to add.
+
+        Returns:
+            The agent instance.
+        """
+        self.tools.append(tool)
+        self.propose_model.config["tools"].append(tool.schema)
+        return self
+
+    def remove_tool(self, tool: Union["BaseAgent", BaseFunction]) -> Self:
+        """Remove a tool from the agent's toolset.
+
+        Args:
+            tool:
+                The tool to remove.
+
+        Returns:
+            The agent instance.
+        """
+        self.tools.remove(tool)
+        self.propose_model.config["tools"].remove(tool.schema)
+        return self
+
+    def reset(self) -> Self:
+        """Reset the agent's state.
+
+        Returns:
+            The agent instance.
+        """
+        self.history.clear()
+        self.cursor = 0
+        self.states = []
+        self.scores = []
+        self.visited = []
+        return self
