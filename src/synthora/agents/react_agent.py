@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from typing import Any, List, Optional, Union, cast
+from typing import Any, List, Optional, Self, Union, cast
 
 from synthora.agents import BaseAgent
 from synthora.callbacks.base_handler import (
@@ -341,3 +341,40 @@ class ReactAgent(BaseAgent):
                     data.content = resp_value
                     await self.async_on_end(data, *args, **kwargs)
                     return Ok(resp_value)
+
+    def add_tool(self, tool: Union["BaseAgent", BaseFunction]) -> Self:
+        """Add a tool to the agent's toolset.
+
+        Args:
+            tool:
+                The tool to add.
+
+        Returns:
+            The agent instance.
+        """
+        self.tools.append(tool)
+        self.model.config["tools"].append(tool.schema)
+        return self
+    
+    def remove_tool(self, tool: Union["BaseAgent", BaseFunction]) -> Self:
+        """Remove a tool from the agent's toolset.
+
+        Args:
+            tool:
+                The tool to remove.
+
+        Returns:
+            The agent instance.
+        """
+        self.tools.remove(tool)
+        self.model.config["tools"].remove(tool.schema)
+        return self
+    
+    def reset(self) -> Self:
+        """Reset the agent's state.
+
+        Returns:
+            The agent instance.
+        """
+        self.history.clear()
+        return self
