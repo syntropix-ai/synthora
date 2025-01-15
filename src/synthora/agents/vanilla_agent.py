@@ -128,6 +128,7 @@ class VanillaAgent(BaseAgent):
             if isinstance(self.prompt, dict)
             else self.prompt
         )
+        self.prompt = BasePrompt(self.prompt)
 
     def step(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
@@ -151,6 +152,8 @@ class VanillaAgent(BaseAgent):
                 - An Exception if the step failed
         """
         UPDATE_SYSTEM(prompt=FORMAT_PROMPT())
+        for _args in self.prompt.args:
+            del kwargs[_args]
         message = cast(BaseMessage, STR_TO_USERMESSAGE())
         if message.content:
             self.history.append(message)
@@ -239,6 +242,8 @@ class VanillaAgent(BaseAgent):
                 - An Exception if the step failed
         """
         UPDATE_SYSTEM(prompt=FORMAT_PROMPT())
+        for _args in self.prompt.args:
+            del kwargs[_args]
         message = cast(BaseMessage, STR_TO_USERMESSAGE())
         if message.content:
             await self.history.async_append(message)
