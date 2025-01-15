@@ -75,7 +75,7 @@ def FORMAT_PROMPT(
     params = {
         **kwargs,
         **globals(),
-        **kwargs.get("__macro_locals__").get("kwargs", {}),
+        **kwargs.get("__macro_locals__").get("kwargs", {}),  # type: ignore[union-attr]
     }
     if "self" in params:
         del params["self"]

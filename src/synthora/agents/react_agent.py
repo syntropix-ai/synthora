@@ -147,11 +147,11 @@ class ReactAgent(BaseAgent):
             finish.schema
         ]
         self.prompt = (
-            list(self.prompt.values())[0]
+            list(self.prompt.values())[0]  # type: ignore[attr-defined]
             if isinstance(self.prompt, dict)
             else self.prompt
         )
-        self.prompt = BasePrompt(self.prompt)
+        self.prompt: BasePrompt = BasePrompt(self.prompt)
 
     def step(
         self, message: Union[str, BaseMessage], *args: Any, **kwargs: Any
