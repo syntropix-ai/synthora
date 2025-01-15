@@ -99,4 +99,12 @@ def add(a: int, b: int) -> int:
     return a + b
 ```
 
-###
+### Workflow
+
+```python
+def add(x: int, y: int) -> int:
+    return x + y
+
+flow = (BaseTask(add) | BaseTask(add)) >> BaseTask(add)
+flow.run(1, 2)
+```
