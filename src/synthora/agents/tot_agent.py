@@ -198,8 +198,10 @@ class ToTAgent(BaseAgent):
 
         self.propose_model.config["tools"] = [tool.schema for tool in tools]
 
-        self.propose_prompt = prompt.get("propose", ZeroShotTOTProposePrompt)
-        self.value_prompt = prompt.get("value", ZeroShotTOTEvalPrompt)
+        self.propose_prompt = BasePrompt(
+            prompt.get("propose", ZeroShotTOTProposePrompt)
+        )
+        self.value_prompt = BasePrompt(prompt.get("value", ZeroShotTOTEvalPrompt))
 
         self.level_size = level_size
         self.max_turns = max_turns
@@ -231,6 +233,8 @@ class ToTAgent(BaseAgent):
 
         """
         UPDATE_SYSTEM(prompt=FORMAT_PROMPT(prompt=self.propose_prompt))
+        for _args in self.propose_prompt.args:
+            del kwargs[_args]
         message = cast(BaseMessage, STR_TO_USERMESSAGE())
         if message.content:
             self.history.append(message)

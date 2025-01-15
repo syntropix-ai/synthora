@@ -72,7 +72,7 @@ def FORMAT_PROMPT(
     """
     if prompt is None:
         prompt = kwargs.get("__macro_locals__").get("self").prompt  # type: ignore[union-attr]
-    params = {**kwargs, **globals()}
+    params = {**kwargs, **globals(), **kwargs.get("__macro_locals__").get("kwargs", {})}
     if "self" in params:
         del params["self"]
     if isinstance(prompt, dict):
