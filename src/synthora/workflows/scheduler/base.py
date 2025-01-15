@@ -277,7 +277,7 @@ class BaseScheduler(ABC):
             raise RuntimeError("No tasks to run")
         if self.context is None:
             self.set_context(BasicContext(self))
-        cursor = self.get_context().get_cursor() 
+        cursor = self.get_context().get_cursor()
         self.state = TaskState.RUNNING
         if self.immutable:
             if args and isinstance(args[0], BaseContext):
@@ -331,7 +331,7 @@ class BaseScheduler(ABC):
         else:
             args = tuple(self._args) + args
             kwargs = {**self._kwargs, **kwargs}
-            self.async_step(*args, **kwargs)
+            await self.async_step(*args, **kwargs)
         while self.cursor < len(self.tasks):
             if self.state != TaskState.RUNNING:
                 break

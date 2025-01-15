@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+import textwrap
+
 from dotenv import load_dotenv
 
 from synthora.agents.vanilla_agent import VanillaAgent
@@ -22,7 +24,7 @@ from synthora.memories.summary_memory import SummaryMemory
 from synthora.services.slack_bot import SlackBotService
 from synthora.toolkits.search_toolkits.google_search import google_search
 from synthora.toolkits.search_toolkits.webpage import webpage
-import textwrap
+
 
 load_dotenv()
 

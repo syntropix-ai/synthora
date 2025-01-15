@@ -16,11 +16,12 @@
 #
 
 import json
+import textwrap
 
 from synthora.agents.vanilla_agent import VanillaAgent
 from synthora.callbacks.rich_output_handler import RichOutputHandler
 from synthora.configs import AgentConfig
-import textwrap
+
 
 json_data = textwrap.dedent(
     """\

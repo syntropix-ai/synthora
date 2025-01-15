@@ -15,13 +15,14 @@
 # limitations under the License.
 #
 
-from synthora.agents import VanillaAgent
-from synthora.toolkits.search_toolkits.google_search import google_search
-from synthora.toolkits.search_toolkits.webpage import webpage
 import textwrap
 
+from synthora.agents import VanillaAgent
 from synthora.memories import RecentNMemory
 from synthora.services.discord_bot import DiscordBotService
+from synthora.toolkits.search_toolkits.google_search import google_search
+from synthora.toolkits.search_toolkits.webpage import webpage
+
 
 prompt = textwrap.dedent(
     """\

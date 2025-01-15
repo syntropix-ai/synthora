@@ -28,6 +28,7 @@ from synthora.messages.base import BaseMessage
 from synthora.models import create_model_from_config
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
+from synthora.prompts.buildin import VanillaPrompt
 from synthora.toolkits.base import BaseFunction
 from synthora.types.enums import AgentType, MessageRole, NodeType, Ok, Result
 from synthora.types.node import Node
@@ -38,7 +39,6 @@ from synthora.utils.macros import (
     STR_TO_USERMESSAGE,
     UPDATE_SYSTEM,
 )
-from synthora.prompts.buildin import VanillaPrompt
 
 
 class VanillaAgent(BaseAgent):

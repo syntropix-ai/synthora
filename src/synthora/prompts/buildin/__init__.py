@@ -15,10 +15,10 @@
 # limitations under the License.
 #
 
+from .cot import ZeroShotCoTPrompt
 from .react import FewShotReactPrompt, ZeroShotReactPrompt
 from .tot import ZeroShotTOTEvalPrompt, ZeroShotTOTProposePrompt
 from .vanilla import VanillaPrompt
-from .cot import ZeroShotCoTPrompt
 
 
 __all__ = [

@@ -665,7 +665,7 @@ class BaseAgent(ABC):
                 The tool to add.
         """
         ...
-    
+
     @abstractmethod
     def remove_tool(self, tool: Union[BaseFunction, "BaseAgent"]) -> Self:
         """Remove a tool from the agent.
@@ -675,7 +675,7 @@ class BaseAgent(ABC):
                 The tool to remove.
         """
         ...
-    
+
     def add_tools(self, tools: List[Union[BaseFunction, "BaseAgent"]]) -> Self:
         """Add multiple tools to the agent.
 
@@ -686,10 +686,8 @@ class BaseAgent(ABC):
         for tool in tools:
             self.add_tool(tool)
         return self
-    
+
     @abstractmethod
     def reset(self) -> Self:
         """Reset the agent to its initial state."""
         ...
-    
-    

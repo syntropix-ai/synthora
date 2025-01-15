@@ -58,16 +58,16 @@ pip install synthora
 
 ## What Makes Synthora Different
 
-Existing agent frameworks are too heavy. We aim to provide users with a solution that is as lightweight as possible while remaining fully functional.  
+Existing agent frameworks are too heavy. We aim to provide users with a solution that is as lightweight as possible while remaining fully functional.
 
-Synthora provides most of the core features you need, such as **Agents**, including various types of predefined agents (e.g., COT, TOT, ReAct, etc.).  
-It also offers a **multi-agent interaction framework**, allowing users to combine multiple agents through configuration files or simple code.  
-As for **Tools**, Synthora provides multiple ways to convert functions or classes into forms that agents can call. Synthora itself only offers the most basic tools.  
-We encourage users to leverage tools from other open-source projects or create custom tools.  
-Finally, there’s **Workflow**. Synthora provides a powerful workflow system that allows users to define complex workflows. Workflows support parallel and sequential operations, as well as loops and branches, meeting the needs of most scenarios.  
+Synthora provides most of the core features you need, such as **Agents**, including various types of predefined agents (e.g., COT, TOT, ReAct, etc.).
+It also offers a **multi-agent interaction framework**, allowing users to combine multiple agents through configuration files or simple code.
+As for **Tools**, Synthora provides multiple ways to convert functions or classes into forms that agents can call. Synthora itself only offers the most basic tools.
+We encourage users to leverage tools from other open-source projects or create custom tools.
+Finally, there’s **Workflow**. Synthora provides a powerful workflow system that allows users to define complex workflows. Workflows support parallel and sequential operations, as well as loops and branches, meeting the needs of most scenarios.
 
-At present, Synthora does not support **Retrieval**. Many retrieval libraries already exist, offering robust features that Synthora is unlikely to surpass.  
-However, these libraries can be easily integrated with Synthora. All you need to do is treat them as a tool or use a sequential workflow to obtain retrieval results.  
+At present, Synthora does not support **Retrieval**. Many retrieval libraries already exist, offering robust features that Synthora is unlikely to surpass.
+However, these libraries can be easily integrated with Synthora. All you need to do is treat them as a tool or use a sequential workflow to obtain retrieval results.
 
 
 ## Quick Start
