@@ -46,18 +46,33 @@ Isn't it beautiful if one shares his effort in specialized intelligence, allowin
 - 🪶 Lightweight and highly extensible implementation of essential components.
 - 🧪 Aligning with state-of-the-art AI research.
 - 🤝 Enabling multi-agent interactions.
-- 🦁 Unique platform of agent zoo and eval benchmark.
+- 🔧 Powerful workflows to assist in accomplishing diverse tasks.
 
 ## Installation
 
 To install Synthora Python Library from PyPI, simply run:
 
 ```shell Shell
- pip install synthora
+pip install synthora
 ```
+
+## What Makes Synthora Different
+
+Existing agent frameworks are too heavy. We aim to provide users with a solution that is as lightweight as possible while remaining fully functional.  
+
+Synthora provides most of the core features you need, such as **Agents**, including various types of predefined agents (e.g., COT, TOT, ReAct, etc.).  
+It also offers a **multi-agent interaction framework**, allowing users to combine multiple agents through configuration files or simple code.  
+As for **Tools**, Synthora provides multiple ways to convert functions or classes into forms that agents can call. Synthora itself only offers the most basic tools.  
+We encourage users to leverage tools from other open-source projects or create custom tools.  
+Finally, there’s **Workflow**. Synthora provides a powerful workflow system that allows users to define complex workflows. Workflows support parallel and sequential operations, as well as loops and branches, meeting the needs of most scenarios.  
+
+At present, Synthora does not support **Retrieval**. Many retrieval libraries already exist, offering robust features that Synthora is unlikely to surpass.  
+However, these libraries can be easily integrated with Synthora. All you need to do is treat them as a tool or use a sequential workflow to obtain retrieval results.  
+
 
 ## Quick Start
 
+### Chat with Agent
 
 ```python
 
@@ -70,6 +85,28 @@ warnings.filterwarnings("ignore")
 
 agent = VanillaAgent.default("You are a Vanilla Agent.", handlers=[RichOutputHandler()])
 agent.run("Hi! How are you?")
+```
+
+### Define Tools
+
+```python
+from synthora.toolkits.decorators import tool
+
+
+@tool
+def add(a: int, b: int) -> int:
+    r"""Add two numbers together."""
+    return a + b
+```
+
+### Workflow
+
+```python
+def add(x: int, y: int) -> int:
+    return x + y
+
+flow = (BaseTask(add) | BaseTask(add)) >> BaseTask(add)
+flow.run(1, 2)
 ```
 
 ```{toctree}
@@ -90,6 +127,7 @@ tutorial/workflow
 :hidden:
 
 cookbook/chat_with_agent.ipynb
+cookbook/workflow.ipynb
 ```
 
 ```{toctree}
