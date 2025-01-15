@@ -128,6 +128,7 @@ tutorial/workflow
 
 cookbook/chat_with_agent.ipynb
 cookbook/workflow.ipynb
+cookbook/data_generation.ipynb
 ```
 
 ```{toctree}
