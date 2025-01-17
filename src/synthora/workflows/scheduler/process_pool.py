@@ -26,6 +26,16 @@ from synthora.workflows.scheduler.base import BaseScheduler
 
 
 class ProcessPoolScheduler(BaseScheduler):
+    """
+    A scheduler that uses a process pool to execute tasks concurrently.
+
+    Attributes:
+        name (Optional[str]): The name of the scheduler.
+        context (Optional[MultiProcessContext]): The context for managing shared state.
+        max_worker (Optional[int]): The maximum number of worker processes.
+        flat_result (bool): Whether to flatten the result.
+        immutable (bool): Whether the scheduler is immutable.
+    """
     def __init__(
         self,
         name: Optional[str] = None,
@@ -45,6 +55,18 @@ class ProcessPoolScheduler(BaseScheduler):
         *args: Any,
         **kwargs: Any,
     ) -> Future[Any]:
+        r"""Runs a task or scheduler using the provided executor.
+
+        Args:
+            executor (ProcessPoolExecutor): The executor to run the task.
+            pre (Optional[List[Union["BaseScheduler", BaseTask]]]): The previous tasks.
+            current (Union["BaseScheduler", BaseTask]): The current task or scheduler.
+            *args (Any): Additional arguments for the task.
+            **kwargs (Any): Additional keyword arguments for the task.
+
+        Returns:
+            Future[Any]: The future result of the task.
+        """
         prev_args = self._get_result(pre)
         args = tuple(prev_args) + args
         if isinstance(current, BaseTask):
@@ -61,11 +83,28 @@ class ProcessPoolScheduler(BaseScheduler):
         *args: Any,
         **kwargs: Any,
     ) -> None:
+        r"""Raises NotImplementedError as async tasks are not supported.
+
+        Args:
+            pre (Optional[List[Union["BaseScheduler", BaseTask]]]): The previous tasks.
+            current (Union["BaseScheduler", BaseTask]): The current task or scheduler.
+            *args (Any): Additional arguments for the task.
+            **kwargs (Any): Additional keyword arguments for the task.
+
+        Raises:
+            NotImplementedError: Async tasks are not supported.
+        """
         raise NotImplementedError(
             "ProcessPoolScheduler does not support async tasks"
         )
 
     def step(self, *args: Any, **kwargs: Any) -> None:
+        r"""Executes the current step of the scheduler.
+
+        Args:
+            *args (Any): Additional arguments for the task.
+            **kwargs (Any): Additional keyword arguments for the task.
+        """
         if self.cursor >= len(self.tasks):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
@@ -100,6 +139,15 @@ class ProcessPoolScheduler(BaseScheduler):
         self.cursor = self.get_context().get_cursor() + 1
 
     def run(self, *args: Any, **kwargs: Any) -> Any:
+        r"""Runs all tasks in the scheduler.
+
+        Args:
+            *args (Any): Additional arguments for the task.
+            **kwargs (Any): Additional keyword arguments for the task.
+
+        Returns:
+            Any: The result of the last task in the scheduler.
+        """
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
         if self.context is None:
@@ -134,11 +182,29 @@ class ProcessPoolScheduler(BaseScheduler):
         return self._result
 
     async def async_step(self, *args: Any, **kwargs: Any) -> None:
+        r"""Raises NotImplementedError as async tasks are not supported.
+
+        Args:
+            *args (Any): Additional arguments for the task.
+            **kwargs (Any): Additional keyword arguments for the task.
+
+        Raises:
+            NotImplementedError: Async tasks are not supported.
+        """
         raise NotImplementedError(
             "ProcessPoolScheduler does not support async tasks"
         )
 
     async def async_run(self, *args: Any, **kwargs: Any) -> Any:
+        r"""Raises NotImplementedError as async tasks are not supported.
+
+        Args:
+            *args (Any): Additional arguments for the task.
+            **kwargs (Any): Additional keyword arguments for the task.
+
+        Raises:
+            NotImplementedError: Async tasks are not supported.
+        """
         raise NotImplementedError(
             "ProcessPoolScheduler does not support async tasks"
         )
