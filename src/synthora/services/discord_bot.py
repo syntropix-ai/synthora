@@ -17,8 +17,7 @@
 
 import asyncio
 import os
-from copy import deepcopy
-from typing import Dict, Optional, Self, Union
+from typing import Optional, Self, Union
 
 import discord
 
@@ -39,8 +38,7 @@ class DiscordBotService(BaseService):
             )
         self._token: str = token
         self._client = discord.Client(intents=discord.Intents.default())
-        self._target: Optional[BaseAgent] = None
-        self._agent_map: Dict[int, BaseAgent] = {}
+        self._agent: Optional[BaseAgent] = None
 
         @self._client.event
         async def on_ready() -> None:
@@ -50,7 +48,7 @@ class DiscordBotService(BaseService):
         async def on_message(message: discord.Message) -> None:
             username = message.author.global_name
             userid = message.author.id
-            user_message = str(message.clean_content)
+            user_message = str(message.content)
 
             if message.author == self._client.user:
                 return
@@ -58,17 +56,14 @@ class DiscordBotService(BaseService):
             if not user_message:
                 return
 
-            if not self._target:
+            if not self._agent:
                 await message.channel.send("Error: No Backend Agent Set")
                 return
 
             print(f"{username} ({userid}) said: {user_message}")
 
-            if userid not in self._agent_map:
-                self._agent_map[userid] = deepcopy(self._target)
-
             user_msg_prompt = f"{username} ({userid}) said: {user_message}"
-            response = await self._agent_map[userid].async_run(user_msg_prompt)
+            response = await self._agent.async_run(user_msg_prompt)
 
             text_response = response.unwrap().content
             try:
@@ -80,14 +75,14 @@ class DiscordBotService(BaseService):
 
     def add(
         self,
-        target: Union[
+        agent: Union[
             BaseAgent, BaseModelBackend, BaseFunction, BaseTask, BaseScheduler
         ],
         name: Optional[str] = None,
     ) -> Self:
-        if not isinstance(target, BaseAgent):
+        if not isinstance(agent, BaseAgent):
             raise NotImplementedError("Only BaseAgent is supported for now")
-        self._target = target
+        self._agent = agent
         return self
 
     def run(self) -> Self:

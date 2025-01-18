@@ -18,6 +18,7 @@
 from .base import AsyncFunction, BaseFunction, BaseToolkit, SyncFunction
 from .basic_math_toolkit import BasicMathToolkit
 from .search_toolkit import SearchToolkit
+from .weather import WeatherToolkit
 
 
 __all__ = [
@@ -27,4 +28,5 @@ __all__ = [
     "SyncFunction",
     "AsyncFunction",
     "SearchToolkit",
+    "WeatherToolkit",
 ]

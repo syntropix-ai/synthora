@@ -37,7 +37,7 @@ class MediawikiToolkit(BaseToolkit):
 
     @tool
     def search_mediawiki(
-        self, query: str, sentences: int = 5, auto_suggest: bool = False
+        self, query: str, sentences: int = 7, auto_suggest: bool = False
     ) -> Result[str, Exception]:
         """Search Mediawiki and return a summary of the article.
 
@@ -51,7 +51,7 @@ class MediawikiToolkit(BaseToolkit):
                 The search query to look up on Mediawiki.
             sentences:
                 Number of sentences to return in the summary.
-                Defaults to 5.
+                Defaults to 7.
             auto_suggest:
                 Whether to auto-suggest similar article titles.
                 Defaults to False.
