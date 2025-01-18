@@ -22,7 +22,9 @@ from synthora.types.enums import Err, Ok, Result
 
 
 @tool
-def search_arxiv(query: str, max_results: Optional[int] = None) -> Result[str, Exception]:
+def search_arxiv(
+    query: str, max_results: Optional[int] = None
+) -> Result[str, Exception]:
     r"""Search arXiv for papers based on the search terms.
 
     Args:
@@ -33,10 +35,9 @@ def search_arxiv(query: str, max_results: Optional[int] = None) -> Result[str, E
     """
     try:
         import arxiv
+
         client = arxiv.Client()
-        search = arxiv.Search(
-            query=query, max_results=max_results
-        )
+        search = arxiv.Search(query=query, max_results=max_results)
 
         results = client.results(search)
         return Ok(

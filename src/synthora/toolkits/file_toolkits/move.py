@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-from typing import Optional
 
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result

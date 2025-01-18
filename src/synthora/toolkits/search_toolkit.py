@@ -22,6 +22,7 @@ from synthora.workflows import BaseTask
 
 from .search_toolkits import (
     search_arxiv,
+    search_duckduckgo,
     search_google,
     search_wikipedia,
     search_youtube,
@@ -41,12 +42,14 @@ def search_all(query: str) -> Result[str, Exception]:
         "search_google",
         "search_arxiv",
         "search_youtube",
+        "search_duckduckgo",
     ]
     flow = (
         BaseTask(search_google.run)
         | BaseTask(search_wikipedia.run)
         | BaseTask(search_arxiv.run).s(5)
         | BaseTask(search_youtube.run).s(5)
+        | BaseTask(search_duckduckgo.run).s("text", 5)
     )
     result = flow.run(query)
     ans = ""

@@ -16,15 +16,15 @@
 #
 
 from typing import Optional
-import requests
-from bs4 import BeautifulSoup
 
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result
 
 
 @tool
-def search_youtube(query: str, max_results: Optional[int] = None) -> Result[str, Exception]:
+def search_youtube(
+    query: str, max_results: Optional[int] = None
+) -> Result[str, Exception]:
     r"""Search YouTube for videos based on the search terms.
 
     Args:
@@ -35,6 +35,7 @@ def search_youtube(query: str, max_results: Optional[int] = None) -> Result[str,
     """
     try:
         from youtube_search import YoutubeSearch
+
         resp = YoutubeSearch(query, max_results).to_dict()
         return Ok(
             "\n".join(

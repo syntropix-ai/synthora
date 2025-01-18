@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-from typing import Optional
 
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result
@@ -28,10 +27,11 @@ def list_directory(path: str) -> Result[str, Exception]:
     Args:
         path:
             The directory path to list the contents of.
-            
+
     """
     try:
         import os
+
         items = os.listdir(path)
         if not items:
             return Ok(f"No items found in {path}")

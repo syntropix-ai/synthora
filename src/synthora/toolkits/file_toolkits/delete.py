@@ -15,14 +15,13 @@
 # limitations under the License.
 #
 
-from typing import Optional
 
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result
 
 
 @tool
-def delete_file(path: str) -> Result[None, Exception]:
+def delete_file(path: str) -> Result[str, Exception]:
     r"""Delete a file.
 
     Args:
@@ -33,6 +32,6 @@ def delete_file(path: str) -> Result[None, Exception]:
         import os
 
         os.remove(path)
-        return Ok(None)
+        return Ok("File deleted successfully")
     except Exception as e:
         return Err(e, str(e))

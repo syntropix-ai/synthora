@@ -15,14 +15,13 @@
 # limitations under the License.
 #
 
-from typing import Optional
 
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result
 
 
 @tool
-def copy_file(src: str, dest: str) -> Result[None, Exception]:
+def copy_file(src: str, dest: str) -> Result[str, Exception]:
     r"""Copy a file from source to destination.
 
     Args:
@@ -35,6 +34,6 @@ def copy_file(src: str, dest: str) -> Result[None, Exception]:
         import shutil
 
         shutil.copy(src, dest)
-        return Ok(None)
+        return Ok(f"File copied successfully from {src} to {dest}")
     except Exception as e:
         return Err(e, str(e))
