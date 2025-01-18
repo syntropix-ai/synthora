@@ -67,3 +67,4 @@ class SearchToolkit(BaseToolkit):
     search_arxiv = search_arxiv
     search_youtube = search_youtube
     search_all = search_all
+    search_duckduckgo = search_duckduckgo
