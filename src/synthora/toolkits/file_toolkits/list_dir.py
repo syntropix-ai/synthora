@@ -15,28 +15,26 @@
 # limitations under the License.
 #
 
-
-from googlesearch import search
+from typing import Optional
 
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result
 
 
 @tool
-def search_google(query: str) -> Result[str, Exception]:
-    r"""Search Google and return a list of URLs.
+def list_directory(path: str) -> Result[str, Exception]:
+    r"""List the contents of a directory.
 
     Args:
-        query (str): The search query to look up on Google
-
-    Returns:
-        Result[str, Exception]: A Result object containing either:
-            - Ok(str): A list of URLs if successful
-            - Err(Exception): An error with description if the search fails
+        path:
+            The directory path to list the contents of.
+            
     """
     try:
-        return Ok(
-            "\n\n".join([str(item) for item in search(query, advanced=True)])
-        )
+        import os
+        items = os.listdir(path)
+        if not items:
+            return Ok(f"No items found in {path}")
+        return Ok("\n".join(os.listdir(path)))
     except Exception as e:
-        return Err(e, f"Error: {e}\n Probably it is an invalid query.")
+        return Err(e, str(e))

@@ -16,9 +16,51 @@
 #
 
 from synthora.toolkits import BaseToolkit
+from synthora.toolkits.decorators import tool
+from synthora.types.enums import Ok, Result
+from synthora.workflows import BaseTask
 
-from .search_toolkits import search_wikipedia
+from .search_toolkits import (
+    search_arxiv,
+    search_google,
+    search_wikipedia,
+    search_youtube,
+)
+
+
+@tool
+def search_all(query: str) -> Result[str, Exception]:
+    r"""Search for a query in Wikipedia, Google, Arxiv, and Youtube.
+
+    Args:
+        query:
+            The query to search for.
+    """
+    names = [
+        "search_wikipedia",
+        "search_google",
+        "search_arxiv",
+        "search_youtube",
+    ]
+    flow = (
+        BaseTask(search_google.run)
+        | BaseTask(search_wikipedia.run)
+        | BaseTask(search_arxiv.run).s(5)
+        | BaseTask(search_youtube.run).s(5)
+    )
+    result = flow.run(query)
+    ans = ""
+    for name, res in zip(names, result):
+        if res.is_ok:
+            ans += f"{name}\n: {res.unwrap()}\n"
+        else:
+            ans += f"{name}\n: {res.unwrap_err()}\n"
+    return Ok(ans)
 
 
 class SearchToolkit(BaseToolkit):
     search_wikipedia = search_wikipedia
+    search_google = search_google
+    search_arxiv = search_arxiv
+    search_youtube = search_youtube
+    search_all = search_all

@@ -20,8 +20,8 @@ import textwrap
 from synthora.agents import VanillaAgent
 from synthora.memories import RecentNMemory
 from synthora.services.discord_bot import DiscordBotService
-from synthora.toolkits.search_toolkits.google_search import google_search
-from synthora.toolkits.search_toolkits.webpage import webpage
+from synthora.toolkits.search_toolkits.google_search import search_google
+from synthora.toolkits.webpage_toolkit import get_webpage
 
 
 prompt = textwrap.dedent(
@@ -39,7 +39,7 @@ prompt = textwrap.dedent(
     """  # noqa: E501
 )
 
-agent = VanillaAgent.default(prompt, tools=[webpage, google_search])
+agent = VanillaAgent.default(prompt, tools=[get_webpage, search_google])
 agent.history = RecentNMemory(100)
 
 service = DiscordBotService()
