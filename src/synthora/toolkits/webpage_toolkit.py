@@ -15,16 +15,46 @@
 # limitations under the License.
 #
 
+import requests
+from bs4 import BeautifulSoup
 from trafilatura import extract, fetch_url, html2txt
 
 from synthora.toolkits.base import BaseToolkit
 from synthora.toolkits.decorators import tool
+from synthora.types.enums import Err, Ok, Result
+
+
+@tool
+def get_webpage(url: str) -> Result[str, Exception]:
+    r"""Retrieve the text content of a web page.
+
+    Args:
+        url (str): The URL of the web page to retrieve.
+
+    Returns:
+        Result[str, Exception]: A Result object containing either:
+            - Ok(str): The text content of the web page if successful
+            - Err(Exception): An error with description if the retrieval fails
+    """
+    try:
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "html.parser")
+        for script in soup(["script", "style"]):
+            script.extract()
+        text = soup.get_text()
+        lines = (line.strip() for line in text.splitlines())
+        text = " ".join(line for line in lines if line)[:4096] + "..."
+        return Ok(text)
+    except Exception as e:
+        return Err(e, f"Error: {e}\n Probably it is an invalid URL.")
 
 
 class TrafilaturaWebpageReader(BaseToolkit):
     """Toolkit for extracting the main content from a webpage using the
     trafilatura library.
     """
+
+    get_webpage = get_webpage
 
     def __init__(self, full_text: bool = False):
         self.full_text = full_text

@@ -31,11 +31,13 @@ class ProcessPoolScheduler(BaseScheduler):
 
     Attributes:
         name (Optional[str]): The name of the scheduler.
-        context (Optional[MultiProcessContext]): The context for managing shared state.
+        context (Optional[MultiProcessContext]):
+            The context for managing shared state.
         max_worker (Optional[int]): The maximum number of worker processes.
         flat_result (bool): Whether to flatten the result.
         immutable (bool): Whether the scheduler is immutable.
     """
+
     def __init__(
         self,
         name: Optional[str] = None,
@@ -58,9 +60,9 @@ class ProcessPoolScheduler(BaseScheduler):
         r"""Runs a task or scheduler using the provided executor.
 
         Args:
-            executor (ProcessPoolExecutor): The executor to run the task.
-            pre (Optional[List[Union["BaseScheduler", BaseTask]]]): The previous tasks.
-            current (Union["BaseScheduler", BaseTask]): The current task or scheduler.
+            executor: The executor to run the task.
+            pre: The previous tasks.
+            current: The current task or scheduler.
             *args (Any): Additional arguments for the task.
             **kwargs (Any): Additional keyword arguments for the task.
 
@@ -86,8 +88,8 @@ class ProcessPoolScheduler(BaseScheduler):
         r"""Raises NotImplementedError as async tasks are not supported.
 
         Args:
-            pre (Optional[List[Union["BaseScheduler", BaseTask]]]): The previous tasks.
-            current (Union["BaseScheduler", BaseTask]): The current task or scheduler.
+            pre: The previous tasks.
+            current: The current task or scheduler.
             *args (Any): Additional arguments for the task.
             **kwargs (Any): Additional keyword arguments for the task.
 

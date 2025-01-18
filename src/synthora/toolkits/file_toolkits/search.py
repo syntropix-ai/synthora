@@ -15,28 +15,33 @@
 # limitations under the License.
 #
 
-
-from googlesearch import search
+from typing import Optional
 
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result
 
 
 @tool
-def search_google(query: str) -> Result[str, Exception]:
-    r"""Search Google and return a list of URLs.
+def search_file(dir_path:str, pattern: str) -> Result[str, Exception]:
+    r"""Search for files in a directory.
 
     Args:
-        query (str): The search query to look up on Google
+        dir_path:
+            The directory path to search for files.
+        pattern:
+            The pattern to search for in the file names.
 
-    Returns:
-        Result[str, Exception]: A Result object containing either:
-            - Ok(str): A list of URLs if successful
-            - Err(Exception): An error with description if the search fails
     """
     try:
-        return Ok(
-            "\n\n".join([str(item) for item in search(query, advanced=True)])
-        )
+        import os
+
+        matches = []
+        for root, dirs, files in os.walk(dir_path):
+            for file in files:
+                if pattern in file:
+                    matches.append(os.path.join(root, file))
+        if matches:
+            return Ok("\n".join(matches))
+        return Ok(f"No matches found for pattern {pattern} in {dir_path}")
     except Exception as e:
-        return Err(e, f"Error: {e}\n Probably it is an invalid query.")
+        return Err(e, str(e))

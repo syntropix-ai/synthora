@@ -16,7 +16,7 @@
 #
 
 from concurrent.futures import Future, ThreadPoolExecutor
-from typing import Any, List, Optional, Union, override
+from typing import Any, List, Optional, Union
 
 from synthora.types.enums import TaskState
 from synthora.workflows.base_task import BaseTask
@@ -30,11 +30,15 @@ class ThreadPoolScheduler(BaseScheduler):
 
     Attributes:
         name (Optional[str]): The name of the scheduler.
-        context (Optional[BasicContext]): The context for managing shared state.
-        max_worker (Optional[int]): The maximum number of worker threads.
+        context (Optional[BasicContext]):
+            The context for managing shared state.
+        max_worker (Optional[int]):
+            The maximum number of worker threads.
         flat_result (bool): Whether to flatten the result.
-        immutable (bool): Whether the scheduler is immutable.
+        immutable (bool):
+            Whether the scheduler is immutable.
     """
+
     def __init__(
         self,
         name: Optional[str] = None,
@@ -58,9 +62,10 @@ class ThreadPoolScheduler(BaseScheduler):
         Runs a task or scheduler using the provided executor.
 
         Args:
-            executor (ThreadPoolExecutor): The executor to run the task.
-            pre (Optional[List[Union["BaseScheduler", BaseTask]]]): The previous tasks.
-            current (Union["BaseScheduler", BaseTask]): The current task or scheduler.
+            executor: The executor to run the task.
+            pre: The previous tasks.
+            current:
+                The current task or scheduler.
             *args (Any): Additional arguments for the task.
             **kwargs (Any): Additional keyword arguments for the task.
 
@@ -86,8 +91,9 @@ class ThreadPoolScheduler(BaseScheduler):
         r"""Raises NotImplementedError as async tasks are not supported.
 
         Args:
-            pre (Optional[List[Union["BaseScheduler", BaseTask]]]): The previous tasks.
-            current (Union["BaseScheduler", BaseTask]): The current task or scheduler.
+            pre: The previous tasks.
+            current:
+                The current task or scheduler.
             *args (Any): Additional arguments for the task.
             **kwargs (Any): Additional keyword arguments for the task.
 
