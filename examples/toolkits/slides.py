@@ -19,8 +19,9 @@ import dotenv
 
 from synthora.agents import VanillaAgent
 from synthora.callbacks import RichOutputHandler
-from synthora.toolkits.slides import SlidesToolkit
 from synthora.toolkits.search_toolkit import SearchToolkit
+from synthora.toolkits.slides import SlidesToolkit
+
 
 toolkit = SearchToolkit()
 
@@ -32,4 +33,4 @@ agent = VanillaAgent.default(
     handlers=[RichOutputHandler()],
 )
 
-agent.run("generate a PPT about Chicago")    
+agent.run("generate a PPT about Chicago")
