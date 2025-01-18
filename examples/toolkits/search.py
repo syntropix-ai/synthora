@@ -15,16 +15,17 @@
 # limitations under the License.
 #
 
-import json
 from synthora.agents import VanillaAgent
 from synthora.callbacks import RichOutputHandler
-from synthora.toolkits.search_toolkit import search_all
 from synthora.toolkits.file_toolkit import FileToolkit
+from synthora.toolkits.search_toolkit import search_all
+
 
 write_file = FileToolkit.write_file
 list_directory = FileToolkit.list_directory
 agent = VanillaAgent.default(
-    tools=[search_all, write_file, list_directory], handlers=[RichOutputHandler()]
+    tools=[search_all, write_file, list_directory],
+    handlers=[RichOutputHandler()],
 )
 
 while True:
@@ -32,4 +33,3 @@ while True:
     if inp == "exit":
         break
     res = agent.run(inp)
-    

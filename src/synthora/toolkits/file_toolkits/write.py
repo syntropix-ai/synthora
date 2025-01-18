@@ -15,14 +15,15 @@
 # limitations under the License.
 #
 
-from typing import Optional
 
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result
 
 
 @tool
-def write_file(path: str, content: str, mode: str = "w") -> Result[None, Exception]:
+def write_file(
+    path: str, content: str, mode: str = "w"
+) -> Result[str, Exception]:
     r"""Write a file.
 
     Args:

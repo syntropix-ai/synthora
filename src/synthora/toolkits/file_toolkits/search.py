@@ -15,14 +15,13 @@
 # limitations under the License.
 #
 
-from typing import Optional
 
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result
 
 
 @tool
-def search_file(dir_path:str, pattern: str) -> Result[str, Exception]:
+def search_file(dir_path: str, pattern: str) -> Result[str, Exception]:
     r"""Search for files in a directory.
 
     Args:

@@ -16,6 +16,7 @@
 #
 
 from .arxiv import search_arxiv
+from .ddgo import search_duckduckgo
 from .google_search import search_google
 from .mediawiki import MediawikiToolkit
 from .wikipidia import search_wikipedia
@@ -28,4 +29,5 @@ __all__ = [
     "MediawikiToolkit",
     "search_youtube",
     "search_arxiv",
+    "search_duckduckgo",
 ]
