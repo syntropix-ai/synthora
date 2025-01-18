@@ -15,28 +15,22 @@
 # limitations under the License.
 #
 
-
-from googlesearch import search
+from typing import Optional
 
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result
 
 
 @tool
-def search_google(query: str) -> Result[str, Exception]:
-    r"""Search Google and return a list of URLs.
+def read_file(path: str) -> Result[str, Exception]:
+    r"""Read a file.
 
     Args:
-        query (str): The search query to look up on Google
-
-    Returns:
-        Result[str, Exception]: A Result object containing either:
-            - Ok(str): A list of URLs if successful
-            - Err(Exception): An error with description if the search fails
+        path:
+            The file path to read.
     """
     try:
-        return Ok(
-            "\n\n".join([str(item) for item in search(query, advanced=True)])
-        )
+        with open(path, "r") as f:
+            return Ok(f.read())
     except Exception as e:
-        return Err(e, f"Error: {e}\n Probably it is an invalid query.")
+        return Err(e, str(e))

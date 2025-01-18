@@ -27,7 +27,23 @@ if TYPE_CHECKING:
 
 
 class BasicContext(BaseContext):
+    r"""BasicContext class provides a context for managing the state
+    and results of tasks within a workflow.
+
+    Attributes:
+        _workflow (BaseScheduler): The workflow associated with this context.
+        _cursor (int): The current cursor position within the workflow.
+
+    """
+
     def __init__(self, workflow: "BaseScheduler") -> None:
+        """
+        Initialize the BasicContext.
+
+        Args:
+            workflow:
+                The workflow instance to be used by the context.
+        """
         super().__init__()
         self._workflow = workflow
         self._cursor = 0
@@ -55,6 +71,18 @@ class BasicContext(BaseContext):
             task.state = TaskState.SKIPPED
 
     def get_state(self, name: str) -> TaskState:
+        """
+        Retrieve the state of a task by its name.
+
+        Args:
+            name (str): The name of the task.
+
+        Returns:
+            TaskState: The state of the task.
+
+        Raises:
+            KeyError: If the task with the given name is not found.
+        """
         if task := self.get_task(name):
             return task.state
         raise KeyError(f"Task {name} not found")

@@ -15,28 +15,26 @@
 # limitations under the License.
 #
 
-
-from googlesearch import search
+from typing import Optional
 
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result
 
 
 @tool
-def search_google(query: str) -> Result[str, Exception]:
-    r"""Search Google and return a list of URLs.
+def copy_file(src: str, dest: str) -> Result[None, Exception]:
+    r"""Copy a file from source to destination.
 
     Args:
-        query (str): The search query to look up on Google
-
-    Returns:
-        Result[str, Exception]: A Result object containing either:
-            - Ok(str): A list of URLs if successful
-            - Err(Exception): An error with description if the search fails
+        src:
+            The source file path.
+        dest:
+            The destination file path.
     """
     try:
-        return Ok(
-            "\n\n".join([str(item) for item in search(query, advanced=True)])
-        )
+        import shutil
+
+        shutil.copy(src, dest)
+        return Ok(None)
     except Exception as e:
-        return Err(e, f"Error: {e}\n Probably it is an invalid query.")
+        return Err(e, str(e))
