@@ -16,43 +16,44 @@
 #
 
 import textwrap
+from typing import List, Union
 
-from synthora.agents import VanillaAgent
-from synthora.memories import SummaryMemory
+from synthora.agents import BaseAgent, VanillaAgent
+from synthora.memories import RecentNMemory
 from synthora.services.discord_bot import DiscordBotService
-from synthora.toolkits import SearchToolkit, WeatherToolkit
+from synthora.toolkits import BaseFunction, SearchToolkit, WeatherToolkit
 from synthora.toolkits.search_toolkits import MediawikiToolkit
 
 
 prompt = textwrap.dedent(
     """\
-    You are a Discord Bot in a Server. Each user in the server has a username and unique user ID. Your name is OrcaNova and your ID is 1325529446370906293. 
+    You are a Discord Bot in a Server. Each user in the server has a username and unique user ID. Your name is OrcaNova and your ID is 1325529446370906293.
     Your purpose is to respond to messages in a professional and engaging manner.
     The query you are given is a message from a user in the following format:
 
     <username> (<userid>) said: <message>
 
     Note that, in the message content, each mention will be presented as <@userid>.
-    
+
     Use markdown formatting for your responses, ensuring clarity and readability. When responding:
 
     Address users using <@userid> for mentions.
     Use markdown formatting for your responses, ensuring clarity and readability.
     Always aim for concise, helpful, and engaging communication.
-    
+
     There are something important to know:
     - There will be messages from different users in the history
     - Use the history to understand the context of the conversation, PAY EXTRA ATTENTION TO THE USER THAT SENT EACH MESSAGE, DON'T MIX THEM UP
     """  # noqa: E501
 )
 
-tools = [
+tools: List[Union[BaseFunction, BaseAgent]] = [
     SearchToolkit.search_all,
-    *WeatherToolkit().sync_tools,
+    WeatherToolkit.get_weather_data,
     *MediawikiToolkit("https://moegirl.uk/api.php").sync_tools,
 ]
 agent = VanillaAgent.default(prompt, tools=tools)
-agent.history = SummaryMemory(50)
+agent.history = RecentNMemory(50)
 
 service = DiscordBotService()
 service.add(agent).run()

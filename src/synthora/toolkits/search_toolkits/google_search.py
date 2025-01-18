@@ -16,8 +16,6 @@
 #
 
 
-from googlesearch import search
-
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Err, Ok, Result
 
@@ -34,6 +32,8 @@ def search_google(query: str) -> Result[str, Exception]:
             - Ok(str): A list of URLs if successful
             - Err(Exception): An error with description if the search fails
     """
+    from googlesearch import search
+
     try:
         return Ok(
             "\n\n".join([str(item) for item in search(query, advanced=True)])
