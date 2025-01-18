@@ -38,10 +38,11 @@ googlesearch-python = {version = "^1.2.5", optional = true}
 slack-bolt = {version = "^1.22.0", optional = true}
 trafilatura = {version = "^2.0.0", optional = true}
 wikipedia = {version = "^1.4.0", optional = true}
+pymediawiki = "^0.7.5"
 
 [tool.poetry.extras]
 services = ["discord-py", "slack-bolt"]
-toolkits = ["googlesearch-python", "trafilatura", "wikipedia"]
+toolkits = ["googlesearch-python", "trafilatura", "wikipedia", "pymediawiki"]
 
 [tool.poetry.group.quality.dependencies]
 black = "^24.10.0"

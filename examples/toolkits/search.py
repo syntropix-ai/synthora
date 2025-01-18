@@ -15,17 +15,21 @@
 # limitations under the License.
 #
 
-from .arxiv import search_arxiv
-from .google_search import search_google
-from .mediawiki import MediawikiToolkit
-from .wikipidia import search_wikipedia
-from .youtube import search_youtube
+import json
+from synthora.agents import VanillaAgent
+from synthora.callbacks import RichOutputHandler
+from synthora.toolkits.search_toolkit import search_all
+from synthora.toolkits.file_toolkit import FileToolkit
 
+write_file = FileToolkit.write_file
+list_directory = FileToolkit.list_directory
+agent = VanillaAgent.default(
+    tools=[search_all, write_file, list_directory], handlers=[RichOutputHandler()]
+)
 
-__all__ = [
-    "search_wikipedia",
-    "search_google",
-    "MediawikiToolkit",
-    "search_youtube",
-    "search_arxiv",
-]
+while True:
+    inp = input("Enter a search query: ")
+    if inp == "exit":
+        break
+    res = agent.run(inp)
+    

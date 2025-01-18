@@ -15,17 +15,17 @@
 # limitations under the License.
 #
 
-from .arxiv import search_arxiv
-from .google_search import search_google
-from .mediawiki import MediawikiToolkit
-from .wikipidia import search_wikipedia
-from .youtube import search_youtube
+from synthora.toolkits import BaseToolkit
+
+from .file_toolkits import *
 
 
-__all__ = [
-    "search_wikipedia",
-    "search_google",
-    "MediawikiToolkit",
-    "search_youtube",
-    "search_arxiv",
-]
+class FileToolkit(BaseToolkit):
+    read_file = read_file
+    delete_file = delete_file
+    write_file = write_file
+    copy_file = copy_file
+    move_file = move_file
+    search_file = search_file
+    list_directory = list_directory
+    
