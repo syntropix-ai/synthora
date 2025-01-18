@@ -15,16 +15,18 @@
 # limitations under the License.
 #
 
+import dotenv
+
 from synthora.agents import VanillaAgent
 from synthora.callbacks import RichOutputHandler
 from synthora.toolkits.weather import WeatherToolkit
-import dotenv
+
 
 dotenv.load_dotenv()
 
 
 agent = VanillaAgent.default(
-    tools=WeatherToolkit().sync_tools,
+    tools=WeatherToolkit().sync_tools,  # type: ignore[arg-type]
     handlers=[RichOutputHandler()],
 )
 
