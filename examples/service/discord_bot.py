@@ -48,8 +48,8 @@ prompt = textwrap.dedent(
 )
 
 tools: List[Union[BaseFunction, BaseAgent]] = [
-    SearchToolkit.search_all,
-    WeatherToolkit.get_weather_data,
+    SearchToolkit().search_all,
+    WeatherToolkit().get_weather_data,
     *MediawikiToolkit("https://moegirl.uk/api.php").sync_tools,
 ]
 agent = VanillaAgent.default(prompt, tools=tools)
