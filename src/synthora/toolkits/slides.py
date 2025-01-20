@@ -29,6 +29,8 @@ from synthora.types.enums import Ok, Result
 
 
 class SlidesToolkit(BaseToolkit):
+    r"""A toolkit for creating slides
+    """
     def __init__(
         self,
         template_dir: Optional[str] = None,
