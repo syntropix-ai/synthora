@@ -1,3 +1,20 @@
+<!-- LICENSE HEADER MANAGED BY add-license-header
+
+Copyright 2024-2025 Syntropix-AI.org
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # Chain-of-Thought (CoT) Agent
 
 The **Chain-of-Thought (CoT) Agent** in Synthora is not a separate class but a configuration of the `VanillaAgent` with a specialized **prompt**. By using the `ZeroShotCoTPrompt`, the agent is guided to perform step-by-step reasoning, enabling it to solve problems that require logical breakdowns or intermediate steps.
@@ -29,7 +46,7 @@ from synthora.prompts.buildin import ZeroShotCoTPrompt
 
 # Create a CoT Agent with step-by-step reasoning
 agent = VanillaAgent.default(
-    ZeroShotCoTPrompt, 
+    ZeroShotCoTPrompt,
     handlers=[RichOutputHandler()]  # Adds rich output formatting
 )
 
@@ -78,4 +95,3 @@ The word "strawberry" contains 3 letters 'r'.
 ## Summary
 
 The **Chain-of-Thought (CoT) Agent** is a powerful extension of the Synthora framework, tailored for tasks requiring logical breakdowns and reasoning transparency. By integrating step-by-step reasoning, predefined prompts, and rich output formatting, it provides a robust tool for solving complex problems in an intuitive and explainable manner.
-
