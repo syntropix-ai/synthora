@@ -2,7 +2,6 @@ Agent
 ================
 .. toctree::
    :maxdepth: 1
-   :hidden:
 
    base.md
    vanilla.md

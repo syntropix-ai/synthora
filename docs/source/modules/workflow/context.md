@@ -168,7 +168,7 @@ hello 1 2
 
 ---
 
-# Synthora Workflow Documentation - Context (Additional Functions)
+## Additional Functions
 
 This section extends the previous documentation by explaining the additional methods provided in the `BasicContext` class. These methods are crucial for managing the workflow's state, results, and task flow. Even methods that appear to be placeholders (`pass`) will be explained, as they provide hooks for future customization or system interaction.
 
