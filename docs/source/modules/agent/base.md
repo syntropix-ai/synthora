@@ -63,5 +63,3 @@ Synthora's agent system provides:
 3. **Predefined agent types** (Cot, ToT, ReAct) tailored to different problem-solving strategies.
 
 By combining these features, Synthora empowers users to solve complex tasks efficiently while leveraging the full power of tools and collaborative agents.
-
-

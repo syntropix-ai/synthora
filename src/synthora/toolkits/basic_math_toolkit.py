@@ -23,9 +23,10 @@ from synthora.toolkits.decorators import tool
 
 class BasicMathToolkit(BaseToolkit):
     r"""A toolkit for basic math operations
-    Provides methods for addition, subtraction, 
+    Provides methods for addition, subtraction,
     multiplication, and division
     """
+
     @tool
     async def async_add(
         self, a: Union[int, float], b: Union[int, float]

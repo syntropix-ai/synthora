@@ -1,3 +1,20 @@
+<!-- LICENSE HEADER MANAGED BY add-license-header
+
+Copyright 2024-2025 Syntropix-AI.org
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # Reasoning and Acting Agent (ReAct) Agent
 
 The **ReAct Agent** (Reasoning and Acting Agent) is an advanced implementation in the Synthora framework. It combines reasoning capabilities with the ability to dynamically execute actions using tools. This design enables the agent to interact with tools in real-time while reasoning through problems step by step.
@@ -31,7 +48,7 @@ agent = ReactAgent.default()
 
 # Process a query
 response = agent.run("What is 15% of 120?")
-print(response.unwrap()) 
+print(response.unwrap())
 ```
 
 ---
