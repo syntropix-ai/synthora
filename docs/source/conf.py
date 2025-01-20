@@ -27,7 +27,7 @@ from typing import List
 
 
 project = "Synthora"
-copyright = "2024, Syntropix.AI"
+copyright = "2024-2025, Syntropix.AI"
 author = "Syntropix.AI"
 
 # -- General configuration ---------------------------------------------------
@@ -73,3 +73,17 @@ html_theme = "sphinx_book_theme"
 html_static_path = ["_static"]
 
 source_suffix = [".rst", ".md"]
+
+html_theme_options = {
+    "logo": {
+        "text": "Synthora",
+        "image_dark": "http://syntropix.ai/wp-content/uploads/2024/11/White-logo-no-background.png",
+        "image_light": "http://syntropix.ai/wp-content/uploads/2024/11/Color-logo-no-background.png",
+    },
+    "repository_url": "https://github.com/syntropix-ai/synthora",
+    "use_repository_button": True,
+    "use_issues_button": True,
+    "use_edit_page_button": True,
+}
+
+html_favicon = "http://syntropix.ai/wp-content/uploads/2025/01/symbol.svg"
