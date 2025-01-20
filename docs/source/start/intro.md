@@ -1,3 +1,20 @@
+<!-- LICENSE HEADER MANAGED BY add-license-header
+
+Copyright 2024-2025 Syntropix-AI.org
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # Introduction to `Synthora`
 
 ## What's an Agent Framework?
@@ -13,9 +30,9 @@ An agent framework is a higher-level abstraction built on top of foundational LL
 
 ## What Makes `Synthora` Different?
 
-`synthora` is a lightweight agent framework designed to balance simplicity and functionality, enhancing the overall user experience. 
+`synthora` is a lightweight agent framework designed to balance simplicity and functionality, enhancing the overall user experience.
 
-We believe a good agent framework should reduce the workload for developers by automating repetitive and complex tasks, making development easier and more efficient.  
+We believe a good agent framework should reduce the workload for developers by automating repetitive and complex tasks, making development easier and more efficient.
 Our goal is to offer a solution that is as lightweight as possible while still being fully functional.
 
 ### The Problem with Existing Frameworks
@@ -43,7 +60,7 @@ By offering a framework that emphasizes flexibility, simplicity, and ease of cus
 ## Core Features of `Synthora`
 
 ### **Agents**
-`Synthora` offers a comprehensive agent framework with support for various predefined agent types such as **COT (Chain of Thought)**, **TOT (Tree of Thought)**, and **ReAct (Reasoning and Action)**. These agents can operate independently or collaboratively in multi-agent systems. 
+`Synthora` offers a comprehensive agent framework with support for various predefined agent types such as **COT (Chain of Thought)**, **TOT (Tree of Thought)**, and **ReAct (Reasoning and Action)**. These agents can operate independently or collaboratively in multi-agent systems.
 
 You can also define and manage **multi-agent interactions** through configuration files or straightforward code, enabling complex task orchestration with ease.
 
