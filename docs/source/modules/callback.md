@@ -1,3 +1,20 @@
+<!-- LICENSE HEADER MANAGED BY add-license-header
+
+Copyright 2024-2025 Syntropix-AI.org
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # Callback
 
 Understand what's happening inside your agent with Synthora's callback system. Callbacks provide a powerful way to log and track events throughout your agent's workflow.
@@ -124,7 +141,7 @@ agent.run("How many letters 'r' are in the word 'strawberry'?")
 | **on_tool_error**  | Triggered when a tool encounters an error.                  | `source`: Node where the error occurred<br>`result`: Error result from the tool                                  |
 | **on_agent_start** | Triggered when an agent starts processing.                  | `source`: Node initiating the agent<br>`message`: Initial message for the agent                                  |
 | **on_agent_end**   | Triggered when an agent completes processing.               | `source`: Node initiating the agent<br>`message`: Final message from the agent                                   |
-| **on_agent_error** | Triggered when an agent encounters an error.                | `source`: Node where the error occurred<br>`result`: Error result from the agent                                 | 
+| **on_agent_error** | Triggered when an agent encounters an error.                | `source`: Node where the error occurred<br>`result`: Error result from the agent                                 |
 
 This table includes all the callback events and their associated parameters for effective tracking and debugging.
 
