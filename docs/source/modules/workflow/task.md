@@ -21,7 +21,7 @@ Synthora is a flexible workflow system inspired by tools like Celery, designed t
 
 ---
 
-# Task Overview
+## Task Overview
 
 A **Task** in Synthora represents the smallest unit of execution. It can be a function or a callable object that performs a specific operation. Synthora provides multiple ways to define tasks and allows users to extend their behavior with advanced features like **signatures** and **immutability**.
 
