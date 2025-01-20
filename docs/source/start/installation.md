@@ -1,3 +1,20 @@
+<!-- LICENSE HEADER MANAGED BY add-license-header
+
+Copyright 2024-2025 Syntropix-AI.org
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # Installation Guide
 
 ## Install from PyPI (Recommended)
@@ -8,22 +25,22 @@ For most users, installing Synthora from PyPI is the simplest and most recommend
 pip install synthora
 ```
 
-This will install the core components of `synthora`. 
+This will install the core components of `synthora`.
 
 ### Optional Add-ons:
-- **Pre-built Toolkits**:  
+- **Pre-built Toolkits**:
   To include Synthora's pre-built tools, use:
   ```shell
   pip install "synthora[toolkits]"
   ```
-  
-- **Pre-built Services**:  
+
+- **Pre-built Services**:
   For pre-configured services, use:
   ```shell
   pip install "synthora[services]"
   ```
 
-- **All Dependencies**:  
+- **All Dependencies**:
   To install all optional dependencies, use:
   ```shell
   pip install "synthora[all]"

@@ -1,3 +1,20 @@
+<!-- LICENSE HEADER MANAGED BY add-license-header
+
+Copyright 2024-2025 Syntropix-AI.org
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # First Steps with `Synthora`
 
 Here’s how you can get started with `Synthora` to build powerful and flexible agents:
@@ -14,7 +31,7 @@ print(agent.run("Hi! How are you?").unwrap())
 - **`VanillaAgent`**: This is the simplest agent provided by `Synthora`. It is an excellent starting point for basic interactions.
 - **Return Value**: If everything works correctly, the agent's return value will be `Ok(BaseMessage)`.
 - **Accessing Text Content**: The `BaseMessage` contains complete information about the response. If you only need the text content, you can access it directly:
-  
+
   ```python
   print(agent.run("Hi! How are you?").unwrap().content)
   ```
