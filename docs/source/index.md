@@ -87,8 +87,6 @@ modules/agent/index.rst
 modules/memory.md
 modules/toolkit.md
 modules/callback.md
-modules/service.md
-modules/tracer.md
 modules/workflow/index.rst
 modules/result.md
 

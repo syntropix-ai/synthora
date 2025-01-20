@@ -25,6 +25,8 @@ from synthora.types.enums import Err, Ok, Result
 
 
 class WeatherToolkit(BaseToolkit):
+    r"""A toolkit for fetching weather data"""
+
     def __init__(self, api_key: Optional[str] = None) -> None:
         super().__init__()
         self.api_key = api_key or os.getenv("OPENWEATHERMAP_API_KEY")
