@@ -222,6 +222,9 @@ class ReactAgent(BaseAgent):
                 return response
 
             data = response.unwrap()
+            if not data.tool_calls:
+                self.on_end(data)
+                return Ok(data)
 
             for tool_call in data.tool_calls:
                 func = tool_call.function
