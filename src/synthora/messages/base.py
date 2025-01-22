@@ -163,6 +163,8 @@ class BaseMessage(BaseModel):
         if images:
             images = [parse_image(image) for image in images]
         source = source or Node(name="user", type=NodeType.USER)
+        if isinstance(content, BaseMessage):
+            content = content.content
         match role:
             case MessageRole.USER:
                 return cls(
