@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from synthora.callbacks.base_handler import BaseCallBackHandler
 from synthora.messages.base import BaseMessage
@@ -23,26 +23,27 @@ from synthora.types.enums import Result
 from synthora.types.node import Node
 
 
-
-
-
 class OutputHandler(BaseCallBackHandler):
-   
     def on_tool_start(
         self, source: Optional[Node], *args: Any, **kwargs: Any
     ) -> None:
-        print(f"[bold blue]Starting tool: {source.name}")
+        print(
+            f"[bold blue]Starting tool: {source.name if source else 'Unknown'}"
+        )
 
     def on_tool_end(
         self, source: Optional[Node], result: Result[Any, Exception]
     ) -> None:
-        print(f"[cyan] Tool: {source.name} completed successfully")
-        
+        print(
+            f"[cyan] Tool: {source.name if source else 'Unknow'} completed successfully"  # noqa E501
+        )
 
     def on_tool_error(
         self, source: Optional[Node], result: Result[Any, Exception]
     ) -> None:
-        print(f"[red] Tool: {source.name} failed with error: {result.unwrap_err_val()}")
+        print(
+            f"[red] Tool: {source.name if source else 'Unknow'} failed with error: {result.unwrap_err_val()}"  # noqa E501
+        )
 
     def on_llm_end(
         self,
@@ -64,20 +65,20 @@ class OutputHandler(BaseCallBackHandler):
         **kwargs: Any,
     ) -> None:
         print(f"[red]LLM: {source.name} failed with error: {e}")
-        
-        
 
     def on_agent_start(
         self, source: Node, message: BaseMessage, *args: Any, **kwargs: Any
     ) -> None:
-        print(f"[bold blue]{source.name if source else 'Unknown'}' Task: {message.content}")
-
+        print(
+            f"[bold blue]{source.name if source else 'Unknown'}' Task: {message.content}"  # noqa E501
+        )
 
     def on_agent_end(
         self, source: Node, message: BaseMessage, *args: Any, **kwargs: Any
     ) -> None:
-        print(f"[bold blue]{source.name if source else 'Unknown'}' Response: {message.content}")
-
+        print(
+            f"[bold blue]{source.name if source else 'Unknown'}' Response: {message.content}"  # noqa E501
+        )
 
     def on_agent_error(
         self,
@@ -86,5 +87,6 @@ class OutputHandler(BaseCallBackHandler):
         *args: Any,
         **kwargs: Any,
     ) -> None:
-        print(f"[bold blue]{source.name if source else 'Unknown'}' Error: {result.unwrap_err_val()}")
-        
+        print(
+            f"[bold blue]{source.name if source else 'Unknown'}' Error: {result.unwrap_err_val()}"  # noqa E501
+        )
