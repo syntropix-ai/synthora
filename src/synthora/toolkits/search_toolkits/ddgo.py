@@ -22,7 +22,7 @@ from synthora.types.enums import Err, Ok, Result
 
 @tool
 def search_duckduckgo(
-    query: str, source: str = "text", max_results: int = 5
+    query: str, content_type: str = "text", max_results: int = 5
 ) -> Result[str, Exception]:
     r"""Use DuckDuckGo search engine to search information for
     the given query.
@@ -33,7 +33,7 @@ def search_duckduckgo(
 
     Args:
         query (str): The query to be searched.
-        source (str): The type of information to query (e.g., "text",
+        content_type (str): The type of information to query (e.g., "text",
             "images", "videos"). Defaults to "text".
         max_results (int): Max number of results, defaults to `5`.
     """
@@ -44,7 +44,7 @@ def search_duckduckgo(
         ddgs = DDGS()
         ans = ""
 
-        if source == "text":
+        if content_type == "text":
             results = ddgs.text(keywords=query, max_results=max_results)
             for i, result in enumerate(results, start=1):
                 ans += f"""
@@ -52,7 +52,7 @@ def search_duckduckgo(
                 Description: {result["body"]}
                 URL: {result["href"]}
                 """
-        elif source == "images":
+        elif content_type == "images":
             results = ddgs.images(keywords=query, max_results=max_results)
             for i, result in enumerate(results, start=1):
                 ans += f"""
@@ -62,7 +62,7 @@ def search_duckduckgo(
                 Source: {result["source"]}
                 """
 
-        elif source == "videos":
+        elif content_type == "videos":
             results = ddgs.videos(keywords=query, max_results=max_results)
             for i, result in enumerate(results, start=1):
                 ans += f"""
