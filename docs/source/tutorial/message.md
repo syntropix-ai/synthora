@@ -15,12 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# 🎉 Welcome to the **BaseMessage Tutorial!** 🎉
-
-In this tutorial, we’ll dive into the fun world of `BaseMessage`, a powerful and flexible way to manage chat messages. Whether you’re working on bots, assistants, or systems that talk, this is your one-stop-shop for creating, validating, and working with structured messages. Let’s get started!
-
-
-
 ## 🛠️ What is `BaseMessage`?
 
 `BaseMessage` is a foundational class that helps manage various types of chat messages—user messages, system messages, assistant responses, and even tool interactions. Think of it as your ultimate message toolkit.

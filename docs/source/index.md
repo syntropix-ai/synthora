@@ -48,13 +48,6 @@ Isn't it beautiful if one shares his effort in specialized intelligence, allowin
 - 🤝 Enabling multi-agent interactions.
 - 🔧 Powerful workflows to assist in accomplishing diverse tasks.
 
-## Installation
-
-To install Synthora Python Library from PyPI, simply run:
-
-```shell Shell
-pip install synthora
-```
 
 ## What Makes Synthora Different
 
@@ -70,59 +63,37 @@ At present, Synthora does not support **Retrieval**. Many retrieval libraries al
 However, these libraries can be easily integrated with Synthora. All you need to do is treat them as a tool or use a sequential workflow to obtain retrieval results.
 
 
-## Quick Start
-
-### Chat with Agent
-
-```python
-
-import warnings
-
-from synthora.callbacks import RichOutputHandler
-from synthora.agents import VanillaAgent
-
-warnings.filterwarnings("ignore")
-
-agent = VanillaAgent.default("You are a Vanilla Agent.", handlers=[RichOutputHandler()])
-agent.run("Hi! How are you?")
-```
-
-### Define Tools
-
-```python
-from synthora.toolkits.decorators import tool
-
-
-@tool
-def add(a: int, b: int) -> int:
-    r"""Add two numbers together."""
-    return a + b
-```
-
-### Workflow
-
-```python
-def add(x: int, y: int) -> int:
-    return x + y
-
-flow = (BaseTask(add) | BaseTask(add)) >> BaseTask(add)
-flow.run(1, 2)
-```
 
 ```{toctree}
-:caption: Tutorial
-:maxdepth: 5
+:caption: Getting Started
+:maxdepth: 1
 :hidden:
 
-tutorial/agent_config
-tutorial/message
-tutorial/callback
-tutorial/workflow
+start/intro.md
+start/installation.md
+start/firststep.md
+```
+
+```{toctree}
+:caption: Core Modules
+:maxdepth: 3
+:hidden:
+
+modules/config.md
+modules/prompt.md
+modules/message.md
+modules/model.md
+modules/agent/index.rst
+modules/memory.md
+modules/toolkit.md
+modules/callback.md
+modules/workflow/index.rst
+modules/result.md
 
 ```
 
 ```{toctree}
-:caption: Examples
+:caption: CookBooks
 :maxdepth: 2
 :hidden:
 

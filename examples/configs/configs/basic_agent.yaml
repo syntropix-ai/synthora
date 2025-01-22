@@ -16,18 +16,6 @@
 #
 
 name: test
-type: react
-description: "This is a test agent"
+type: vanilla
 model: !include basic_model.yaml
 prompt: "What is the capital of France? {x}"
-tools:
-  - 'retrieval.ABCRetriever'
-  - target: 'tool.math'
-    trace: false
-    args:
-      key: value
-  - target: 'synropic.agents.VanillaAgent'
-    args: !include vanilla_agent.yaml
-  - target: 'synropic.agents.buildin.SearchAgent'
-    args:
-      top_k: 5
