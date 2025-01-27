@@ -126,3 +126,8 @@ class TaskState(str, Enum):
     COMPLETED = "completed"
     FAILURE = "failure"
     SKIPPED = "skipped"
+
+
+class TriggerRuntime(str, Enum):
+    SYNC = "sync"
+    ASYNC = "async"

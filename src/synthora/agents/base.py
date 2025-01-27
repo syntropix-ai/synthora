@@ -122,15 +122,7 @@ class BaseAgent(ABC):
         self.tools = tools or []
         self.history: BaseMemory = FullContextMemory()
         self.callback_manager = get_callback_manager(handlers or [])
-
-    @property
-    def schema(self) -> Dict[str, Any]:
-        """Generate the JSON schema describing this agent's interface.
-
-        Returns:
-            The schema of the agent.
-        """
-        return {
+        self.schema = {
             "type": "function",
             "function": {
                 "name": self.name,
@@ -146,6 +138,34 @@ class BaseAgent(ABC):
             },
         }
 
+    def set_name(self, name: str) -> Self:
+        """Set the agent's name.
+
+        Args:
+            name:
+                The new name for the agent.
+
+        Returns:
+            The agent instance.
+        """
+        self.name = name
+        self.schema["function"]["name"] = name  # type: ignore[index]
+        return self
+
+    def set_description(self, description: str) -> Self:
+        """Set the agent's description.
+
+        Args:
+            description:
+                The new description for the agent.
+
+        Returns:
+            The agent instance.
+        """
+        self.description = description
+        self.schema["function"]["description"] = description  # type: ignore[index]
+        return self
+
     @property
     def parameters(self) -> Dict[str, Any]:
         """Get the parameters schema for this agent.
@@ -154,7 +174,7 @@ class BaseAgent(ABC):
             A dictionary containing the properties section of the agent's
             function parameters schema
         """
-        return self.schema["function"]["parameters"]["properties"]  # type: ignore[no-any-return]
+        return self.schema["function"]["parameters"]["properties"]  # type: ignore
 
     @abstractmethod
     def run(
