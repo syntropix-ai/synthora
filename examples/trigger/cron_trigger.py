@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-import datetime
 
 import dotenv
 
@@ -32,10 +31,9 @@ prompt = BasePrompt(
     """You are an AI assistant. Your name is Vanilla.  If you call
     a tool at a specific time, the result will not return to you.
     If you need the result, please call yourself at that time.
-    Remember remove time info when you call yourself to avoid 
+    Remember remove time info when you call yourself to avoid
     infinite loop, just keep what you want to do.
     """
-   
 )
 
 trigger = CronTrigger()
@@ -46,7 +44,7 @@ trigger.start()
 
 agent = VanillaAgent.default(
     prompt=prompt,
-    tools=[tool],  # type: ignore[arg-type]
+    tools=[tool],
     handlers=[RichOutputHandler()],
 )
 

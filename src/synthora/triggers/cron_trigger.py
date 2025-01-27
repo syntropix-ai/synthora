@@ -17,10 +17,10 @@
 
 
 from datetime import datetime
-from typing import Any, Optional, Self, Union
+from typing import Any, List, Optional, Self, Union
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.schedulers.base import BaseScheduler
+from apscheduler.schedulers.base import BaseScheduler, Job
 from pydantic import BaseModel, Field
 
 from synthora.agents.base import BaseAgent
@@ -71,12 +71,12 @@ class CronTriggerArgs(BaseModel):
 
 class CronTrigger(BaseTrigger):
     r"""A trigger that schedules a function to run at a specific time
-    
+
     The trigger uses the `APScheduler <https://apscheduler.readthedocs.io/en/stable/>`_
     library to schedule the function to run at a specific time. The trigger
     uses the cron syntax to specify the time at which the function should be
     run.
-    
+
     Attributes:
         args_name:
             The name of the argument that will be used to pass the trigger
@@ -85,6 +85,7 @@ class CronTrigger(BaseTrigger):
             The scheduler to use for scheduling the function. Defaults to
             a BackgroundScheduler.
     """
+
     def __init__(
         self,
         args_name: str = "__time",
@@ -92,27 +93,28 @@ class CronTrigger(BaseTrigger):
     ):
         super().__init__(args_name)
         self.scheduler = scheduler or BackgroundScheduler()
-        self.jobs = []
+        self.jobs: List[Job] = []
 
     def add(self, obj: Union[BaseFunction, BaseAgent]) -> Self:
         r"""Add the trigger to the function or agent
-        
+
         Args:
 
             obj:
                 The function or agent to which the trigger should be added.
-                
+
         Returns:
-            Self: The trigger object with the trigger added to the function or agent.
+            Self: The trigger object with the trigger added
+                to the function or agent.
         """
         if (
             self.args_name
-            in obj.schema["function"]["parameters"]["properties"]
+            in obj.schema["function"]["parameters"]["properties"]  # type: ignore[index]
         ):
             raise ValueError(
                 f"Parameter {self.args_name} already exists in {obj.name}"
             )
-        obj.schema["function"]["parameters"]["properties"][self.args_name] = (
+        obj.schema["function"]["parameters"]["properties"][self.args_name] = (  # type: ignore[index]
             CronTriggerArgs.model_json_schema()
         )
         _run = obj.run
@@ -129,7 +131,7 @@ class CronTrigger(BaseTrigger):
             self.jobs.append(job)
             return Ok(f"Task {obj.name} added successfully!")
 
-        obj.run = run
+        obj.run = run  # type: ignore[method-assign]
         _async_run = obj.async_run
 
         async def async_run(
@@ -139,7 +141,7 @@ class CronTrigger(BaseTrigger):
             if self.args_name in kwargs:
                 del kwargs[self.args_name]
             if not trigger_args:
-                return await _async_run(*args, **kwargs)
+                return await _async_run(*args, **kwargs)  # type: ignore
 
             job = self.scheduler.add_job(
                 obj.async_run, **trigger_args, args=args, kwargs=kwargs
@@ -147,13 +149,13 @@ class CronTrigger(BaseTrigger):
             self.jobs.append(job)
             return Ok(f"Task {obj.name} added successfully!")
 
-        obj.async_run = async_run
+        obj.async_run = async_run  # type: ignore[method-assign]
 
         return self
 
     def start(self) -> Self:
         r"""Start the scheduler
-        
+
         Returns:
             Self: The trigger object with the scheduler started.
         """
@@ -162,12 +164,12 @@ class CronTrigger(BaseTrigger):
 
     def stop(self, wait: bool = True) -> Self:
         r"""Stop the scheduler
-        
+
         Args:
             wait:
                 Whether to wait for the scheduler to stop before returning.
                 Defaults to True.
-                
+
         Returns:
             Self: The trigger object with the scheduler stopped.
         """
