@@ -176,7 +176,8 @@ class ReactAgent(BaseAgent):
         """
         UPDATE_SYSTEM(prompt=FORMAT_PROMPT())
         for _args in self.prompt.args:
-            del kwargs[_args]
+            if _args in kwargs:
+                del kwargs[_args]
         message = cast(BaseMessage, STR_TO_USERMESSAGE())
         if message.content:
             self.history.append(message)
