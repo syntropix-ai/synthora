@@ -23,6 +23,7 @@ from .enums import (
     NodeType,
     Ok,
     Result,
+    TriggerRuntime,
 )
 from .event import TraceEvent
 from .node import Node
@@ -76,4 +77,5 @@ __all__ = [
     "CallBackEvent",
     "TraceEvent",
     "HttpAgentRequest",
+    "TriggerRuntime",
 ]
