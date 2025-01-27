@@ -15,26 +15,30 @@
 # limitations under the License.
 #
 
+import datetime
+
 import dotenv
 
 from synthora.agents import VanillaAgent
 from synthora.callbacks import RichOutputHandler
-from synthora.toolkits.weather import WeatherToolkit
-from synthora.triggers.apscheduler_trigger import APSchedulerTrigger
 from synthora.prompts import BasePrompt
-import datetime
+from synthora.toolkits.weather import WeatherToolkit
+from synthora.triggers import CronTrigger
+
 
 dotenv.load_dotenv()
 
 prompt = BasePrompt(
-    """You are an AI assistant. Your name is Vanilla.  If you call 
+    """You are an AI assistant. Your name is Vanilla.  If you call
     a tool at a specific time, the result will not return to you.
     If you need the result, please call yourself at that time.
-    curent time is: 
-    """ + datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S")
+    Remember remove time info when you call yourself to avoid 
+    infinite loop, just keep what you want to do.
+    """
+   
 )
 
-trigger = APSchedulerTrigger()
+trigger = CronTrigger()
 tool = WeatherToolkit().get_weather_data
 
 trigger.add(tool)
@@ -45,18 +49,14 @@ agent = VanillaAgent.default(
     tools=[tool],  # type: ignore[arg-type]
     handlers=[RichOutputHandler()],
 )
-print(tool.schema)
 
 agent.add_tool(trigger.wrap_agent(agent))
 
-for t in agent.tools:
-    print(t.name)
-
 while True:
-    inp = input("Enter a search query: ")
+    inp = input()
     if inp == "exit":
         break
-    
+
     res = agent.run(inp)
 
 trigger.stop()
