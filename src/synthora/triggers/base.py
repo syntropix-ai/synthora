@@ -29,6 +29,12 @@ class BaseTrigger(ABC):
     @abstractmethod
     def add(self, obj: Union[BaseFunction, BaseAgent]) -> Self: ...
 
+    @abstractmethod
+    def start(self) -> Self: ...
+
+    @abstractmethod
+    def stop(self, wait: bool = True) -> Self: ...
+
     def wrap_agent(
         self,
         agent: BaseAgent,

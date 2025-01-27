@@ -23,20 +23,20 @@ from synthora.agents import VanillaAgent
 from synthora.callbacks import RichOutputHandler
 from synthora.prompts import BasePrompt
 from synthora.toolkits.weather import WeatherToolkit
-from synthora.triggers import TimeTrigger
+from synthora.triggers import DateTrigger
 
 
 dotenv.load_dotenv()
 
 prompt = BasePrompt(
-    """You are an AI assistant. Your name is Vanilla. Current time is:
-    2025-01-27 01:21:15. If you call
+    """You are an AI assistant. Your name is Vanilla.  If you call
     a tool at a specific time, the result will not return to you.
     If you need the result, please call yourself at that time.
+    Remember remove time when you call yourself.
     """
 )
 
-trigger = TimeTrigger(beat=1)
+trigger = DateTrigger()
 tool = WeatherToolkit().get_weather_data
 
 trigger.add(tool)
@@ -47,15 +47,11 @@ agent = VanillaAgent.default(
     tools=[tool],
     handlers=[RichOutputHandler()],
 )
-# print(agent.schema)
 
 agent.add_tool(trigger.wrap_agent(agent))
 
-for t in agent.tools:
-    print(t.name)
-
 while True:
-    inp = input("Enter a search query: ")
+    inp = input()
     if inp == "exit":
         break
     time_str = datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S")
