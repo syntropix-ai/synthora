@@ -127,7 +127,7 @@ def power(base: int, exp: int) -> int:
     return base ** exp
 
 immutable_task = power.si(2, 3)  # Locks the parameters
-print(immutable_task(4, 5))  # Output: 8 (only 2**3 is executed)
+print(immutable_task(4, 5))  # Output: 6 (only 2**3 is executed)
 ```
 
 ---
