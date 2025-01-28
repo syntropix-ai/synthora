@@ -37,15 +37,8 @@ agent2 = VanillaAgent.from_config(config)
 def convert(resp: Result[BaseMessage, Exception]) -> str:
     return str(resp.unwrap().content)
 
-
-prompt1 = (
-    "Please debate: What came first, the chicken or the egg? "
-    "Your argument is that the egg came first."
-)
-prompt2 = (
-    "Please debate: What came first, the chicken or the egg? "
-    "Your argument is that the chicken came first."
-)
+prompt1 = "Argue why humanity should prioritize going to Mars. Your answer should be very short."
+prompt2 = "Argue why humanity should not prioritize going to Mars. Your answer should be very short."
 
 for round in range(2):
     flow1 = (BaseTask(agent1.run) >> BaseTask(convert)).s(prompt1)
