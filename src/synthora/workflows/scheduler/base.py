@@ -70,6 +70,17 @@ class BaseScheduler(ABC):
                     if sub_task:
                         return sub_task
         return None
+    
+    def get_workflow_by_task(self, name: str) -> Optional["BaseScheduler"]:
+        for task_group in self.tasks:
+            for task in task_group:
+                if task.name == name:
+                    return self
+                if isinstance(task, BaseScheduler):
+                    sub_task = task.get_workflow_by_task(name)
+                    if sub_task:
+                        return sub_task
+        return None
 
     def signature(
         self,
@@ -77,19 +88,19 @@ class BaseScheduler(ABC):
         kwargs: Dict[str, Any],
         immutable: bool = False,
     ) -> Self:
-        self._args += list(args)
-        self._kwargs.update(kwargs)
+        self._args = list(args)
+        self._kwargs = kwargs
         self.immutable = immutable
         return self
 
     def s(self, *args: Any, **kwargs: Any) -> Self:
-        self._args += list(args)
-        self._kwargs.update(kwargs)
+        self._args = list(args)
+        self._kwargs = kwargs
         return self
 
     def si(self, *args: Any, **kwargs: Any) -> Self:
-        self._args += list(args)
-        self._kwargs.update(kwargs)
+        self._args = list(args)
+        self._kwargs = kwargs
         self.immutable = True
         return self
 

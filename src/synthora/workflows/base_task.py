@@ -140,8 +140,8 @@ class BaseTask(ABC):
         Returns:
             The task instance with the provided signature.
         """
-        self._args += list(args)
-        self._kwargs.update(kwargs)
+        self._args = list(args)
+        self._kwargs = kwargs
         self.immutable = immutable
         return self
 
@@ -160,8 +160,8 @@ class BaseTask(ABC):
         Returns:
             The task instance with the provided signature.
         """
-        self._args += list(args)
-        self._kwargs.update(kwargs)
+        self._args = list(args)
+        self._kwargs = kwargs
         return self
 
     def si(self, *args: Any, **kwargs: Any) -> Self:
@@ -179,8 +179,8 @@ class BaseTask(ABC):
         Returns:
             The task instance with the provided signature.
         """
-        self._args += list(args)
-        self._kwargs.update(kwargs)
+        self._args = list(args)
+        self._kwargs = kwargs
         self.immutable = True
         return self
 
