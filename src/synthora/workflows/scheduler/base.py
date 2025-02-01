@@ -70,7 +70,7 @@ class BaseScheduler(ABC):
                     if sub_task:
                         return sub_task
         return None
-    
+
     def get_workflow_by_task(self, name: str) -> Optional["BaseScheduler"]:
         for task_group in self.tasks:
             for task in task_group:

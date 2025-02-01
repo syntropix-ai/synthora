@@ -37,8 +37,9 @@ agent2 = VanillaAgent.from_config(config)
 def convert(resp: Result[BaseMessage, Exception]) -> str:
     return str(resp.unwrap().content)
 
-prompt1 = "Argue why humanity should prioritize going to Mars. Your answer should be very short."
-prompt2 = "Argue why humanity should not prioritize going to Mars. Your answer should be very short."
+
+prompt1 = "Argue why humanity should prioritize going to Mars. Your answer should be very short."  # noqa E501
+prompt2 = "Argue why humanity should not prioritize going to Mars. Your answer should be very short."  # noqa E501
 
 for round in range(2):
     flow1 = (BaseTask(agent1.run) >> BaseTask(convert)).s(prompt1)
