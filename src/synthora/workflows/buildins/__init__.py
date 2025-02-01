@@ -14,3 +14,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from multiprocessing.context import BaseContext
+from typing import Any, Optional
+from synthora.workflows import task
+from synthora.workflows.base_task import BaseTask
+
+def empty(name: Optional[str] = None) -> BaseTask:
+    @task(flat_result=True)
+    def _empty(*args: Any, **kwargs: Any) -> Any:
+        if kwargs:
+            return *args, kwargs
+        return args
+    if name:
+        _empty.name = name
+    return _empty
+
+from .loop import for_loop, while_loop
+from .condition import if_else
+
+__all__ = ["for_loop", "while_loop", "if_else", "empty"]
