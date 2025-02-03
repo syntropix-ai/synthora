@@ -17,7 +17,7 @@
 
 [tool.poetry]
 name = "synthora"
-version = "0.1.7"
+version = "0.1.8"
 description = "Synthora is a lightweight and extensible framework for LLM-driven Agents and ALM research. It provides essential components to build, test and evaluate agents. At its core, Synthora aims to assemble an agent with a single config, thus minimizing your effort in building, tuning, and sharing agents."
 authors = ["Syntropix.AI"]
 license = "Apache 2.0"
