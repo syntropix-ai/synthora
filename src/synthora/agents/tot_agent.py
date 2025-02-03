@@ -343,7 +343,10 @@ class ToTAgent(BaseAgent):
                         resp_value = resp.unwrap()
                     except Exception as e:
                         resp_value = f"Error: {str(e)}"
-                        self.on_error(resp)
+                        try:
+                            self.on_error(resp)
+                        except Exception as _:
+                            self.on_error(Err(e, resp_value))
 
                     self.states[self.cursor][-1].append(
                         BaseMessage.create_message(

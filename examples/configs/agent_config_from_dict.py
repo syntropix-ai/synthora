@@ -57,7 +57,7 @@ json_data = textwrap.dedent(
             "prompt": "You are an AI Assistant. You are here to help me with my queries. Your name is vanilla.",
             "tools": [
               {
-                "target": "synthora.toolkits.SearchToolkit",
+                "target": "synthora.toolkits.search_toolkit.SearchToolkit",
                 "trace": true,
                 "args": {}
               }
@@ -65,7 +65,7 @@ json_data = textwrap.dedent(
           }
         },
         {
-          "target": "synthora.toolkits.SearchToolkit",
+          "target": "synthora.toolkits.search_toolkit.SearchToolkit",
           "trace": true,
           "args": {}
         }

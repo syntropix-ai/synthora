@@ -21,4 +21,4 @@ type: react
 model: !include basic_model.yaml
 prompt: !prompt FewShotReactPrompt
 tools:
-  - synthora.toolkits.SearchToolkit
+  - synthora.toolkits.search_toolkit.SearchToolkit

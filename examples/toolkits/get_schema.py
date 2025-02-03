@@ -18,7 +18,7 @@
 import asyncio
 import json
 
-from synthora.toolkits import BasicMathToolkit
+from synthora.toolkits.basic_math_toolkit import BasicMathToolkit
 
 
 loop = asyncio.new_event_loop()

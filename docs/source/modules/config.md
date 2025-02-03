@@ -78,14 +78,14 @@ type: vanilla
 model: !include basic_model.yaml
 prompt: "You are an AI Assistant. You are here to help me with my queries. Your name is vanilla."
 tools:
-  - synthora.toolkits.BasicMathToolkit
+  - synthora.toolkits.basic_math_toolkit.BasicMathToolkit
   - target: synthora.agents.VanillaAgent
     args: !include basic_agent.yaml
 ```
 
 #### Key Additions:
 - **`tools`**: Specifies tools or other agents that the current agent can use.
-  - **`synthora.toolkits.BasicMathToolkit`**: A toolkit providing basic math functionalities.
+  - **`synthora.toolkits.basic_math_toolkit.BasicMathToolkit`**: A toolkit providing basic math functionalities.
   - **`target`**: Points to another agent class, here `synthora.agents.VanillaAgent`.
   - **`args`**: Includes configuration for the target agent using `!include`.
 

@@ -163,3 +163,5 @@ cython_debug/
 
 test.py
 .vscode/
+tools/
+test.ipynb

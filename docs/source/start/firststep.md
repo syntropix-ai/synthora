@@ -128,7 +128,7 @@ agent = VanillaAgent.default(
     tools=[add],
     handlers=[RichOutputHandler()],
 )
-agent.run("114514 + 1919810 = ?")
+agent.run("123 + 321 = ?")
 ```
 
 The ability to integrate both predefined and custom tools allows agents to tackle a wide range of real-world problems seamlessly.

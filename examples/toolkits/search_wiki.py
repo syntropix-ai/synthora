@@ -17,7 +17,7 @@
 
 import json
 
-from synthora.toolkits import SearchToolkit
+from synthora.toolkits.search_toolkit import SearchToolkit
 
 
 toolkit = SearchToolkit()

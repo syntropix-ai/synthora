@@ -30,7 +30,14 @@ from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import BaseFunction
 from synthora.toolkits.decorators import tool
-from synthora.types.enums import AgentType, MessageRole, NodeType, Ok, Result
+from synthora.types.enums import (
+    AgentType,
+    Err,
+    MessageRole,
+    NodeType,
+    Ok,
+    Result,
+)
 from synthora.types.node import Node
 from synthora.utils.macros import (
     ASYNC_GET_FINAL_MESSAGE,
@@ -235,7 +242,10 @@ class ReactAgent(BaseAgent):
                     resp_value = resp.unwrap()
                 except Exception as e:
                     resp_value = f"Error: {str(e)}"
-                    self.on_error(resp)
+                    try:
+                        self.on_error(resp)
+                    except Exception as _:
+                        self.on_error(Err(e, resp_value))
 
                 self.history.append(
                     BaseMessage.create_message(
