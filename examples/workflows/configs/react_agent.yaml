@@ -28,4 +28,4 @@ prompt: |
 
   YOU MUST Output the thought first!
 tools:
-  - synthora.toolkits.SearchToolkit
+  - synthora.toolkits.search_toolkit.SearchToolkit

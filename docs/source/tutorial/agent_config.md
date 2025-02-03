@@ -76,7 +76,7 @@ type: vanilla
 model: !include basic_model.yaml
 prompt: "You are an AI Assistant with search capabilities. You can search the web to answer questions."
 tools:
-  - synthora.toolkits.SearchToolkit  # Adds search functionality! 🔍
+  - synthora.toolkits.search_toolkit.SearchToolkit  # Adds search functionality! 🔍
 ```
 
 The model configuration remains the same, but now your agent can search the web!

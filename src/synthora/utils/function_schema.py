@@ -75,9 +75,9 @@ def get_openai_tool_schema(func: Callable[..., Any]) -> Dict[str, Any]:
     paras_schema = model.model_json_schema()
 
     # Remove 'self' parameter if present (for class methods)
-    if "self" in paras_schema["properties"]:
+    if "properties" in paras_schema and "self" in paras_schema["properties"]:
         del paras_schema["properties"]["self"]
-    if "self" in paras_schema["required"]:
+    if "required" in paras_schema and "self" in paras_schema["required"]:
         paras_schema["required"].remove("self")
 
     # Handle functions without docstrings

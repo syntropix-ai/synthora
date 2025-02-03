@@ -17,14 +17,14 @@
 
 [tool.poetry]
 name = "synthora"
-version = "0.1.4"
+version = "0.1.6"
 description = "Synthora is a lightweight and extensible framework for LLM-driven Agents and ALM research. It provides essential components to build, test and evaluate agents. At its core, Synthora aims to assemble an agent with a single config, thus minimizing your effort in building, tuning, and sharing agents."
 authors = ["Syntropix.AI"]
 license = "Apache 2.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 pydantic = "^2.10.1"
 docstring-parser = "^0.16"
 asyncio = "^3.4.3"
@@ -40,6 +40,7 @@ trafilatura = {version = "^2.0.0", optional = true}
 wikipedia = {version = "^1.4.0", optional = true}
 pymediawiki = "^0.7.5"
 apscheduler = "^3.11.0"
+pyyaml = "^6.0.2"
 
 [tool.poetry.extras]
 services = ["discord-py", "slack-bolt"]

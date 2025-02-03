@@ -42,9 +42,7 @@ asyncio.run(
     agent.async_run(
         textwrap.dedent(
             """\
-            Consider a regular octagon.
-            How many different triangles can be formed if the octagon is placed inside a circle and we can also use
-            the center of the circle as a vertex for the triangles? Let's think step by step.
+            search openai
             """  # noqa: E501
         )
     )
