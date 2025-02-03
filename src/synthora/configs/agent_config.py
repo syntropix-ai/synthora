@@ -16,7 +16,13 @@
 #
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Self, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 import yaml
 

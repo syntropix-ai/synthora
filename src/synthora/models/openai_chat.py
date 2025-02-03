@@ -24,7 +24,6 @@ from typing import (
     List,
     Optional,
     Union,
-    override,
 )
 
 from openai import AsyncOpenAI, OpenAI
@@ -220,7 +219,6 @@ class OpenAIChatBackend(BaseModelBackend):
             )
             return result
 
-    @override
     async def async_run(
         self,
         messages: Union[List[BaseMessage], BaseMessage],

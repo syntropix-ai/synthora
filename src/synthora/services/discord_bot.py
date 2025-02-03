@@ -18,7 +18,13 @@
 import asyncio
 import os
 from copy import deepcopy
-from typing import Dict, Optional, Self, Union
+from typing import Dict, Optional, Union
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 import discord
 

@@ -76,12 +76,8 @@ However, these libraries can be easily integrated with Synthora. All you need to
 
 ```python
 
-import warnings
-
 from synthora.callbacks import RichOutputHandler
 from synthora.agents import VanillaAgent
-
-warnings.filterwarnings("ignore")
 
 agent = VanillaAgent.default("You are a Vanilla Agent.", handlers=[RichOutputHandler()])
 agent.run("Hi! How are you?")
