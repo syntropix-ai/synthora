@@ -16,6 +16,7 @@
 #
 
 import textwrap
+from typing import Optional
 
 from synthora.memories.base import BaseMemory
 from synthora.memories.full_context_memory import FullContextMemory
@@ -31,12 +32,12 @@ class SummaryMemory(BaseMemory):
         self,
         n: int = 15,
         cache_size: int = 6,
-        summary_model: BaseModelBackend = OpenAIChatBackend.default(),
+        summary_model: Optional[BaseModelBackend] = None,
     ) -> None:
         super().__init__()
         self.n = n
         self.cache_size = cache_size
-        self.summary_model = summary_model
+        self.summary_model = summary_model or OpenAIChatBackend.default()
 
     def append(self, message: BaseMessage) -> None:
         super().append(message)
