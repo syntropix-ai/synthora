@@ -16,7 +16,13 @@
 #
 
 from pathlib import Path
-from typing import Any, Dict, Self, Type, Union
+from typing import Any, Dict, Type, Union
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 from pydantic import BaseModel
 

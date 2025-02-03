@@ -16,7 +16,13 @@
 #
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Optional, Self, Union
+from typing import Any, Callable, Dict, Optional, Union
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 from synthora.agents.base import BaseAgent
 from synthora.models.base import BaseModelBackend

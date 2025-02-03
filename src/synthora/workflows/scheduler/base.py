@@ -24,11 +24,16 @@ from typing import (
     Iterable,
     List,
     Optional,
-    Self,
     Union,
     get_type_hints,
 )
 from uuid import uuid4
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 from synthora.types.enums import TaskState
 from synthora.workflows.base_task import AsyncTask, BaseTask

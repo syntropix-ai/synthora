@@ -23,9 +23,14 @@ from typing import (
     Dict,
     List,
     Optional,
-    Self,
     Union,
 )
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 from uuid import uuid4
 
 from synthora.types.enums import TaskState

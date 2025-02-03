@@ -16,7 +16,13 @@
 #
 
 from copy import deepcopy
-from typing import Any, AnyStr, Dict, List, Optional, Self, Type, Union
+from typing import Any, AnyStr, Dict, List, Optional, Type, Union
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 from pydantic import BaseModel, model_validator
 

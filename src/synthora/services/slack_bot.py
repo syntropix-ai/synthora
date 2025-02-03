@@ -18,7 +18,13 @@
 import os
 import re
 from copy import deepcopy
-from typing import Any, Callable, Dict, Optional, Self, Union
+from typing import Any, Callable, Dict, Optional, Union
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler

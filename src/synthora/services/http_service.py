@@ -16,7 +16,13 @@
 #
 
 from asyncio import Task
-from typing import TYPE_CHECKING, Any, Literal, Optional, Self, Union
+from typing import TYPE_CHECKING, Any, Literal, Optional, Union
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 from synthora.agents.base import BaseAgent
 from synthora.models.base import BaseModelBackend

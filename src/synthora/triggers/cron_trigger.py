@@ -17,7 +17,13 @@
 
 
 from datetime import datetime
-from typing import Any, List, Optional, Self, Union
+from typing import Any, List, Optional, Union
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.schedulers.base import BaseScheduler, Job

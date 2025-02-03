@@ -15,7 +15,13 @@
 # limitations under the License.
 #
 
-from typing import Any, List, Optional, Self, Union, cast
+from typing import Any, List, Optional, Union, cast
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 from synthora.agents import BaseAgent
 from synthora.callbacks.base_handler import (

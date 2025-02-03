@@ -23,7 +23,6 @@ from typing import (
     List,
     Optional,
     Union,
-    override,
 )
 
 from openai import AsyncOpenAI, OpenAI
@@ -190,7 +189,6 @@ class OpenAICompletionBackend(OpenAIChatBackend):
             )
             return result
 
-    @override
     async def async_run(
         self,
         prompt: Union[str, BaseMessage],  # type: ignore[override]

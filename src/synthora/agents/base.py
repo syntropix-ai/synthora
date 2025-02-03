@@ -19,7 +19,13 @@ import importlib
 import inspect
 import json
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Self, Type, Union
+from typing import Any, Dict, List, Optional, Type, Union
+
+
+try:
+    from typing import Self
+except ImportError:
+    from typing_extensions import Self
 
 from synthora.callbacks import get_callback_manager
 from synthora.callbacks.base_handler import (

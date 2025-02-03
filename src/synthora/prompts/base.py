@@ -16,7 +16,7 @@
 #
 
 import re
-from typing import Any, Set, override
+from typing import Any, Set
 
 from pydantic_core import core_schema
 from pydantic_core.core_schema import StringSchema
@@ -42,7 +42,6 @@ class BasePrompt(str):
         """
         return set(re.findall(r"{([^}]*)}", self))
 
-    @override
     def format(self, **kwargs: Any) -> "BasePrompt":  # type: ignore[override]
         """Format the prompt template with provided arguments.
 
