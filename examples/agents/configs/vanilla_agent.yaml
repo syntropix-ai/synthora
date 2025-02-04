@@ -21,4 +21,4 @@ type: vanilla
 model: !include basic_model.yaml
 prompt: "You are an AI Assistant. You are here to help me with my queries. Your name if vanilla."
 tools:
-  - synthora.toolkits.search_toolkit.search_toolkit
+  - synthora.toolkits.search_toolkit.SearchToolkit
