@@ -31,6 +31,8 @@ config = AgentConfig.from_file("examples/agents/configs/react_agent.yaml")
 print(json.dumps(config.model_dump(), indent=2))
 
 agent = ReactAgent.from_config(config)
+
+
 handler = RichOutputHandler()
 agent.add_handler(handler)
 
