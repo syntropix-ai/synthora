@@ -286,19 +286,14 @@ class BaseScheduler(ABC):
                     task.state = TaskState.FAILURE
                     task.meta_data["error"] = str(e)
 
-        self.cursor = (
-            self.get_context().get_cursor(
-                self.name)
-            + 1
-        )
+        self.cursor = self.get_context().get_cursor(self.name) + 1
 
     def run(self, *args: Any, **kwargs: Any) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
         if self.context is None:
             self.set_context(BasicContext(self))
-        cursor = self.get_context().get_cursor(
-            self.name)
+        cursor = self.get_context().get_cursor(self.name)
         self.state = TaskState.RUNNING
         if self.immutable:
             if args and isinstance(args[0], BaseContext):

@@ -15,10 +15,6 @@
 # limitations under the License.
 #
 
-import os
-import time
-from pathlib import Path
-from typing import Optional
 
 import newspaper
 from newspaper import Article
@@ -26,17 +22,17 @@ from newspaper import Article
 from synthora.toolkits.base import BaseToolkit
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Ok, Result
-import json
 
 
 class NewsToolkit(BaseToolkit):
-
     def __init__(self, memoize_articles: bool = True):
         super().__init__()
         self.memoize_articles = memoize_articles
 
     @tool
-    def get_article_list(self, base_url: str, num_articles: int = 20) -> Result[str, Exception]:
+    def get_article_list(
+        self, base_url: str, num_articles: int = 20
+    ) -> Result[str, Exception]:
         """
         Get a list of articles from a news website.
 
@@ -47,7 +43,9 @@ class NewsToolkit(BaseToolkit):
         Returns:
             Result: A list of article URLs.
         """
-        articles =  newspaper.build(base_url, memoize_articles=self.memoize_articles).articles[:num_articles]
+        articles = newspaper.build(
+            base_url, memoize_articles=self.memoize_articles
+        ).articles[:num_articles]
         return Ok([article.url for article in articles])
 
     @tool
@@ -77,13 +75,13 @@ class NewsToolkit(BaseToolkit):
     def get_summary_by_url(self, url: str) -> Result[str, Exception]:
         r"""
         Get the summary of an article from a URL.
-        
+
         Args:
             url: The URL of the article.
-        
+
         Returns:
             Result: The summary of the article.
-        """      
+        """
         article = Article(url)
         article.download()
         article.parse()
@@ -96,4 +94,3 @@ class NewsToolkit(BaseToolkit):
             Summary: {article.summary}
             """
         )
-       
