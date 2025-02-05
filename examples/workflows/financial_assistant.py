@@ -1,17 +1,32 @@
-from datetime import time
+# LICENSE HEADER MANAGED BY add-license-header
+#
+# Copyright 2024-2025 Syntropix-AI.org
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 import os
 import smtplib
 from email.mime.text import MIMEText
-from synthora.toolkits.decorators import tool
-from synthora.triggers.cron_trigger import CronTrigger, CronTriggerArgs
-from synthora.types.enums import Err, Ok, Result
-from synthora.workflows import task, BaseTask
-from synthora.toolkits.news import NewsToolkit
-from synthora.toolkits.finance import FinanceToolkit
+
 from synthora.agents import VanillaAgent
-from synthora.workflows import ThreadPoolScheduler, BaseScheduler, BasicContext
 from synthora.callbacks.output_handler import OutputHandler
-import os
+from synthora.toolkits.decorators import tool
+from synthora.toolkits.finance import FinanceToolkit
+from synthora.toolkits.news import NewsToolkit
+from synthora.types.enums import Err, Ok, Result
+from synthora.workflows import BaseTask, ThreadPoolScheduler
+
 
 EMAIL_ACCOUNT = os.getenv("SMTP_ACCOUNT")
 EMAIL_PASSWORD = os.getenv("SMTP_PASSWORD")
@@ -60,7 +75,9 @@ def get_company_news_urls(symbol):
 def summarize_news(contents):
     print("Summarizing news")
     agent = VanillaAgent.default("Summarize News into a single paragraph")
-    return agent.run("\n\n".join([i.unwrap() for i in contents])).unwrap().content
+    return (
+        agent.run("\n\n".join([i.unwrap() for i in contents])).unwrap().content
+    )
 
 
 def send_email_to_user(email: str, *contents):
@@ -71,7 +88,9 @@ def send_email_to_user(email: str, *contents):
         tools=[send_email],
         handlers=[OutputHandler()],
     )
-    return agent.run("\n\n".join([i.unwrap() for i in contents])).unwrap().content
+    return (
+        agent.run("\n\n".join([i.unwrap() for i in contents])).unwrap().content
+    )
 
 
 stocks = ["AAPL", "TSLA"]

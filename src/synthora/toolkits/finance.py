@@ -15,21 +15,15 @@
 # limitations under the License.
 #
 
-import os
-import time
-from pathlib import Path
-from typing import Optional
 
 import yfinance as yf
-from newspaper import Article
+
 from synthora.toolkits.base import BaseToolkit
 from synthora.toolkits.decorators import tool
 from synthora.types.enums import Ok, Result
-import json
 
 
 class FinanceToolkit(BaseToolkit):
-
     @tool
     @staticmethod
     def get_stock_price(symbol: str) -> Result[str, Exception]:

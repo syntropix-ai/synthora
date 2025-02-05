@@ -35,7 +35,6 @@ class MultiProcessContext(BaseContext):
         self._data = data
         self._data["__workflow"] = workflow
         self._data["__lock"] = lock
-        
 
     @property
     def lock(self) -> Lock:
@@ -111,5 +110,5 @@ class MultiProcessContext(BaseContext):
     def get_cursor(self, id: str) -> int:
         return cast(int, self._data.get(f"__{id}_cursor", 0))
 
-    def set_cursor(self,id: str,  cursor: int) -> None:
+    def set_cursor(self, id: str, cursor: int) -> None:
         self._data[f"__{id}_cursor"] = cursor
