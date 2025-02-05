@@ -46,7 +46,7 @@ class BasicContext(BaseContext):
         """
         super().__init__()
         self._workflow = workflow
-        self._cursor = 0
+        self._cursor = {}
 
     @property
     def lock(self) -> None:
@@ -108,11 +108,11 @@ class BasicContext(BaseContext):
     def workflow(self) -> "BaseScheduler":
         return self._workflow
 
-    def get_cursor(self) -> int:
-        return self._cursor
+    def get_cursor(self, id: str) -> int:
+        return self._cursor.get(id, 0)
 
-    def set_cursor(self, cursor: int) -> None:
-        self._cursor = cursor
+    def set_cursor(self, id: str, cursor: int) -> None:
+        self._cursor[id] = cursor
 
     def __contains__(self, key: Any) -> bool:
         return super().__contains__(key)
