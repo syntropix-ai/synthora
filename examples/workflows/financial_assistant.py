@@ -80,7 +80,10 @@ def summarize_news(contents):
     )
 
 
-def send_email_to_user(email: str, *contents):
+def send_email_to_user(
+    *contents,
+    email: str,
+):
     print(f"Sending Email: {email}")
     print(contents)
     agent = VanillaAgent.default(
@@ -88,9 +91,7 @@ def send_email_to_user(email: str, *contents):
         tools=[send_email],
         handlers=[OutputHandler()],
     )
-    return (
-        agent.run("\n\n".join([i.unwrap() for i in contents])).unwrap().content
-    )
+    return agent.run("\n\n".join([i for i in contents])).unwrap().content
 
 
 stocks = ["AAPL", "TSLA"]
@@ -100,6 +101,6 @@ flow = ThreadPoolScheduler.map(
     >> BaseTask(get_news_summary)
     >> BaseTask(summarize_news),
     stocks,
-) >> BaseTask(send_email_to_user).s("xukunliu@syntropix.ai")
+) >> BaseTask(send_email_to_user).s(email="xukunliu@syntropix.ai")
 
 print(flow.run())
