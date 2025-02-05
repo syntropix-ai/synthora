@@ -111,7 +111,7 @@ class ProcessPoolScheduler(BaseScheduler):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
         current = self.tasks[self.cursor]
-        self.get_context().set_cursor(self.cursor)
+        self.get_context().set_cursor(self.name, self.cursor)
         with ProcessPoolExecutor(self.max_worker) as pool:
             futures = []
             for task in current:
@@ -138,7 +138,7 @@ class ProcessPoolScheduler(BaseScheduler):
                     self.state = TaskState.FAILURE
                     self.get_context().set_state(self.name, TaskState.FAILURE)
 
-        self.cursor = self.get_context().get_cursor() + 1
+        self.cursor = self.get_context().get_cursor(self.name) + 1
 
     def run(self, *args: Any, **kwargs: Any) -> Any:
         r"""Runs all tasks in the scheduler.
@@ -159,7 +159,7 @@ class ProcessPoolScheduler(BaseScheduler):
             lock = manager.Lock()
             context = MultiProcessContext(data, lock, self)
             self.set_context(context)
-        cursor = self.get_context().get_cursor()
+        cursor = self.get_context().get_cursor(self.name)
         self.state = TaskState.RUNNING
         self.get_context().set_state(self.name, TaskState.RUNNING)
         if self.immutable:
@@ -180,7 +180,7 @@ class ProcessPoolScheduler(BaseScheduler):
         if self.cursor == len(self.tasks):
             self.get_context().set_state(self.name, TaskState.COMPLETED)
             self.state = TaskState.COMPLETED
-        self.get_context().set_cursor(cursor)
+        self.get_context().set_cursor(self.name, cursor)
         return self._result
 
     async def async_step(self, *args: Any, **kwargs: Any) -> None:

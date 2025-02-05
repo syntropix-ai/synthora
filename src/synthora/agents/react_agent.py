@@ -257,7 +257,7 @@ class ReactAgent(BaseAgent):
                     BaseMessage.create_message(
                         id=tool_call.id,
                         role=MessageRole.TOOL_RESPONSE,
-                        content=resp_value,
+                        content=str(resp_value),
                         source=tool.source,
                     )
                 )
@@ -353,7 +353,7 @@ class ReactAgent(BaseAgent):
                     BaseMessage.create_message(
                         id=tool_call.id,
                         role=MessageRole.TOOL_RESPONSE,
-                        content=resp_value,
+                        content=str(resp_value),
                         source=tool.source,
                     )
                 )
