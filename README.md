@@ -20,7 +20,7 @@ limitations under the License.
 </div>
 
 <div align="center">
-<a href="https://github.com/syntropix-ai/synthora">
+<a href="https://github.com/syntropix-ai/synthora/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/syntropix-ai/synthora?style=flat" alt="GitHub License">
 </a>
 <a href="https://twitter.com/SyntropixAI">
