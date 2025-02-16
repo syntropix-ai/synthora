@@ -16,7 +16,7 @@ limitations under the License.
 -->
 
 <div align="center">
-    <img src="./assets/logo.png" alt="Synthora Logo" width="350">
+    <img src="../../assets/logo.png" alt="Synthora Logo" width="350">
 </div>
 
 <div align="center">
@@ -110,7 +110,7 @@ For detailed information on core modules, tutorials, and cookbooks, please visit
 
 Synthora is a core component of the **Syntropix Ecosystem**, serving as the hub for our tech stack and community engagement.
 
-![figure](./assets/ecosystem.png)
+![figure](../../assets/ecosystem.png)
 
 We also offer a backend API platform, **Syntropix**, which provides a low-cost, efficient CPU-accelerated inference service—the first of its kind in heterogeneous acceleration. Using Syntropix as your backend API in Synthora unlocks additional benefits:
 
