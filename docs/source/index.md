@@ -16,7 +16,7 @@ limitations under the License.
 -->
 
 <div align="center">
-    <img src="https://github.com/syntropix-ai/synthora/blob/main/assets/logo.png" alt="Synthora Logo" width="350">
+    <img src="https://github.com/syntropix-ai/synthora/blob/main/assets/logo.png?raw=true" alt="Synthora Logo" width="350">
 </div>
 
 <div align="center">
