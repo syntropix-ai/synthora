@@ -77,8 +77,8 @@ source_suffix = [".rst", ".md"]
 html_theme_options = {
     "logo": {
         "text": "Synthora",
-        "image_dark": "http://syntropix.ai/wp-content/uploads/2024/11/White-logo-no-background.png",
-        "image_light": "http://syntropix.ai/wp-content/uploads/2024/11/Color-logo-no-background.png",
+        "image_dark": "https://raw.githubusercontent.com/syntropix-ai/synthora/f8a3dc3c8270d15ccfc9678d4780dc392d1d47b0/assets/syntropix_white.svg",
+        "image_light": "https://raw.githubusercontent.com/syntropix-ai/synthora/f8a3dc3c8270d15ccfc9678d4780dc392d1d47b0/assets/syntropix_color.svg",
     },
     "repository_url": "https://github.com/syntropix-ai/synthora",
     "use_repository_button": True,
@@ -86,4 +86,4 @@ html_theme_options = {
     "use_edit_page_button": True,
 }
 
-html_favicon = "http://syntropix.ai/wp-content/uploads/2025/01/symbol.svg"
+html_favicon = "https://github.com/syntropix-ai/synthora/blob/main/assets/syntropix_favicon.png?raw=true"
