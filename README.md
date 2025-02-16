@@ -121,7 +121,7 @@ We also offer a backend API platform, **Syntropix**, which provides a low-cost, 
 For further details, check out:
 
 - [Syntropix Homepage](https://syntropix.ai/)
-- [Syntropix Playground]()
+- [Syntropix Playground (Coming Soon)]()
 
 ## 🧠 Contributing
 
