@@ -15,8 +15,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# Synthora
-[![Read the Docs](https://img.shields.io/readthedocs/synthora)](https://docs.syntropix.ai/)
+<div align="center">
+    <img src="./assets/logo.png" alt="Synthora Logo" width="350">
+</div>
+
+<div align="center">
+<a href="https://github.com/syntropix-ai/synthora">
+    <img src="https://img.shields.io/github/license/syntropix-ai/synthora?style=flat" alt="GitHub License">
+</a>
+<a href="https://twitter.com/SyntropixAI">
+    <img src="https://img.shields.io/twitter/follow/SyntropixAI" alt="X Follow">
+</a>
+<a href="https://www.linkedin.com/company/syntropix">
+    <img src="https://img.shields.io/badge/LinkedIn-Syntropix-blue?style=flat" alt="LinkedIn">
+</a>
+<a href="https://docs.syntropix.ai/">
+    <img src="https://img.shields.io/readthedocs/synthora" alt="Read the Docs">
+</a>
+<a href="https://github.com/syntropix-ai/synthora">
+    <img src="https://img.shields.io/github/stars/syntropix-ai/synthora?style=flat&logo=github&color=gold" alt="GitHub Stars">
+</a>
+</div>
+
+## 📖 Introduction
 
 Synthora is a lightweight, extensible framework for LLM-driven agents and ALM research. It provides the essential components to build, test, and evaluate agents, enabling you to assemble an agent with a single configuration file. Our goal is to minimize effort while delivering robust functionality.
 
