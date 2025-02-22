@@ -25,7 +25,7 @@ from synthora.workflows.context.base import BaseContext
 def if_else(
     condition_func: Callable[..., bool], name_true: str, name_false: str
 ) -> BaseTask:
-    @task(flat_result=True)
+    @task
     def _condition(context: BaseContext, *args: Any, **kwargs: Any) -> Any:
         result = condition_func(context, *args, **kwargs)
         if result:

@@ -35,7 +35,7 @@ def for_loop(
     if num <= 0:
         raise ValueError("Number of iterations must be greater than 0.")
 
-    @task(flat_result=True)
+    @task
     def _loop(context: BaseContext, *args: Any, **kwargs: Any) -> Any:
         if counter_name not in context:
             context[counter_name] = num - 1
@@ -71,7 +71,7 @@ def for_loop(
 def while_loop(
     task_name_or_offset: str, condition_func: Callable[..., bool]
 ) -> BaseTask:
-    @task(flat_result=True)
+    @task
     def _loop(context: BaseContext, *args: Any, **kwargs: Any) -> Any:
         condition = condition_func(context, *args, **kwargs)
         if not condition:

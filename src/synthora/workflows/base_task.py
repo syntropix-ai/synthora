@@ -57,8 +57,7 @@ class BaseTask(ABC):
             Indicates whether the task is immutable, preventing modifications
             to its arguments or state.
         flat_result:
-            Specifies if the result should be treated as flat for downstream
-            processing.
+            Not used.
         state:
             The current state of the task, initialized as `TaskState.PENDING`.
         meta_data:
@@ -91,8 +90,7 @@ class BaseTask(ABC):
                 Indicates whether the task is immutable, preventing
                 modifications to its arguments or state.
             flat_result:
-                Specifies if the result should be treated as flat for
-                downstream processing.
+                Not used.
         """
         self.func = func
         self.name = name or str(uuid4())
