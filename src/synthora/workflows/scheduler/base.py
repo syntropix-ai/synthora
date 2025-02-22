@@ -275,7 +275,7 @@ class BaseScheduler(ABC):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
         current = self.tasks[self.cursor]
-        self.get_context().set_cursor(self.cursor)
+        self.get_context().set_cursor(self.name, self.cursor)
         for task in current:
             if task.state != TaskState.SKIPPED:
                 task.state = TaskState.RUNNING
@@ -286,14 +286,14 @@ class BaseScheduler(ABC):
                     task.state = TaskState.FAILURE
                     task.meta_data["error"] = str(e)
 
-        self.cursor = self.get_context().get_cursor() + 1
+        self.cursor = self.get_context().get_cursor(self.name) + 1
 
     def run(self, *args: Any, **kwargs: Any) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
         if self.context is None:
             self.set_context(BasicContext(self))
-        cursor = self.get_context().get_cursor()
+        cursor = self.get_context().get_cursor(self.name)
         self.state = TaskState.RUNNING
         if self.immutable:
             if args and isinstance(args[0], BaseContext):
@@ -312,7 +312,7 @@ class BaseScheduler(ABC):
         if len(self._result) == 1:
             self._result = self._result[0]
         self.get_context().set_result(self.name, self._result)
-        self.get_context().set_cursor(cursor)
+        self.get_context().set_cursor(self.name, cursor)
         return self._result
 
     async def async_step(self, *args: Any, **kwargs: Any) -> None:
@@ -320,7 +320,7 @@ class BaseScheduler(ABC):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
         current = self.tasks[self.cursor]
-        self.get_context().set_cursor(self.cursor)
+        self.get_context().set_cursor(self.name, self.cursor)
         for task in current:
             if task.state != TaskState.SKIPPED:
                 task.state = TaskState.RUNNING
@@ -330,14 +330,14 @@ class BaseScheduler(ABC):
                 except Exception as e:
                     task.state = TaskState.FAILURE
                     task.meta_data["error"] = str(e)
-        self.cursor = self.get_context().get_cursor() + 1
+        self.cursor = self.get_context().get_cursor(self.name) + 1
 
     async def async_run(self, *args: Any, **kwargs: Any) -> Any:
         if len(self.tasks) == 0:
             raise RuntimeError("No tasks to run")
         if self.context is None:
             self.set_context(BasicContext(self))
-        cursor = self.get_context().get_cursor()
+        cursor = self.get_context().get_cursor(self.name)
         self.state = TaskState.RUNNING
         if self.immutable:
             if args and isinstance(args[0], BaseContext):
@@ -356,7 +356,7 @@ class BaseScheduler(ABC):
         if len(self._result) == 1:
             self._result = self._result[0]
         self.get_context().set_result(self.name, self._result)
-        self.get_context().set_cursor(cursor)
+        self.get_context().set_cursor(self.name, cursor)
         return self._result
 
     def set_context(self, context: BaseContext) -> Self:
