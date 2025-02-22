@@ -20,7 +20,11 @@ repos:
     rev: v2.2.0
     hooks:
       - id: add-license-header
-        args: [--license-file, licenses/license_template.txt, --exit-zero-if-unsupported, --check]
+        args: [
+          --license-file,
+          licenses/license_template.txt,
+          --exit-zero-if-unsupported,
+        ]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.8.4"
     hooks:
