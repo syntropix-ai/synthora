@@ -165,3 +165,5 @@ test.py
 .vscode/
 tools/
 test.ipynb
+.DS_Store
+.python-version

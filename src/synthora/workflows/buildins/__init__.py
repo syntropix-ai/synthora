@@ -24,7 +24,7 @@ from .loop import for_loop, while_loop
 
 
 def empty(name: Optional[str] = None) -> BaseTask:
-    @task(flat_result=True)
+    @task
     def _empty(*args: Any, **kwargs: Any) -> Any:
         if kwargs:
             return *args, kwargs
