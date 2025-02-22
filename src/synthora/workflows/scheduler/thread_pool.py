@@ -115,7 +115,7 @@ class ThreadPoolScheduler(BaseScheduler):
             return None
         pre = self.tasks[self.cursor - 1] if self.cursor > 0 else None
         current = self.tasks[self.cursor]
-        self.get_context().set_cursor(self.cursor)
+        self.get_context().set_cursor(self.name, self.cursor)
         with ThreadPoolExecutor(self.max_worker) as pool:
             futures = []
             for task in current:
@@ -130,8 +130,7 @@ class ThreadPoolScheduler(BaseScheduler):
                 except Exception:
                     task.state = TaskState.FAILURE
                     task.meta_data["error"] = future.exception()
-
-        self.cursor = self.get_context().get_cursor() + 1
+        self.cursor = self.get_context().get_cursor(self.name) + 1
 
     def run(self, *args: Any, **kwargs: Any) -> Any:
         r"""Runs all tasks in the scheduler.
@@ -147,7 +146,7 @@ class ThreadPoolScheduler(BaseScheduler):
             raise RuntimeError("No tasks to run")
         if self.context is None:
             self.set_context(BasicContext(self))
-        cursor = self.get_context().get_cursor()
+        cursor = self.get_context().get_cursor(self.name)
         self.state = TaskState.RUNNING
         if self.immutable:
             self.step(*self._args, **self._kwargs)
@@ -164,7 +163,7 @@ class ThreadPoolScheduler(BaseScheduler):
             self._result = self._result[0]
         self.state = TaskState.COMPLETED
         self.get_context().set_result(self.name, self._result)
-        self.get_context().set_cursor(cursor)
+        self.get_context().set_cursor(self.name, cursor)
         return self._result
 
     async def async_step(self, *args: Any, **kwargs: Any) -> None:
