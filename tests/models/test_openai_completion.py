@@ -21,42 +21,44 @@ import pytest
 
 from synthora.messages import user
 from synthora.messages.base import BaseMessage
-from synthora.models.openai_chat import OpenAIChatBackend
+from synthora.models.openai_completion import OpenAICompletionBackend
 
 
 @pytest.fixture(scope="class")
-def openai_chat_model() -> OpenAIChatBackend:
-    return OpenAIChatBackend.default(
-        model_type="gpt-4o-mini",
+def openai_completion_model() -> OpenAICompletionBackend:
+    return OpenAICompletionBackend.default(
+        model_type="gpt-3.5-turbo-instruct",
         api_key=os.getenv("OPENAI_API_KEY"),
     )
 
 
 @pytest.fixture(scope="class")
-def openai_chat_model_stream() -> OpenAIChatBackend:
-    return OpenAIChatBackend.default(
-        model_type="gpt-4o-mini",
+def openai_completion_model_stream() -> OpenAICompletionBackend:
+    return OpenAICompletionBackend.default(
+        model_type="gpt-3.5-turbo-instruct",
         api_key=os.getenv("OPENAI_API_KEY"),
         config={"stream": True},
     )
 
 
 @pytest.mark.requires_env("OPENAI_API_KEY")
-class TestOpenAIChat:
-    def test_openai_chat(self, openai_chat_model: OpenAIChatBackend):
+class TestOpenAICompletion:
+    def test_openai_completion(
+        self, openai_completion_model: OpenAICompletionBackend
+    ):
         message = user(content="Say 'Hello, World!' in French")
-        response = openai_chat_model.run(message)
+        response = openai_completion_model.run(message)
 
         assert isinstance(response, BaseMessage)
         assert response.content is not None
         assert len(response.content) > 0
         assert "bonjour" in response.content.lower()
 
-    def test_openai_chat_stream(
-        self, openai_chat_model_stream: OpenAIChatBackend
+    def test_openai_completion_stream(
+        self, openai_completion_model_stream: OpenAICompletionBackend
     ):
         message = user(content="Say 'Hello, World!' in French")
-        stream = openai_chat_model_stream.run(message)
+        stream = openai_completion_model_stream.run(message)
 
         chunks = []
         for chunk in stream:
@@ -69,21 +71,21 @@ class TestOpenAIChat:
         assert len(final_content) > 0
         assert "bonjour" in final_content.lower()
 
-    async def test_openai_chat_async(
-        self, openai_chat_model: OpenAIChatBackend
+    async def test_openai_completion_async(
+        self, openai_completion_model: OpenAICompletionBackend
     ):
         message = user(content="Say 'Hello, World!' in French")
-        response = await openai_chat_model.async_run(message)
+        response = await openai_completion_model.async_run(message)
 
         assert isinstance(response, BaseMessage)
         assert len(response.content) > 0
         assert "bonjour" in response.content.lower()
 
-    async def test_openai_chat_async_stream(
-        self, openai_chat_model_stream: OpenAIChatBackend
+    async def test_openai_completion_async_stream(
+        self, openai_completion_model_stream: OpenAICompletionBackend
     ):
         message = user(content="Say 'Hello, World!' in French")
-        stream = await openai_chat_model_stream.async_run(message)
+        stream = await openai_completion_model_stream.async_run(message)
 
         chunks = []
         async for chunk in stream:
