@@ -36,4 +36,4 @@ def if_else(
             return *args, kwargs
         return args
 
-    return _condition  # type: ignore[no-any-return]
+    return _condition

@@ -1,33 +1,55 @@
-from typing import List, Tuple
-import pytest
+# LICENSE HEADER MANAGED BY add-license-header
+#
+# Copyright 2024-2025 Syntropix
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-from synthora.workflows import task, BaseTask, BaseScheduler, ThreadPoolScheduler, ProcessPoolScheduler, AsyncTask, BasicContext, MultiProcessContext
+
+from synthora.workflows import (
+    BaseTask,
+    BasicContext,
+    ProcessPoolScheduler,
+    ThreadPoolScheduler,
+)
+
 
 def add(ctx: BasicContext, a: int, b: int) -> int:
     print(f"Adding {a} and {b}")
     with ctx:
-        ctx['log'] = [a + b] if 'log' not in ctx else ctx['log'] + [
-            a + b
-        ]
+        ctx["log"] = [a + b] if "log" not in ctx else ctx["log"] + [a + b]
     return a + b
-
 
 
 class TestContexts:
     def test_basiccontext(self):
         flow = BaseTask(add).si(1, 2) >> BaseTask(add).s(3)
         flow.run()
-        assert flow.context['log'] == [3, 6]
+        assert flow.context["log"] == [3, 6]
 
-        flow = ThreadPoolScheduler() >> BaseTask(add).si(1, 2) >> BaseTask(add).s(3)
+        flow = (
+            ThreadPoolScheduler()
+            >> BaseTask(add).si(1, 2)
+            >> BaseTask(add).s(3)
+        )
         flow.run()
-        assert flow.context['log'] == [3, 6]
-    
+        assert flow.context["log"] == [3, 6]
+
     def test_multiprocesscontext(self):
-        flow = ProcessPoolScheduler() >> BaseTask(add).si(1, 2) >> BaseTask(add).s(3)
+        flow = (
+            ProcessPoolScheduler()
+            >> BaseTask(add).si(1, 2)
+            >> BaseTask(add).s(3)
+        )
         flow.run()
-        assert flow.context['log'] == [3, 6]
-    
-    
-    
-    
+        assert flow.context["log"] == [3, 6]

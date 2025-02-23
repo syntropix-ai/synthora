@@ -32,7 +32,7 @@ def empty(name: Optional[str] = None) -> BaseTask:
 
     if name:
         _empty.name = name
-    return _empty  # type: ignore[no-any-return]
+    return _empty
 
 
 __all__ = ["for_loop", "while_loop", "if_else", "empty"]
