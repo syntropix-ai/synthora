@@ -110,21 +110,28 @@ class BaseTask(ABC):
         """
         return self._result
 
-    def reset(self) -> Self:
+    def reset(self, clear_arguments: bool = False) -> Self:
         """Reset the task to its initial state.
 
+        Args:
+            clear_arguments:
+                Indicates whether to clear the arguments of the task.
         Returns:
             The task instance in its initial state.
         """
         self.state = TaskState.PENDING
         self._result = None
+        if clear_arguments:
+            self._args = []
+            self._kwargs = {}
         return self
 
     def signature(
         self,
-        args: List[Any],
-        kwargs: Dict[str, Any],
+        *args: List[Any],
         immutable: bool = False,
+        **kwargs: Dict[str, Any],
+        
     ) -> Self:
         """Set the signature of the task.
 
@@ -257,7 +264,10 @@ class BaseTask(ABC):
         """
         from synthora.utils.default import DEFAULT_CHAIN_SCHEDULER
 
-        return DEFAULT_CHAIN_SCHEDULER() >> self >> other
+        flow = DEFAULT_CHAIN_SCHEDULER() >> self >> other
+        
+        flow.flat_result = other.flat_result
+        return flow
 
     def __str__(self) -> str:
         r"""Return the string representation of the task.
