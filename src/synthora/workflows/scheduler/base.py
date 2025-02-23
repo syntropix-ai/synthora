@@ -92,7 +92,6 @@ class BaseScheduler(ABC):
         *args: Any,
         immutable: bool = False,
         **kwargs: Any,
-        
     ) -> Self:
         self._args = list(args)
         self._kwargs = kwargs
@@ -198,7 +197,9 @@ class BaseScheduler(ABC):
         self.tasks.append(list(group))
         return self
 
-    def __or__(self, value: Union["BaseScheduler", BaseTask]) -> "BaseScheduler":
+    def __or__(
+        self, value: Union["BaseScheduler", BaseTask]
+    ) -> "BaseScheduler":
         if isinstance(value, BaseTask):
             new_scheduler = deepcopy(self) if self.tasks else self
             if not new_scheduler.tasks:
@@ -213,7 +214,9 @@ class BaseScheduler(ABC):
         self.tasks.append([])
         return self
 
-    def __rshift__(self, value: Union["BaseScheduler", BaseTask]) -> "BaseScheduler":
+    def __rshift__(
+        self, value: Union["BaseScheduler", BaseTask]
+    ) -> "BaseScheduler":
         if isinstance(value, BaseTask) or isinstance(value, BaseScheduler):
             new_scheduler = self.__class__() if self.tasks else self
             if new_scheduler is self:
@@ -223,7 +226,7 @@ class BaseScheduler(ABC):
                 new_scheduler.add_task(value)
                 new_scheduler.flat_result = value.flat_result
                 new_scheduler.immutable = value.immutable
-            
+
             return new_scheduler
         else:
             raise ValueError("Invalid value, must be a Task or Scheduler")
