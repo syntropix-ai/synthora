@@ -1,6 +1,6 @@
 <!-- LICENSE HEADER MANAGED BY add-license-header
 
-Copyright 2024-2025 Syntropix-AI.org
+Copyright 2024-2025 Syntropix
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

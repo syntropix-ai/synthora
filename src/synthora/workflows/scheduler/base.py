@@ -1,6 +1,6 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# Copyright 2024-2025 Syntropix-AI.org
+# Copyright 2024-2025 Syntropix
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -89,9 +89,10 @@ class BaseScheduler(ABC):
 
     def signature(
         self,
-        args: List[Any],
-        kwargs: Dict[str, Any],
+        *args: Any,
         immutable: bool = False,
+        **kwargs: Any,
+        
     ) -> Self:
         self._args = list(args)
         self._kwargs = kwargs
@@ -197,13 +198,14 @@ class BaseScheduler(ABC):
         self.tasks.append(list(group))
         return self
 
-    def __or__(self, value: Union["BaseScheduler", BaseTask]) -> Self:
+    def __or__(self, value: Union["BaseScheduler", BaseTask]) -> "BaseScheduler":
         if isinstance(value, BaseTask):
-            if not self.tasks:
-                self.add_task(value)
+            new_scheduler = deepcopy(self) if self.tasks else self
+            if not new_scheduler.tasks:
+                new_scheduler.add_task(value)
             else:
-                self.tasks[-1].append(value)
-            return self
+                new_scheduler.tasks[-1].append(value)
+            return new_scheduler
         else:
             raise ValueError("Invalid value, must be a Task")
 
@@ -211,10 +213,18 @@ class BaseScheduler(ABC):
         self.tasks.append([])
         return self
 
-    def __rshift__(self, value: Union["BaseScheduler", BaseTask]) -> Self:
+    def __rshift__(self, value: Union["BaseScheduler", BaseTask]) -> "BaseScheduler":
         if isinstance(value, BaseTask) or isinstance(value, BaseScheduler):
-            self.add_task(value)
-            return self
+            new_scheduler = self.__class__() if self.tasks else self
+            if new_scheduler is self:
+                new_scheduler.add_task(value)
+            else:
+                new_scheduler.add_task(self)
+                new_scheduler.add_task(value)
+                new_scheduler.flat_result = value.flat_result
+                new_scheduler.immutable = value.immutable
+            
+            return new_scheduler
         else:
             raise ValueError("Invalid value, must be a Task or Scheduler")
 

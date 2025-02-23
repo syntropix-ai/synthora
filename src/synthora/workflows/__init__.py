@@ -1,6 +1,6 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# Copyright 2024-2025 Syntropix-AI.org
+# Copyright 2024-2025 Syntropix
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ def task(
     *,
     name: Optional[str] = None,
     immutable: bool = False,
-    flat_result: bool = False,
 ) -> BaseTask:
     if func is None:
 
@@ -38,23 +37,21 @@ def task(
                     inner_func,
                     name=name,
                     immutable=immutable,
-                    flat_result=flat_result,
                 )
             return BaseTask(
                 inner_func,
                 name=name,
                 immutable=immutable,
-                flat_result=flat_result,
             )
 
         return decorator  # type: ignore[return-value]
     else:
         if inspect.iscoroutinefunction(func):
             return AsyncTask(
-                func, name=name, immutable=immutable, flat_result=flat_result
+                func, name=name, immutable=immutable,
             )
         return BaseTask(
-            func, name=name, immutable=immutable, flat_result=flat_result
+            func, name=name, immutable=immutable,
         )
 
 

@@ -1,6 +1,6 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# Copyright 2024-2025 Syntropix-AI.org
+# Copyright 2024-2025 Syntropix
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ from synthora.workflows.context.base import BaseContext
 def if_else(
     condition_func: Callable[..., bool], name_true: str, name_false: str
 ) -> BaseTask:
-    @task(flat_result=True)
+    @task
     def _condition(context: BaseContext, *args: Any, **kwargs: Any) -> Any:
         result = condition_func(context, *args, **kwargs)
         if result:

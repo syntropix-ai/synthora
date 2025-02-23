@@ -1,6 +1,6 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# Copyright 2024-2025 Syntropix-AI.org
+# Copyright 2024-2025 Syntropix
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ from .loop import for_loop, while_loop
 
 
 def empty(name: Optional[str] = None) -> BaseTask:
-    @task(flat_result=True)
+    @task
     def _empty(*args: Any, **kwargs: Any) -> Any:
         if kwargs:
             return *args, kwargs
