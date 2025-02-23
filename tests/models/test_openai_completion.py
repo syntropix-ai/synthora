@@ -27,7 +27,7 @@ from synthora.models.openai_completion import OpenAICompletionBackend
 @pytest.fixture(scope="class")
 def openai_completion_model() -> OpenAICompletionBackend:
     return OpenAICompletionBackend.default(
-        model_type="gpt-3.5-turbo-instruct",
+        model_type="gpt-4o-mini",
         api_key=os.getenv("OPENAI_API_KEY"),
     )
 
@@ -35,7 +35,7 @@ def openai_completion_model() -> OpenAICompletionBackend:
 @pytest.fixture(scope="class")
 def openai_completion_model_stream() -> OpenAICompletionBackend:
     return OpenAICompletionBackend.default(
-        model_type="gpt-3.5-turbo-instruct",
+        model_type="gpt-4o-mini",
         api_key=os.getenv("OPENAI_API_KEY"),
         config={"stream": True},
     )
