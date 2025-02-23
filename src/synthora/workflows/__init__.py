@@ -48,10 +48,14 @@ def task(
     else:
         if inspect.iscoroutinefunction(func):
             return AsyncTask(
-                func, name=name, immutable=immutable,
+                func,
+                name=name,
+                immutable=immutable,
             )
         return BaseTask(
-            func, name=name, immutable=immutable,
+            func,
+            name=name,
+            immutable=immutable,
         )
 
 

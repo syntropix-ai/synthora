@@ -65,7 +65,7 @@ def for_loop(
             else:
                 raise ValueError(f"Task {task_name_or_offset} not found.")
 
-    return _loop  # type: ignore[no-any-return]
+    return _loop
 
 
 def while_loop(
@@ -97,4 +97,4 @@ def while_loop(
             else:
                 raise ValueError(f"Task {task_name_or_offset} not found.")
 
-    return _loop  # type: ignore[no-any-return]
+    return _loop

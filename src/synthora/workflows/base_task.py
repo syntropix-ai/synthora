@@ -131,7 +131,6 @@ class BaseTask(ABC):
         *args: List[Any],
         immutable: bool = False,
         **kwargs: Dict[str, Any],
-        
     ) -> Self:
         """Set the signature of the task.
 
@@ -265,7 +264,7 @@ class BaseTask(ABC):
         from synthora.utils.default import DEFAULT_CHAIN_SCHEDULER
 
         flow = DEFAULT_CHAIN_SCHEDULER() >> self >> other
-        
+
         flow.flat_result = other.flat_result
         return flow
 
