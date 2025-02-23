@@ -1,6 +1,6 @@
 <!-- LICENSE HEADER MANAGED BY add-license-header
 
-Copyright 2024-2025 Syntropix-AI.org
+Copyright 2024-2025 Syntropix
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -128,4 +128,3 @@ For further details, check out:
 We’re in the early stages of Synthora’s development, and your contributions are crucial to shaping its future. Whether you're a developer, researcher, or enthusiast, your feedback and code contributions are welcome and highly valued. If you encounter issues, have ideas for enhancements, or want to contribute new features, please get involved! Check our GitHub repository for guidelines on how to contribute, submit issues, and propose pull requests.
 
 Together, we can build a robust and innovative framework that meets the needs of the AI research community. Join us on this journey, and help shape the future of agent-driven AI!
-

@@ -1,6 +1,6 @@
 # LICENSE HEADER MANAGED BY add-license-header
 #
-# Copyright 2024-2025 Syntropix-AI.org
+# Copyright 2024-2025 Syntropix
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,10 +20,11 @@ repos:
     rev: v2.2.0
     hooks:
       - id: add-license-header
-        args:
-          - --license-file
-          - licenses/license_template.txt
-          - --exit-zero-if-unsupported
+        args: [
+          --license-file,
+          licenses/license_template.txt,
+          --exit-zero-if-unsupported,
+        ]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.8.4"
     hooks:
