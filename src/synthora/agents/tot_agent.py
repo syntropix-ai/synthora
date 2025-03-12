@@ -383,7 +383,7 @@ class ToTAgent(BaseAgent):
                         self.history.append(result)
                         if result.role == MessageRole.ASSISTANT:
                             self.on_end(result)
-                            return Ok(result.content)
+                            return Ok(result)
                 except Exception:
                     self.scores[self.cursor].append(0.0)
             try:

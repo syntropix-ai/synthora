@@ -21,7 +21,7 @@ from synthora.types.enums import Err, Ok, Result
 
 @tool
 def search_wikipedia(
-    query: str, sentences: int = 5, auto_suggest: bool = False
+    query: str, sentences: int = 15, auto_suggest: bool = False
 ) -> Result[str, Exception]:
     """Search Wikipedia and return a summary of the article.
 

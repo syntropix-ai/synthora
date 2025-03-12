@@ -20,6 +20,7 @@ import dotenv
 from synthora.agents import VanillaAgent
 from synthora.callbacks import RichOutputHandler
 from synthora.toolkits.search_toolkit import SearchToolkit
+from synthora.toolkits.webpage_toolkit import TrafilaturaWebpageReader
 from synthora.toolkits.slides import SlidesToolkit
 
 
@@ -29,8 +30,8 @@ dotenv.load_dotenv()
 
 
 agent = VanillaAgent.default(
-    tools=SlidesToolkit().sync_tools + [toolkit.search_duckduckgo],  # type: ignore[arg-type]
+    tools=SlidesToolkit().sync_tools + [*TrafilaturaWebpageReader(full_text=True).sync_tools],  # type: ignore[arg-type]
     handlers=[RichOutputHandler()],
 )
 
-agent.run("generate a PPT about Chicago")
+agent.run("generate a PPT about https://ai4ocean.xyz, including Products, Team, Research, Projects, Publications, Education, Partnership, etc. You can only use the content from the webpage.")
