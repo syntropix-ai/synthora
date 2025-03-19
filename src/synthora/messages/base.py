@@ -78,7 +78,7 @@ class BaseMessage(BaseModel):
     chunk: Optional[str] = None
     parsed: Optional[Any] = None
     content: Optional[str] = None
-    tool_calls: Optional[List[ChatCompletionMessageToolCall]] = None
+    tool_calls: Optional[List[Any]] = None
     tool_response: Optional[Dict[str, Any]] = None
     images: Optional[List[str]] = None
     origional_response: Optional[
@@ -292,13 +292,13 @@ class BaseMessage(BaseModel):
         metadata = {
             "created": response.created,
             "model": response.model,
-            "service_tier": response.service_tier,
-            "system_fingerprint": response.system_fingerprint,
+            "service_tier": getattr(response, "service_tier", None),
+            "system_fingerprint": getattr(response, "system_fingerprint", None),
             "usage": response.usage,
             "finish_reason": choice.finish_reason,
         }
         tool_calls = choice.message.tool_calls
-        if not tool_calls and choice.message.function_call:
+        if not tool_calls and getattr(choice.message, "function_call", None):
             tool_calls = [choice.message.function_call]
         try:
             parsed = choice.message.parsed
@@ -311,7 +311,7 @@ class BaseMessage(BaseModel):
             content=choice.message.content,
             metadata=metadata,
             tool_calls=tool_calls,
-            origional_response=response,
+            # origional_response=response,
             parsed=parsed,
         )
 
