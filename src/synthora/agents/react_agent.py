@@ -126,7 +126,6 @@ class ReactAgent(BaseAgent):
             type=AgentType.REACT,
             model=ModelConfig(model_type=model_type, name=model_type),
             prompt=BasePrompt(prompt),
-            tools=tools,
         )
         node = Node(name=name, type=NodeType.AGENT)
         model = create_model_from_config(config.model, node)
@@ -135,7 +134,7 @@ class ReactAgent(BaseAgent):
             Node(name=name, type=NodeType.AGENT),
             model,  # type: ignore[arg-type]
             config.prompt,  # type: ignore[arg-type]
-            config.tools,  # type: ignore[arg-type]
+            tools,
         )
         if handlers:
             for handler in handlers:

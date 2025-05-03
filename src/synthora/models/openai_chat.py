@@ -147,8 +147,8 @@ class OpenAIChatBackend(BaseModelBackend):
             Generated response(s).
             If stream=True, returns a generator of message chunks.
         """
-        # if not self.client or not isinstance(self.client, OpenAI):
-        #     self.client = OpenAI(**self.kwargs)
+        if not self.client or not isinstance(self.client, OpenAI):
+            self.client = OpenAI(**self.kwargs)
         if not isinstance(messages, list):
             messages = [messages]
         stream = self.config.get("stream", False)
@@ -255,7 +255,9 @@ class OpenAIChatBackend(BaseModelBackend):
         )
         try:
             if kwargs.get("response_format", None) is not None:
-                resp = self.client.beta.chat.completions.parse(*args, **kwargs)
+                resp = await self.client.beta.chat.completions.parse(
+                    *args, **kwargs
+                )
             else:
                 resp = await self.client.chat.completions.create(
                     *args, **kwargs
