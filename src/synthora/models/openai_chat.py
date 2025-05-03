@@ -255,7 +255,9 @@ class OpenAIChatBackend(BaseModelBackend):
         )
         try:
             if kwargs.get("response_format", None) is not None:
-                resp = self.client.beta.chat.completions.parse(*args, **kwargs)
+                resp = await self.client.beta.chat.completions.parse(
+                    *args, **kwargs
+                )
             else:
                 resp = await self.client.chat.completions.create(
                     *args, **kwargs

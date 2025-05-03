@@ -62,3 +62,34 @@ class TestToolkit:
         toolkit = MyToolkit()
         assert toolkit.sync_tools[0].name == "add"
         assert toolkit.ADD(1, 2).unwrap() == 3
+
+    async def test_model_rewrite_bug(self):
+        # This test is related to __init__ function of BaseToolkit
+        # Fixed by using deepcopy
+        # def __init__(self) -> None:
+        #     self._exposed_functions = []
+
+        #     for v in self.__class__.__dict__.values():
+        #         if isinstance(v, BaseFunction):
+        #             if getattr(v, "_flag", False):
+        #                 v.instance = self
+        #             self._exposed_functions.append(v)
+        #
+        # If do not use deepcopy, the following test will fail
+        # because the message is shared between toolkit instances
+        # toolkit will return the same message for all toolkit instances
+        class MyToolkit(BaseToolkit):
+            def __init__(self, message: str):
+                super().__init__()
+                self.message = message
+
+            @tool
+            def hello(self) -> str:
+                """Say hello"""
+                return self.message
+
+        toolkit = MyToolkit("Hello, world!")
+        assert toolkit.hello.run().unwrap() == "Hello, world!"
+        toolkit2 = MyToolkit("Hello, world! 2")
+        assert toolkit2.hello.run().unwrap() == "Hello, world! 2"
+        assert toolkit.hello.run().unwrap() == "Hello, world!"

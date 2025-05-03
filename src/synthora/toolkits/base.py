@@ -18,6 +18,7 @@
 import asyncio
 import inspect
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from typing import Any, Callable, Dict, List, Optional, Union, cast
 
 from synthora.callbacks.base_handler import BaseCallBackHandler
@@ -29,6 +30,7 @@ from synthora.types import Err, Ok, Result
 from synthora.types.enums import CallBackEvent, NodeType
 from synthora.types.node import Node
 from synthora.utils import get_openai_tool_schema
+from synthora.utils.macros import CALL_ASYNC_CALLBACK
 
 
 class BaseFunction(ABC):
@@ -289,16 +291,17 @@ class AsyncFunction(BaseFunction):
         Returns:
             Result containing either the return value or an exception.
         """
-        self.callback_manager.call(
+        await CALL_ASYNC_CALLBACK(
             CallBackEvent.TOOL_START, self.source, *args, **kwargs
         )
+
         result = await self(*args, **kwargs)
         if result.is_err:
-            await self.callback_manager.call(  # type: ignore[func-returns-value]
+            await CALL_ASYNC_CALLBACK(
                 CallBackEvent.TOOL_ERROR, self.source, result
             )
         else:
-            await self.callback_manager.call(  # type: ignore[func-returns-value]
+            await CALL_ASYNC_CALLBACK(
                 CallBackEvent.TOOL_END, self.source, result
             )
         return result
@@ -330,8 +333,14 @@ class BaseToolkit(ABC):
 
         for v in self.__class__.__dict__.values():
             if isinstance(v, BaseFunction):
+                if isinstance(v.func, staticmethod):
+                    self._exposed_functions.append(v)
+                    continue
+
+                v = deepcopy(v)
                 if getattr(v, "_flag", False):
                     v.instance = self
+                setattr(self, v.name, v)
                 self._exposed_functions.append(v)
 
     @property
