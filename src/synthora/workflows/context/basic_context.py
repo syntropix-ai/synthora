@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 from synthora.types.enums import TaskState
 from synthora.workflows.base_task import BaseTask
@@ -46,7 +46,7 @@ class BasicContext(BaseContext):
         """
         super().__init__()
         self._workflow = workflow
-        self._cursor = {}
+        self._cursor: Dict[str, int] = {}
 
     @property
     def lock(self) -> None:

@@ -39,7 +39,7 @@ from synthora.messages.base import BaseMessage
 from synthora.models import create_model_from_config
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
-from synthora.toolkits.base import BaseFunction, BaseToolkit
+from synthora.toolkits.base import AsyncFunction, BaseFunction, BaseToolkit
 from synthora.types.enums import CallBackEvent, NodeType, Ok, Result
 from synthora.types.node import Node
 from synthora.utils.macros import CALL_ASYNC_CALLBACK
@@ -452,10 +452,10 @@ class BaseAgent(ABC):
         """
         tool = self.get_tool(name)
         tool_args = json.loads(arguments)
-        if isinstance(tool, BaseFunction):
-            return tool.run(**tool_args)
-        else:
+        if isinstance(tool, AsyncFunction):
             return await tool.async_run(**tool_args)
+        else:
+            return tool.run(**tool_args)
 
     def on_start(
         self,
