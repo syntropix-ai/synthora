@@ -78,6 +78,8 @@ class TestToolkit:
         # If do not use deepcopy, the following test will fail
         # because the message is shared between toolkit instances
         # toolkit will return the same message for all toolkit instances
+        #
+        # This is a temporary fix
         class MyToolkit(BaseToolkit):
             def __init__(self, message: str):
                 super().__init__()
