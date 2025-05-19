@@ -1,79 +1,73 @@
-# LICENSE HEADER MANAGED BY add-license-header
-#
-# Copyright 2024-2025 Syntropix
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
-[tool.poetry]
+[project]
 name = "synthora"
 version = "0.1.11"
 description = "Synthora is a lightweight and extensible framework for LLM-driven Agents and ALM research. It provides essential components to build, test and evaluate agents. At its core, Synthora aims to assemble an agent with a single config, thus minimizing your effort in building, tuning, and sharing agents."
-authors = ["Syntropix.AI"]
-license = "Apache 2.0"
+authors = [{ name = "Syntropix.AI" }]
+requires-python = "~=3.10"
 readme = "README.md"
+license = "Apache 2.0"
+dependencies = [
+    "pydantic>=2.10.1,<3",
+    "docstring-parser>=0.16,<0.17",
+    "asyncio>=3.4.3,<4",
+    "openai>=1.55.0,<2",
+    "rich>=13.9.4,<14",
+    "websockets~=14.1",
+    "fastapi>=0.115.5,<0.116",
+    "python-dotenv>=1.0.1,<2",
+    "apscheduler>=3.11.0,<4",
+    "pyyaml>=6.0.2,<7",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-pydantic = "^2.10.1"
-docstring-parser = "^0.16"
-asyncio = "^3.4.3"
-openai = "^1.55.0"
-rich = "^13.9.4"
-websockets = "^14.1"
-fastapi = "^0.115.5"
-python-dotenv = "^1.0.1"
-discord-py = {version = "^2.4.0", optional = true}
-googlesearch-python = {version = "^1.2.5", optional = true}
-slack-bolt = {version = "^1.22.0", optional = true}
-trafilatura = {version = "^2.0.0", optional = true}
-wikipedia = {version = "^1.4.0", optional = true}
-pymediawiki = "^0.7.5"
-apscheduler = "^3.11.0"
-pyyaml = "^6.0.2"
+[project.optional-dependencies]
+services = [
+    "discord-py>=2.4.0,<3",
+    "slack-bolt>=1.22.0,<2",
+]
+toolkits = [
+    "googlesearch-python>=1.2.5,<2",
+    "trafilatura>=2.0.0,<3",
+    "wikipedia>=1.4.0,<2",
+    "pymediawiki>=0.7.5,<0.8",
+]
 
-[tool.poetry.extras]
-services = ["discord-py", "slack-bolt"]
-toolkits = ["googlesearch-python", "trafilatura", "wikipedia", "pymediawiki"]
+[dependency-groups]
+quality = [
+    "black>=24.10.0,<25",
+    "ruff>=0.8.0,<0.9",
+    "pre-commit>=4.0.1,<5",
+    "mypy>=1.13.0,<2",
+    "types-pyyaml>=6.0.12.20240917,<7",
+    "add-license-header>=2.2.0,<3",
+]
+test = [
+    "pytest>=8.3.3,<9",
+    "pytest-asyncio>=0.25.3,<0.26",
+]
+dev = [
+    "sphinx>=8.1.3,<9",
+    "myst-parser>=4.0.0,<5",
+    "sphinx-rtd-theme>=3.0.2,<4",
+    "sphinx-book-theme>=1.1.3,<2",
+    "nbsphinx>=0.9.5,<0.10",
+    "nbconvert[webpdf]>=7.16.4,<8",
+    "jupyter-sphinx>=0.5.3,<0.6",
+    "jupyter>=1.1.1,<2",
+    "myst-nb>=1.1.2,<2",
+    "pandoc~=2.4",
+    "fastapi[standard]>=0.115.5,<0.116",
+]
 
-[tool.poetry.group.quality.dependencies]
-black = "^24.10.0"
-ruff = "^0.8.0"
-pre-commit = "^4.0.1"
-mypy = "^1.13.0"
-types-pyyaml = "^6.0.12.20240917"
-add-license-header = "^2.2.0"
-
-[tool.poetry.group.test.dependencies]
-pytest = "^8.3.3"
-pytest-asyncio = "^0.25.3"
-
-[tool.poetry.group.dev.dependencies]
-sphinx = "^8.1.3"
-myst-parser = "^4.0.0"
-sphinx-rtd-theme = "^3.0.2"
-sphinx-book-theme = "^1.1.3"
-nbsphinx = "^0.9.5"
-nbconvert = {extras = ["webpdf"], version = "^7.16.4"}
-jupyter-sphinx = "^0.5.3"
-jupyter = "^1.1.1"
-myst-nb = "^1.1.2"
-pandoc = "^2.4"
-fastapi = {extras = ["standard"], version = "^0.115.5"}
+[tool.uv]
+default-groups = [
+    "quality",
+    "test",
+    "dev",
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [tool.ruff.lint.isort]
 lines-after-imports = 2
