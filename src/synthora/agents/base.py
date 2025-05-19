@@ -40,7 +40,12 @@ from synthora.models import create_model_from_config
 from synthora.models.base import BaseModelBackend
 from synthora.prompts.base import BasePrompt
 from synthora.toolkits.base import AsyncFunction, BaseFunction, BaseToolkit
-from synthora.types.enums import CallBackEvent, NodeType, Ok, Result
+from synthora.types.enums import (
+    CallBackEvent,
+    NodeType,
+    Ok,
+    Result,
+)
 from synthora.types.node import Node
 from synthora.utils.macros import CALL_ASYNC_CALLBACK
 

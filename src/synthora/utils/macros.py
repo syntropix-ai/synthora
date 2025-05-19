@@ -122,7 +122,23 @@ def UPDATE_SYSTEM(
             )
         )
     else:
-        history[0].content = prompt
+        if history[0].role == MessageRole.SYSTEM:
+            history[0].content = prompt
+        else:
+            for i, message in enumerate(history):
+                if message.role == MessageRole.SYSTEM:
+                    history[i].content = prompt
+                    return
+            history.insert(
+                0,
+                BaseMessage.create_message(
+                    MessageRole.SYSTEM,
+                    content=prompt,
+                    source=Node(
+                        name=name, type=NodeType.SYSTEM, ancestor=source
+                    ),
+                ),
+            )
 
 
 @macro
