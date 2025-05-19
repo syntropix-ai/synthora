@@ -131,3 +131,10 @@ class TaskState(str, Enum):
 class TriggerRuntime(str, Enum):
     SYNC = "sync"
     ASYNC = "async"
+
+class AutomationBlockType(str, Enum):
+    CODE = "code"
+    INPUT = "input"
+    CONDITION = "condition"
+    LOOP = "loop"
+

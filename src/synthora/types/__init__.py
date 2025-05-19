@@ -24,6 +24,7 @@ from .enums import (
     Ok,
     Result,
     TriggerRuntime,
+    AutomationBlockType,
 )
 from .event import TraceEvent
 from .node import Node
@@ -78,4 +79,5 @@ __all__ = [
     "TraceEvent",
     "HttpAgentRequest",
     "TriggerRuntime",
+    "AutomationBlockType",
 ]
