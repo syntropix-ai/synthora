@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import List
 
-from synthora.code_automations.blocks.agents import create_code_generation_agent
+from synthora.code_automations.agents.agents import create_code_generation_agent
 from synthora.code_automations.blocks.base import BaseAutomationBlock
 from synthora.types.enums import AutomationBlockType, Err, Result
 

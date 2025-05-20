@@ -2,7 +2,7 @@ from synthora.code_automations.blocks import *
 from synthora.code_automations.graph import AutomationGraph
 
 
-block0 = CodeBlock("agent", "define an agent good at math(can use calculator)")
+block0 = CodeBlock("agent", "define an agent good at math(can use calculator: +,-,*,/)")
 block1 = LoopBlock("loop", "while True")
 block2 = CodeBlock("input", "Let's user to input a query")
 
@@ -14,8 +14,6 @@ block0 >> block1 >> block2 >> block3 >> block4
 
 
 graph = AutomationGraph("A math agent", [block0, block1, block2, block3, block4])
-
-print(graph)
 
 result = graph.run()
 

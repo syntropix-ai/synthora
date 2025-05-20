@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import json
 from typing import Any, List, Optional
 
-from synthora.code_automations.blocks.agents import create_code_block_generation_agent
+from synthora.code_automations.agents.agents import create_code_block_generation_agent
 from synthora.types.enums import AutomationBlockType, Result
 
 from pydantic import BaseModel
