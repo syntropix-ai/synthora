@@ -255,6 +255,7 @@ class ReactAgent(BaseAgent):
                 self.history.append(
                     BaseMessage.create_message(
                         id=tool_call.id,
+                        tool_response=resp_value,
                         role=MessageRole.TOOL_RESPONSE,
                         content=str(resp_value),
                         source=tool.source,
@@ -351,6 +352,7 @@ class ReactAgent(BaseAgent):
                 await self.history.async_append(
                     BaseMessage.create_message(
                         id=tool_call.id,
+                        tool_response=resp_value,
                         role=MessageRole.TOOL_RESPONSE,
                         content=str(resp_value),
                         source=tool.source,

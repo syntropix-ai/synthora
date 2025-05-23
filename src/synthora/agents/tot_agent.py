@@ -357,6 +357,7 @@ class ToTAgent(BaseAgent):
                     self.states[self.cursor][-1].append(
                         BaseMessage.create_message(
                             id=tool_call.id,
+                            tool_response=resp_value,
                             role=MessageRole.TOOL_RESPONSE,
                             content=str(resp_value),
                             source=tool.source,
