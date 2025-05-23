@@ -5,7 +5,7 @@ from synthora.code_automations.graph import AutomationGraph
 block00 = InputBlock("input-pdf", "read the pdf file from input.pdf")
 block01 = InputBlock("input-company", "read a company list from input.json")
 
-block10 = CodeBlock("vectorize", "vectorize the pdf file using llamaindex, bm25", extra_dependencies=[block00])
+block10 = CodeBlock("vectorize", "vectorize the pdf file using llamaindex's bm25", extra_dependencies=[block00])
 
 block20 = LoopBlock("loop-company", "for every company in the company list, search name in the vectorized pdf file using bm25. collect the results to a list.", extra_dependencies=[block01, block10])
 
