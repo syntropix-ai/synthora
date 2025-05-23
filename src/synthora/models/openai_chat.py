@@ -198,7 +198,7 @@ class OpenAIChatBackend(BaseModelBackend):
                         CallBackEvent.LLM_ERROR,
                         self.source,
                         e,
-                        stream,
+                        # stream,
                         *args,
                         **kwargs,
                     )
@@ -292,7 +292,7 @@ class OpenAIChatBackend(BaseModelBackend):
                         CallBackEvent.LLM_ERROR,
                         self.source,
                         e,
-                        stream,
+                        # stream,
                         *args,
                         **kwargs,
                     )
