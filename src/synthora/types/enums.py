@@ -89,6 +89,9 @@ class AgentType(str, Enum):
 
 class ModelBackendType(str, Enum):
     OPENAI_CHAT = "openai_chat"
+    OPENAI_COMPLETION = "openai_completion"
+    AZURE_CHAT = "azure_chat"
+    AZURE_COMPLETION = "azure_completion"
 
 
 class MessageRole(str, Enum):
@@ -132,9 +135,9 @@ class TriggerRuntime(str, Enum):
     SYNC = "sync"
     ASYNC = "async"
 
+
 class AutomationBlockType(str, Enum):
     CODE = "code"
     INPUT = "input"
     CONDITION = "condition"
     LOOP = "loop"
-

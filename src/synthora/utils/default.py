@@ -15,9 +15,11 @@
 # limitations under the License.
 #
 
+from synthora.types.enums import ModelBackendType
 from synthora.workflows.scheduler.base import BaseScheduler
 from synthora.workflows.scheduler.thread_pool import ThreadPoolScheduler
 
 
 DEFAULT_CHAIN_SCHEDULER = BaseScheduler
 DEFAULT_GROUP_SCHEDULER = ThreadPoolScheduler
+DEFAULT_CHAT_MODEL_BACKEND = ModelBackendType.OPENAI_CHAT

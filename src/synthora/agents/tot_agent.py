@@ -18,6 +18,8 @@
 from copy import deepcopy
 from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
 
+from synthora.utils.default import DEFAULT_CHAT_MODEL_BACKEND
+
 
 try:
     from typing import Self
@@ -49,6 +51,7 @@ from synthora.types.enums import (
     AgentType,
     Err,
     MessageRole,
+    ModelBackendType,
     NodeType,
     Ok,
     Result,
@@ -96,6 +99,7 @@ class ToTAgent(BaseAgent):
         search_method: str = "dfs",
         name: str = "TOT",
         model_type: str = "gpt-4o",
+        model_backend: ModelBackendType = DEFAULT_CHAT_MODEL_BACKEND,
         tools: Optional[List[Union["BaseAgent", BaseFunction]]] = None,
         handlers: Optional[
             List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
@@ -119,8 +123,16 @@ class ToTAgent(BaseAgent):
             name=name,
             type=AgentType.TOT,
             model=[
-                ModelConfig(model_type=model_type, name=model_type),
-                ModelConfig(model_type=model_type, name=model_type),
+                ModelConfig(
+                    model_type=model_type,
+                    name=model_type,
+                    backend=model_backend,
+                ),
+                ModelConfig(
+                    model_type=model_type,
+                    name=model_type,
+                    backend=model_backend,
+                ),
             ],
             prompt={
                 "propose": BasePrompt(propose_prompt),

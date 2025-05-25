@@ -18,6 +18,9 @@
 from typing import List, Union
 
 from synthora.configs.model_config import ModelConfig
+from synthora.models.azure_chat import AzureChatBackend
+from synthora.models.azure_completion import AzureCompletionBackend
+from synthora.models.openai_completion import OpenAICompletionBackend
 from synthora.types.enums import ModelBackendType
 from synthora.types.node import Node
 
@@ -27,6 +30,9 @@ from .openai_chat import OpenAIChatBackend
 
 BACKEND_MAP = {
     ModelBackendType.OPENAI_CHAT: OpenAIChatBackend,
+    ModelBackendType.OPENAI_COMPLETION: OpenAICompletionBackend,
+    ModelBackendType.AZURE_CHAT: AzureChatBackend,
+    ModelBackendType.AZURE_COMPLETION: AzureCompletionBackend,
 }
 
 
@@ -52,7 +58,7 @@ def create_model_from_config(
     if isinstance(config, list):
         return [create_model_from_config(c, source) for c in config]
     cls = BACKEND_MAP[config.backend]
-    return cls(
+    return cls(  # type: ignore[no-any-return]
         name=config.name,
         source=source,
         model_type=config.model_type,
