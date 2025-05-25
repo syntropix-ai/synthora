@@ -15,12 +15,17 @@
 # limitations under the License.
 #
 
-from copy import deepcopy
+from synthora.agents import VanillaAgent
+from synthora.types.enums import ModelBackendType
 
-from synthora.models.openai_chat import OpenAIChatBackend
+
+# agent = VanillaAgent.default("You are a helpful assistant.")
+
+# print(agent.run("What is the capital of France?").unwrap().content)
 
 
-model = OpenAIChatBackend.default()
+agent = VanillaAgent.default(
+    "You are a helpful assistant.", model_backend=ModelBackendType.AZURE_CHAT
+)
 
-# lazy init client to enable deepcopy
-print(deepcopy(model).client)
+print(agent.run("What is the capital of France?").unwrap().content)

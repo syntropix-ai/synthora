@@ -17,6 +17,8 @@
 
 from typing import Any, List, Optional, Union, cast
 
+from synthora.utils.default import DEFAULT_CHAT_MODEL_BACKEND
+
 
 try:
     from typing import Self
@@ -40,6 +42,7 @@ from synthora.types.enums import (
     AgentType,
     Err,
     MessageRole,
+    ModelBackendType,
     NodeType,
     Ok,
     Result,
@@ -93,10 +96,11 @@ class ReactAgent(BaseAgent):
     """
 
     @staticmethod
-    def default(
+    def default(  # type: ignore[override]
         prompt: str,
         name: str = "React",
         model_type: str = "gpt-4o",
+        model_backend: ModelBackendType = DEFAULT_CHAT_MODEL_BACKEND,
         tools: Optional[List[Union["BaseAgent", BaseFunction]]] = None,
         handlers: Optional[
             List[Union[BaseCallBackHandler, AsyncCallBackHandler]]
@@ -124,7 +128,11 @@ class ReactAgent(BaseAgent):
         config = AgentConfig(
             name=name,
             type=AgentType.REACT,
-            model=ModelConfig(model_type=model_type, name=model_type),
+            model=ModelConfig(
+                model_type=model_type,
+                name=model_type,
+                backend=model_backend,
+            ),
             prompt=BasePrompt(prompt),
         )
         node = Node(name=name, type=NodeType.AGENT)
