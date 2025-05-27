@@ -267,9 +267,9 @@ async def CALL_ASYNC_CALLBACK(
     kwargs.pop("__macro_locals__", None)
 
     # Handle different types of callback managers
-    if isinstance(manager, BaseCallBackManager):
+    if isinstance(manager, AsyncCallBackManager):
         # For synchronous manager, call directly
-        manager.call(*args, **kwargs)
+        await manager.call(*args, **kwargs)
     else:
         # For async manager, await the call
-        await manager.call(*args, **kwargs)
+        manager.call(*args, **kwargs)

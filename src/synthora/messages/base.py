@@ -79,7 +79,7 @@ class BaseMessage(BaseModel):
     parsed: Optional[Any] = None
     content: Optional[str] = None
     tool_calls: Optional[List[Any]] = None
-    tool_response: Optional[Dict[str, Any]] = None
+    tool_response: Optional[Any] = None
     images: Optional[List[str]] = None
     origional_response: Optional[
         Union[ChatCompletion, ChatCompletionChunk]
@@ -135,7 +135,7 @@ class BaseMessage(BaseModel):
         content: Optional[AnyStr] = None,
         images: Optional[List[str]] = None,
         tool_calls: Optional[List[Dict[str, Any]]] = None,
-        tool_response: Optional[Result[Dict[str, Any], Exception]] = None,
+        tool_response: Optional[Union[Result[Any, Exception], Any]] = None,
         source: Optional[Node] = None,
         metadata: Dict[str, Any] = {},
     ) -> Self:
