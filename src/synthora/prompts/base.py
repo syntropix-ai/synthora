@@ -40,7 +40,7 @@ class BasePrompt(str):
             A set of unique argument names found in the prompt template,
             extracted from patterns like {arg_name}.
         """
-        return set(re.findall(r"{([^}]*)}", self))
+        return set(re.findall(r"{(\w+)}", self))
 
     def format(self, **kwargs: Any) -> "BasePrompt":  # type: ignore[override]
         """Format the prompt template with provided arguments.
